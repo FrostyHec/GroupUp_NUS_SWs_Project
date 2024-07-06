@@ -18,6 +18,4 @@ public interface QueryMapper {
     @Update("UPDATE \"Query\" SET state = #{state}, temp_id = #{tempId}, info = #{info} WHERE id = #{id}")
     void updateQuery(Query query);
 
-    @Delete("DELETE FROM \"Query\" WHERE id = #{id}")
-    void deleteQuery(int id);
 }

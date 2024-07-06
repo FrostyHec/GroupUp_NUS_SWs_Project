@@ -1,0 +1,16 @@
+package com.sustech.groupup.utils;
+
+public enum ResponseCodeType {
+    SUCCESS(200),
+    NOT_MODIFIED(304),
+    BAD_REQUEST(400),
+    UNAUTHORIZED(401),
+    NO_FOUND(404),
+    INTERNAL_ERROR(500);
+
+    final int code;
+
+    ResponseCodeType(int value) {
+        this.code = value;
+    }
+}

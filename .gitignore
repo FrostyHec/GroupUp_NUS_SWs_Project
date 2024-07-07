@@ -79,3 +79,4 @@ public/
 
 #self-ignore
 .non-public
+**/safety-nonpublic-*

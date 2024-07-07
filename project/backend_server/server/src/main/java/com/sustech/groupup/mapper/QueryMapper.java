@@ -1,9 +1,5 @@
 package com.sustech.groupup.mapper;
 
-import com.sustech.groupup.entity.QueryEntity;
-import org.apache.ibatis.annotations.*;
-import java.util.List;
-
 //public interface QueryMapper {
 //    @Select("SELECT * FROM \"Query\" WHERE id = #{id}")
 //    QueryEntity getQueryById(int id);

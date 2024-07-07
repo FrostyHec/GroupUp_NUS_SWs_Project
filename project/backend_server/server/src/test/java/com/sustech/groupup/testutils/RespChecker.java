@@ -4,6 +4,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.springframework.test.web.servlet.ResultMatcher;
 
+import com.sustech.groupup.utils.ResponseCodeType;
+
 public class RespChecker {
     public static ResultMatcher success(){
         return jsonPath("$.code").value(ResponseCodeType.SUCCESS.getCode());

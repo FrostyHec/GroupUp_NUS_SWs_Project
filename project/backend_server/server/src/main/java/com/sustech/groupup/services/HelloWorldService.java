@@ -1,6 +1,6 @@
 package com.sustech.groupup.services;
 
-import com.sustech.groupup.entity.UserEntity;
+import com.sustech.groupup.entity.db.DemoEntity;
 
 public interface HelloWorldService {
     String getHelloMessage();
@@ -9,5 +9,5 @@ public interface HelloWorldService {
 
     String getNumberMessage(int number);
 
-    UserEntity getUser(int number);
+    DemoEntity getUser(int number);
 }

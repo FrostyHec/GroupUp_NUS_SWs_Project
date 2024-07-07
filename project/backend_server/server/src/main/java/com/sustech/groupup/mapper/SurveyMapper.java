@@ -1,8 +1,4 @@
 package com.sustech.groupup.mapper;
-import com.sustech.groupup.entity.SurveyEntity;
-
-import org.apache.ibatis.annotations.*;
-import java.util.List;
 
 //public interface SurveyMapper {
 //    @Select("SELECT * FROM \"Survey\" WHERE id = #{id}")

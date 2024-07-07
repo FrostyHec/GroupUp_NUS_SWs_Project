@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.sustech.groupup.config.Constant;
 import com.sustech.groupup.exception.ExternalException;
 import com.sustech.groupup.services.HelloWorldService;
-import com.sustech.groupup.testutils.Response;
+import com.sustech.groupup.utils.Response;
 
 import org.springframework.web.bind.annotation.*;
 

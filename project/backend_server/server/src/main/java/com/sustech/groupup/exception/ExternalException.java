@@ -1,7 +1,7 @@
 package com.sustech.groupup.exception;
 
 
-import com.sustech.groupup.testutils.Response;
+import com.sustech.groupup.utils.Response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

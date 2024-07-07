@@ -1,10 +1,5 @@
 package com.sustech.groupup.mapper;
 
-import com.sustech.groupup.entity.GroupEntity;
-import org.apache.ibatis.annotations.*;
-import java.util.List;
-
-
 //public interface GroupMapper {
 //    @Select("SELECT * FROM \"Group\" WHERE id = #{id}")
 //    @Results({

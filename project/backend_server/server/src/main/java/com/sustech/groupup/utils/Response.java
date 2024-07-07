@@ -1,4 +1,4 @@
-package com.sustech.groupup.testutils;
+package com.sustech.groupup.utils;
 
 import lombok.Data;
 

@@ -1,7 +1,6 @@
-package com.sustech.groupup.testutils;
+package com.sustech.groupup.utils;
 
 import lombok.Getter;
-
 
 @Getter
 public enum ResponseCodeType {
@@ -17,3 +16,4 @@ public enum ResponseCodeType {
         this.code = value;
     }
 }
+

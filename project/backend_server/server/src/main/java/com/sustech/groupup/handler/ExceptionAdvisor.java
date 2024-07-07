@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.sustech.groupup.exception.ExternalException;
 import com.sustech.groupup.exception.InternalException;
-import com.sustech.groupup.testutils.Response;
-import com.sustech.groupup.testutils.ResponseCodeType;
+import com.sustech.groupup.utils.Response;
+import com.sustech.groupup.utils.ResponseCodeType;
 
 import lombok.extern.log4j.Log4j2;
 

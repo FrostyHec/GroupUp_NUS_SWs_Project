@@ -1,10 +1,9 @@
 package com.sustech.groupup.services.impl;
 
-import com.sustech.groupup.entity.UserEntity;
+import com.sustech.groupup.entity.db.DemoEntity;
 import com.sustech.groupup.mapper.UserMapper;
 import com.sustech.groupup.services.HelloWorldService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,7 @@ public class HelloWorldServiceImpl implements HelloWorldService {
     }
 
     @Override
-    public UserEntity getUser(int number) {
+    public DemoEntity getUser(int number) {
         return userMapper.selectById(number);
     }
 }

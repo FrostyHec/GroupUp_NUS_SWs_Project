@@ -5,6 +5,6 @@ import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface DatabaseManager {
-    @Select("TRUNCATE TABLE users")
+    @Select("TRUNCATE TABLE users;")
     void clearDatabase();
 }

@@ -1,4 +1,4 @@
-package com.sustech.groupup.utils;
+package com.sustech.groupup.testutils;
 
 import lombok.Data;
 
@@ -8,8 +8,8 @@ public class Response {
     private String msg;
     private Object data;
 
-    public Response(ResponseCodeType code, String msg, Object data) {
-        this.code = code.code;
+    public Response(ResponseCodeType codeType, String msg, Object data) {
+        this.code = codeType.getCode();
         this.msg = msg;
         this.data = data;
     }

@@ -1,18 +1,18 @@
 package com.sustech.groupup.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.sustech.groupup.config.Constant;
 import com.sustech.groupup.services.HelloWorldService;
-import com.sustech.groupup.utils.Response;
+import com.sustech.groupup.testutils.Response;
 
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping(Constant.API_VERSION+"/hello")
 @RequiredArgsConstructor
 public class HelloWorldController {
 

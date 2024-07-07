@@ -1,5 +1,9 @@
-package com.sustech.groupup.utils;
+package com.sustech.groupup.testutils;
 
+import lombok.Getter;
+
+
+@Getter
 public enum ResponseCodeType {
     SUCCESS(200),
     NOT_MODIFIED(304),
@@ -7,8 +11,7 @@ public enum ResponseCodeType {
     UNAUTHORIZED(401),
     NO_FOUND(404),
     INTERNAL_ERROR(500);
-
-    final int code;
+    private final int code;
 
     ResponseCodeType(int value) {
         this.code = value;

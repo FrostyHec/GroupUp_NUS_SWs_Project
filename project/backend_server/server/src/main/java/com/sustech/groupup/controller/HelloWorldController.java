@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.sustech.groupup.config.Constant;
+import com.sustech.groupup.exception.ExternalException;
 import com.sustech.groupup.services.HelloWorldService;
 import com.sustech.groupup.testutils.Response;
 
@@ -38,5 +39,9 @@ public class HelloWorldController {
     public Response getUser(@PathVariable int number) {
         var resp = helloService.getUser(number);
         return Response.getSuccess(resp);
+    }
+    @GetMapping("/exceptiontest")
+    public Response testExternalException() {
+        throw new ExternalException(Response.getBadRequest("test exception"));
     }
 }

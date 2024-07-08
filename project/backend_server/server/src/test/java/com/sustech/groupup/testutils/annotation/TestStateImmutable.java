@@ -7,10 +7,10 @@ import java.lang.annotation.Target;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.sustech.groupup.testutils.EnsureTestStateImmutabilityFilterTest;
+import com.sustech.groupup.testutils.EnsureTestStateImmutabilityFilter;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@ExtendWith(EnsureTestStateImmutabilityFilterTest.class)
+@ExtendWith(EnsureTestStateImmutabilityFilter.class)
 public @interface TestStateImmutable {
 }

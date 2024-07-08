@@ -28,7 +28,6 @@ public class UserController {
 
     @PostMapping("/public/login")
     public Response login(@NonNull @RequestBody LoginDTO login) {
-        // TODO
         String token = userService.login(login.getUsername(),login.getPassword());
         return Response.getSuccess(token);
     }

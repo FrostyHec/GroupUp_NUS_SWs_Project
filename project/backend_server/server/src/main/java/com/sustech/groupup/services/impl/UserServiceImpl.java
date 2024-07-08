@@ -3,6 +3,7 @@ package com.sustech.groupup.services.impl;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
     private final JwtUtil jwtUtil;
-
+    private final PasswordEncoder passwordEncoder;
     @Override
     public String login(String username, String password) {
         QueryWrapper<UserEntity> queryWrapper = Wrappers.query();
@@ -31,10 +32,10 @@ public class UserServiceImpl implements UserService {
         List<UserEntity> users = userMapper.selectList(queryWrapper);
 
         if (users.isEmpty()) {
-            throw new ExternalException(Response.getNotFound("user-not-found"));
+            throw new ExternalException(Response.getNotFound("user-no-found"));
         } else if (users.size() > 1) {
             throw new ExternalException(Response.getInternalError("user-duplicate"));
-        } else if (!users.getFirst().getPassword().equals(password)) {
+        } else if (!passwordEncoder.matches(password,users.getFirst().getPassword())) {
             throw new ExternalException(Response.getBadRequest("wrong-password"));
         }
 
@@ -44,6 +45,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void register(String username, String password) {
+        password = passwordEncoder.encode(password);
         userMapper.selectByMap(Map.of("username", username))
                   .stream().findAny().ifPresent(e -> {
                       throw new ExternalException(Response.getBadRequest("user-duplicate"));

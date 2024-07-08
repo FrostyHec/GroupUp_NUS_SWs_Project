@@ -37,11 +37,6 @@ public class HelloWorldController {
         var resp = helloService.getNumberMessage(number);
         return Response.getSuccess(resp);
     }
-    @GetMapping("/user/{number}")
-    public Response getUser(@PathVariable int number) {
-        var resp = helloService.getUser(number);
-        return Response.getSuccess(resp);
-    }
     @GetMapping("/exceptiontest")
     public Response testExternalException() {
         throw new ExternalException(Response.getBadRequest("test exception"));

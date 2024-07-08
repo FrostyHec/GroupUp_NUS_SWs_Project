@@ -1,6 +1,6 @@
 "use client";
 
-// import { Form } from "@prisma/client";
+import { Form } from "@/actions/form";
 import React, { useEffect, useState } from "react";
 import PreviewDialogBtn from "./PreviewDialogBtn";
 import PublishFormBtn from "./PublishFormBtn";
@@ -16,14 +16,6 @@ import { toast } from "./ui/use-toast";
 import Link from "next/link";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 import Confetti from "react-confetti";
-
-type Form = {
-  id: number;
-  name: string;
-  content: string;
-  shareURL: string;
-  published: boolean;
-};
 
 function FormBuilder({ form }: { form: Form }) {
   const { setElements, setSelectedElement } = useDesigner();

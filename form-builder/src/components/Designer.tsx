@@ -9,6 +9,7 @@ import { ElementsType, FormElementInstance, FormElements } from "./FormElements"
 import { idGenerator } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { BiSolidTrash } from "react-icons/bi";
+import PropertiesFormSidebar from "./PropertiesFormSidebar";
 
 function Designer() {
   const { elements, addElement, selectedElement, setSelectedElement, removeElement } = useDesigner();
@@ -134,6 +135,7 @@ function Designer() {
         </div>
       </div>
       <DesignerSidebar />
+      {selectedElement && <PropertiesFormSidebar />}
     </div>
   );
 }

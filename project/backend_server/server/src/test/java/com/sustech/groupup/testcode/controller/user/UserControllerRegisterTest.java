@@ -15,7 +15,7 @@ import com.sustech.groupup.config.Constant;
 import com.sustech.groupup.mapper.UserMapper;
 import com.sustech.groupup.testutils.RespChecker;
 import com.sustech.groupup.testutils.annotation.ControllerTest;
-import com.sustech.groupup.testutils.mapper.DatabaseManager;
+
 @ControllerTest
 public class UserControllerRegisterTest {
 
@@ -24,8 +24,6 @@ public class UserControllerRegisterTest {
     private final String baseUrl = Constant.API_VERSION + "/user/public/register";
     @Autowired
     private UserMapper mapper;
-    @Autowired
-    private DatabaseManager databaseManager;
 
     private ResultActions register(String username, String password) throws Exception {
         String requestBody = String.format(
@@ -38,51 +36,44 @@ public class UserControllerRegisterTest {
                         """,
                 username, password);
         return mockMvc.perform(MockMvcRequestBuilders.post(baseUrl)
-                                                  .contentType(MediaType.APPLICATION_JSON)
-                                                  .content(requestBody)
-                                                  .accept(MediaType.APPLICATION_JSON));
+                                                     .contentType(MediaType.APPLICATION_JSON)
+                                                     .content(requestBody)
+                                                     .accept(MediaType.APPLICATION_JSON));
     }
+
     @Test
     public void testRegisterOK() throws Exception {
-        try {
-            String username = "longzhi";
-            String password = "123";
-            register(username, password)
-                   .andExpect(status().isOk())
-                   .andExpect(RespChecker.success());
+        String username = "longzhi";
+        String password = "123";
+        register(username, password)
+                .andExpect(status().isOk())
+                .andExpect(RespChecker.success());
 
-            var res = mapper.selectByMap(Map.of("username", "longzhi"));
-            assert res.size() == 1;
+        var res = mapper.selectByMap(Map.of("username", "longzhi"));
+        assert res.size() == 1;
 
-            var user = res.getFirst();
-            assert user.getUsername().equals(username);
-        } finally {
-            databaseManager.clearDatabase();
-        }
+        var user = res.getFirst();
+        assert user.getUsername().equals(username);
     }
 
     @Test
     public void testRegisterDuplicate() throws Exception {
-        try {
-            String username = "longzhi";
-            String password = "123";
-            register(username, password)
-                    .andExpect(status().isOk())
-                    .andExpect(RespChecker.success());
+        String username = "longzhi";
+        String password = "123";
+        register(username, password)
+                .andExpect(status().isOk())
+                .andExpect(RespChecker.success());
 
-            register(username, password)
-                   .andExpect(status().isOk())
-                   .andExpect(RespChecker.badRequest())
-                   .andExpect(RespChecker.message("user-duplicate"));
+        register(username, password)
+                .andExpect(status().isOk())
+                .andExpect(RespChecker.badRequest())
+                .andExpect(RespChecker.message("user-duplicate"));
 
-            var res = mapper.selectByMap(Map.of("username", "longzhi"));
-            assert res.size() == 1;
+        var res = mapper.selectByMap(Map.of("username", "longzhi"));
+        assert res.size() == 1;
 
-            var user = res.getFirst();
-            assert user.getUsername().equals(username);
-        } finally {
-            databaseManager.clearDatabase();
-        }
+        var user = res.getFirst();
+        assert user.getUsername().equals(username);
     }
 }
 

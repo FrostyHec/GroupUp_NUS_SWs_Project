@@ -1,11 +1,11 @@
 package com.sustech.groupup.controller;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.sustech.groupup.config.Constant;
 import com.sustech.groupup.exception.ExternalException;
 import com.sustech.groupup.services.HelloWorldService;
+import com.sustech.groupup.utils.JwtUtil;
 import com.sustech.groupup.utils.Response;
 
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 public class HelloWorldController {
 
     private final HelloWorldService helloService;
+
+    private final JwtUtil jwtUtil;
     @GetMapping("/hello")
     public Response sayHello() {
         var resp = helloService.getHelloMessage();
@@ -43,5 +45,15 @@ public class HelloWorldController {
     @GetMapping("/exceptiontest")
     public Response testExternalException() {
         throw new ExternalException(Response.getBadRequest("test exception"));
+    }
+
+    @GetMapping("/logintest/public")
+    public String loginTest() {
+        String token = jwtUtil.generateToken("longzhi");
+        return token;
+    }
+    @GetMapping("/requiredAuth")
+    public String requiredAuth(){
+        return "You have passed the authentication!";
     }
 }

@@ -5,3 +5,8 @@ spring:
     active: dev
   jackson:
     property-naming-strategy: SNAKE_CASE
+
+jwt:
+  secret: secret12740184018403rujdfcu9hv9nsdzsajsz0ehfUO(vhqoCQfsecret12740184018403rujdfcu9hv9nsdzsajsz0ehfUO(vhqoCQf
+  expiration: 86400000
+

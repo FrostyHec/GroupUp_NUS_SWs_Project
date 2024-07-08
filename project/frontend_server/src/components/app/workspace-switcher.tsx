@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { CirclePlus, Check, ChevronsUpDown } from 'lucide-react';
-
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -44,6 +43,7 @@ const groups = [
     label: 'Personal Account',
     workspaces: [
       {
+        id: 0,
         label: 'Alicia Koch',
         value: 'personal',
       },
@@ -53,10 +53,12 @@ const groups = [
     label: 'Workspaces',
     workspaces: [
       {
+        id: 1,
         label: 'Acme Inc.',
         value: 'acme-inc',
       },
       {
+        id: 2,
         label: 'Monsters Inc.',
         value: 'monsters',
       },

@@ -15,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @RestControllerAdvice
 public class ExceptionAdvisor {
+
     @ExceptionHandler(InternalException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Response exceptionHandler(InternalException e) {
@@ -27,7 +28,16 @@ public class ExceptionAdvisor {
     @ExceptionHandler(ExternalException.class)
     @ResponseStatus(HttpStatus.OK)
     public Response exceptionHandler(ExternalException e) {
-        log.error("ExternalException:", e);
+        log.warn("ExternalException:" + e.getResponse());
         return e.getResponse();
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Response exceptionHandler(Exception e) {
+        log.error("InternalException:", e);
+        return new Response(ResponseCodeType.INTERNAL_ERROR,
+                            e.getMessage(),
+                            e.getCause());
     }
 }

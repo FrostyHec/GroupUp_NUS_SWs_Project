@@ -20,7 +20,7 @@ public class SurveyController {
     private final SurveyConverter surveyConverter;
 
     @GetMapping("/{number}")
-    public Response getSurveyInfoById (@PathVariable long number, @RequestHeader("username") String username) throws JsonProcessingException {
+    public Response getSurveyInfoById (@PathVariable long number) throws JsonProcessingException {
         var resp = surveyConverter.toDTO(surveyService.getSurveyById(number));
         return Response.getSuccess("success",resp);
     }

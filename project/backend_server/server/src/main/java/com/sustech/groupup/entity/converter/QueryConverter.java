@@ -32,7 +32,7 @@ public class QueryConverter {
         queryEntity.setUpdateAt(queryDTO.getUpdateAt());
         queryEntity.setPersonalInfo(queryDTO.getPersonalInfo().asText());
         queryEntity.setQuestionsAnswer(queryDTO.getQuestionsAnswer().asText());
-        queryEntity.setMemberID(1);//应该从token中获得
+        queryEntity.setMemberId(1);//应该从token中获得
         return queryEntity;
     }
 }

@@ -32,7 +32,7 @@ public interface SurveyMapper extends BaseMapper<SurveyEntity> {
                     </if>
             </script>
             """)
-    List<Long> queryOwnSurvey(int id, int pageSize, int pageNo);
+    List<Long> queryOwnSurvey(long id, int pageSize, int pageNo);
 
     @Select("""
             <script>
@@ -42,7 +42,7 @@ public interface SurveyMapper extends BaseMapper<SurveyEntity> {
                     </if>
             </script>
             """)
-    List<Long> queryParticipateSurvey(int id, int pageSize, int pageNo);
+    List<Long> queryParticipateSurvey(long id, int pageSize, int pageNo);
 
     @Insert("insert into survey_member (member_id, survey_id) VALUES (#{member_id}, #{survey_id})")
     void insertSurveyMember(@Param("member_id") Long MemberId, @Param("survey_id") Long SurveyId);

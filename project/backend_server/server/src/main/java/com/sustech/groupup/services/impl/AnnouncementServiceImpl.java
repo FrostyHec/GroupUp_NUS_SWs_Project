@@ -30,7 +30,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         if(!surveyMapper.isAccessable(surveyId, requestUserId)){
             throw new ExternalException(Response.getUnauthorized("no-privilege"));
         }
-        List<AnnouncementEntity> res=  announcementMapper.getAnnouncement(surveyId, pageSize, pageNo);
+        List<AnnouncementEntity> res=  announcementMapper.getAnnouncementInSurvey(surveyId, pageSize, pageNo);
         return res.stream().map(AnnouncementConverter::toDTO).toList();
     }
 

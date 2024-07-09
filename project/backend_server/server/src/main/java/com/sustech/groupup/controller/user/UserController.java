@@ -42,13 +42,13 @@ public class UserController {
     }
 
     @GetMapping("/public/query")
-    public Response publicUserQuery(@RequestParam("find_username")@NonNull String findUsername) {
+    public Response publicUserQuery(@RequestParam("find_username") @NonNull String findUsername) {
         List<UserPublicQueryDTO> res = userService.queryUserLikeName(findUsername);
-        return Response.getSuccess(Map.of("users",res));
+        return Response.getSuccess(Map.of("users", res));
     }
 
     @GetMapping("/{id}/survey/own")
-    public Response queryOwnSurvey(@PathVariable int id,
+    public Response queryOwnSurvey(@PathVariable long id,
                                    int pageSize,
                                    int pageNo
     ) {
@@ -60,7 +60,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/survey/participate")
-    public Response queryParticipateSurvey(@PathVariable int id,
+    public Response queryParticipateSurvey(@PathVariable long id,
                                            int pageSize,
                                            int pageNo
     ) {
@@ -72,7 +72,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/announcement/received")
-    public Response queryReceivedAnnouncement(@PathVariable int id,
+    public Response queryReceivedAnnouncement(@PathVariable long id,
                                               int pageSize,
                                               int pageNo
     ) {

@@ -2,11 +2,7 @@ package com.sustech.groupup.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sustech.groupup.entity.db.SurveyEntity;
-
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -42,4 +38,16 @@ public interface SurveyMapper extends BaseMapper<SurveyEntity> {
             """)
     List<Long> queryParticipateSurvey(int id, int pageSize, int pageNo);
 
+
+    @Insert("insert into survey_member (member_id, survey_id) VALUES (#{member_id}, #{survey_id})")
+    void insertSurveyMember(@Param("member_id") Long MemberId, @Param("survey_id") Long SurveyId);
+
+    @Insert("insert into survey_owner (owner_id, survey_id) VALUES (#{owner_id}, #{survey_id})")
+    void insertSurveyOwner(@Param("owner_id") Long OwnerId, @Param("survey_id") Long SurveyId);
+
+    @Delete("delete from survey_owner where survey_id= #{survey_id}")
+    void deleteSurveyOwnerById(@Param("survey_id") Long SurveyId);
+
+    @Delete("delete from survey_member where survey_id= #{survey_id}")
+    void deleteSurveyMemberById(@Param("survey_id") Long SurveyId);
 }

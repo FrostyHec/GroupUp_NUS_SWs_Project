@@ -2,6 +2,7 @@ package com.sustech.groupup.testcode.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.MediaType;
@@ -64,10 +65,10 @@ public class APIWrapper {
     public LoginAuthDTO templateUserLogin() throws Exception {
         String username = "username";
         String password = "password";
-        return registerAndLogin(username,password);
+        return registerAndLogin(username, password);
     }
 
-    public LoginAuthDTO registerAndLogin(String username,String password) throws Exception {
+    public LoginAuthDTO registerAndLogin(String username, String password) throws Exception {
         register(username, password);
         return loginAndGetAuth(username, password);
     }
@@ -148,10 +149,19 @@ public class APIWrapper {
         String requestBody = objectMapper.writeValueAsString(dto);
         String baseUrl = Constant.API_VERSION + "/survey/" + surveyID + "/announcement";
         return mockMvc.perform(MockMvcRequestBuilders.post(baseUrl)
-                                                     .header("authorization", "Bearer " + auth.getToken())
+                                                     .header("authorization",
+                                                             "Bearer " + auth.getToken())
                                                      .contentType(MediaType.APPLICATION_JSON)
                                                      .content(requestBody)
                                                      .accept(MediaType.APPLICATION_JSON));
+    }
+
+    public long successfulCreateAnnouncement(long surveyID, LoginAuthDTO auth,
+                                             AnnouncementDTO dto) throws Exception {
+        var res = createAnnouncement(surveyID, auth, dto)
+                .andExpect(RespChecker.success())
+                .andReturn();
+        return JsonUtils.toJsonData(res).get("id").asLong();
     }
 
     public AnnouncementDTO getTemplateAnnouncementDTO() throws Exception {
@@ -164,6 +174,30 @@ public class APIWrapper {
                                                
                                                }
                                               """, AnnouncementDTO.class);
+    }
+
+    public ResultActions getAnnouncement(LoginAuthDTO auth, int pageSize, int pageNo) throws Exception {
+        final String baseUrl = Constant.API_VERSION + "/user/" + auth.getId() + "/announcement/received";
+        return mockMvc.perform(MockMvcRequestBuilders.get(baseUrl)
+                                                     .header("authorization",
+                                                             "Bearer " + auth.getToken())
+                                       .param("page_size", String.valueOf(pageSize))
+                                       .param("page_no", String.valueOf(pageNo))
+                                         .accept(MediaType.APPLICATION_JSON));
+    }
+
+    public List<Long> successfulGetUserOwnAnnouncement(LoginAuthDTO auth, int pageSize, int pageNo) throws
+                                                                                           Exception {
+        var res = getAnnouncement(auth, pageSize, pageNo)
+                .andExpect(RespChecker.success())
+                .andReturn();
+        List<Long> ans = new ArrayList<>();
+        var li = JsonUtils.toJsonData(res).get("ids");
+        assert li.isArray();
+        for (var i : li) {
+            ans.add(i.asLong());
+        }
+        return ans;
     }
 
 }

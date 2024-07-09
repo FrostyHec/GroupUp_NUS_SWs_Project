@@ -24,10 +24,10 @@ public interface AnnouncementMapper extends BaseMapper<AnnouncementEntity> {
             select id from announcement where survey_id in (
                 select survey_id from survey_member
                     where member_id= #{uid}
+                )
                 <if test="pageSize != -1">
                     limit #{pageSize} offset (#{pageNo}-1)*#{pageSize}
                 </if>
-                )
             </script>
             """)
     List<Long> getAnnouncementByUser(long uid, int pageSize, int pageNo);

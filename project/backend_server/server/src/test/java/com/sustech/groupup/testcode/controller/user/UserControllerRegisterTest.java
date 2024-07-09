@@ -75,5 +75,7 @@ public class UserControllerRegisterTest {
         var user = res.getFirst();
         assert user.getUsername().equals(username);
     }
+
+
 }
 

@@ -28,7 +28,7 @@ public class UserControllerOwnTest {
 
 
     private ResultActions createSurvey(List<Long> owner,List<Long> member) {
-        //TODO
+
         return null;
     }
     private ResultActions queryOwn(int id, int pageSize, int pageNo) throws Exception {

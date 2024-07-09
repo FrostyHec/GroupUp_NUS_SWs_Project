@@ -25,12 +25,11 @@ public class LoginInterceptor implements HandlerInterceptor {
                              @NonNull Object handler) {
 
         String token = request.getHeader("Authorization");
-        String username = request.getHeader("username");
-        if (token == null || username == null|| !token.startsWith("Bearer ")){
+        if (token == null || !token.startsWith("Bearer ")){
             throwUnauthorizedException("no-auth");
         }
         token = token.substring(7);
-        if (!jwtUtil.validateToken(token, username)) {
+        if (!jwtUtil.validateToken(token)) {
             throwUnauthorizedException("invalid-auth");
         }
         return true;

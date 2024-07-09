@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.sustech.groupup.entity.api.UserPublicQueryDTO;
 import com.sustech.groupup.entity.db.UserEntity;
 import com.sustech.groupup.entity.api.LoginAuthDTO;
 import com.sustech.groupup.exception.ExternalException;
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final SurveyMapper surveyMapper;
+
     @Override
     public LoginAuthDTO login(String username, String password) {
         QueryWrapper<UserEntity> queryWrapper = Wrappers.query();
@@ -38,11 +40,11 @@ public class UserServiceImpl implements UserService {
             throw new ExternalException(Response.getNotFound("user-no-found"));
         } else if (users.size() > 1) {
             throw new ExternalException(Response.getInternalError("user-duplicate"));
-        } else if (!passwordEncoder.matches(password,users.getFirst().getPassword())) {
+        } else if (!passwordEncoder.matches(password, users.getFirst().getPassword())) {
             throw new ExternalException(Response.getBadRequest("wrong-password"));
         }
 
-        String token=  jwtUtil.generateToken(username);
+        String token = jwtUtil.generateToken(username);
         return new LoginAuthDTO(users.getFirst().getId(), token);
     }
 
@@ -54,7 +56,7 @@ public class UserServiceImpl implements UserService {
                   .stream().findAny().ifPresent(e -> {
                       throw new ExternalException(Response.getBadRequest("user-duplicate"));
                   });
-        userMapper.insert(new UserEntity(0, username, password));
+        userMapper.insert(new UserEntity(null, username, password));
     }
 
     @Override
@@ -70,5 +72,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Long> queryReceivedAnnouncement(int id, int pageSize, int pageNo) {
         return null;//TODO
+    }
+
+    @Override
+    public List<UserPublicQueryDTO> queryUserLikeName(String username) {
+        QueryWrapper<UserEntity> queryWrapper = Wrappers.query();
+        queryWrapper.like("username", username).orderByAsc("LENGTH(username)");
+        List<UserEntity> users = userMapper.selectList(queryWrapper);
+        //converting user to DTO
+        return users.stream().map(e -> new UserPublicQueryDTO(e.getId(), e.getUsername())).toList();
     }
 }

@@ -3,6 +3,7 @@ package com.sustech.groupup.services;
 import java.util.List;
 
 import com.sustech.groupup.entity.api.LoginAuthDTO;
+import com.sustech.groupup.entity.api.UserPublicQueryDTO;
 
 public interface UserService {
 
@@ -30,4 +31,5 @@ public interface UserService {
      * return survey id list or throw failed exception
      */
     List<Long> queryReceivedAnnouncement(int id, int pageSize, int pageNo);
+    List<UserPublicQueryDTO> queryUserLikeName(String username);
 }

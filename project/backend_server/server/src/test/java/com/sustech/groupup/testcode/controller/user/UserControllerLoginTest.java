@@ -37,7 +37,7 @@ public class UserControllerLoginTest {
         var token = data.get("token").asText();
 
         assert StringUtils.isNotBlank(token);
-        assert id == 0;
+        assert id == 1;
     }
 
     @Test

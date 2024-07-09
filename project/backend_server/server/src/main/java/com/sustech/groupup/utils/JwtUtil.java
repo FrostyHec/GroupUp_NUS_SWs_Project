@@ -50,9 +50,8 @@ public class JwtUtil {
                 .before(new Date());
     }
 
-    public boolean validateToken(String token, String username) {
-        String tokenUsername = getClaimsFromToken(token).getSubject();
-        return (username.equals(tokenUsername) && !isTokenExpired(token));
+    public boolean validateToken(String token) {
+        return !isTokenExpired(token);
     }
 
     public String getUsernameFromToken(String token) {

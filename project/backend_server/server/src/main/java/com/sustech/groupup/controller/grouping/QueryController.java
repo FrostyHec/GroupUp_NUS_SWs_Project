@@ -1,15 +1,63 @@
 package com.sustech.groupup.controller.grouping;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sustech.groupup.entity.api.QueryDTO;
+import com.sustech.groupup.entity.api.SurveyDTO;
+import com.sustech.groupup.entity.converter.QueryConverter;
+import com.sustech.groupup.entity.db.QueryEntity;
+import com.sustech.groupup.entity.db.SurveyEntity;
+import com.sustech.groupup.services.QueryService;
+import com.sustech.groupup.utils.Response;
+import org.springframework.web.bind.annotation.*;
 
 import com.sustech.groupup.config.Constant;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(Constant.API_VERSION + "/survey/{id}/query")
+@RequestMapping(Constant.API_VERSION + "/survey/{surveyId}/query")
 @RequiredArgsConstructor
 public class QueryController {
+    private final QueryConverter queryConverter;
+    private final QueryService queryService;
 
+    @GetMapping("/{number}")
+    public Response getQueryById (@PathVariable long number, @PathVariable String surveyId) throws JsonProcessingException {
+        var resp = queryConverter.toDTO(queryService.getQueryById(number));
+        return Response.getSuccess("success",resp);
+    }
+
+    @PostMapping()
+    public Response addQuery (@PathVariable long surveyId ,@RequestBody QueryDTO queryDTO) {
+        QueryEntity queryEntity = queryConverter.toEntity(queryDTO);
+        queryEntity.setSurveyId(surveyId);
+        queryService.createQuery(queryEntity);
+        return Response.getSuccess("success",queryEntity.getId());
+    }
+
+    @PutMapping("/{number}")
+    public Response updateQueryById (@PathVariable long number, @RequestBody QueryDTO queryDTO) {
+        QueryEntity queryEntity = queryConverter.toEntity(queryDTO);
+        queryEntity.setId(number);
+        queryService.updateQuery(queryEntity);
+        return Response.getSuccess("success",queryDTO);
+    }
+
+    @DeleteMapping("/{number}")
+    public Response deleteQueryById (@PathVariable long number) {
+        queryService.deleteQueryById(number);
+        return Response.getSuccess("success");
+    }
+
+    @PostMapping("/{number}/status")
+    public Response updateSurveyStatusById (@PathVariable long id, @RequestParam int status) {
+        queryService.updateStatusByQueryId(id,status);
+        return Response.getSuccess("success","");
+    }
+
+    @GetMapping("/{number}/status")
+    public Response getQueryStatusById(@PathVariable long id) {
+        QueryEntity queryEntity = queryService.getQueryById(id);
+        return Response.getSuccess("success",queryEntity.getStatus());
+    }
 }

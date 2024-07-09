@@ -1,23 +1,12 @@
-package com.sustech.groupup.testcode.controller;
+package com.sustech.groupup.testcode.controller.survey;
 
 import com.sustech.groupup.config.Constant;
-import com.sustech.groupup.entity.db.DemoEntity;
-import com.sustech.groupup.entity.db.SurveyEntity;
-import com.sustech.groupup.entity.db.SurveyStatus;
 import com.sustech.groupup.mapper.SurveyMapper;
-import com.sustech.groupup.mapper.UserMapper;
-import com.sustech.groupup.testutils.RespChecker;
 import com.sustech.groupup.testutils.annotation.ControllerTest;
 import com.sustech.groupup.testutils.mapper.DatabaseManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.sql.Timestamp;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ControllerTest
 public class SurveyControllerTest {

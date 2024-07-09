@@ -4,8 +4,6 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.sustech.groupup.annotation.JsonToStringField;
-import com.sustech.groupup.entity.db.RestrictionEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

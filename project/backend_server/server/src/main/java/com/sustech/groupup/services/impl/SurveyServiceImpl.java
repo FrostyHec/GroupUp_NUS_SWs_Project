@@ -48,8 +48,4 @@ public class SurveyServiceImpl implements SurveyService {
         surveyMapper.deleteById(surveyId);
     }
 
-    @Override
-    public int getStatusBySurveyId(long surveyId) {
-        return 0;
-    }
 }

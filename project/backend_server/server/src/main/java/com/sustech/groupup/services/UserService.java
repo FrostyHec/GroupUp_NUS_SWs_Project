@@ -2,12 +2,14 @@ package com.sustech.groupup.services;
 
 import java.util.List;
 
+import com.sustech.groupup.entity.api.LoginAuthDTO;
+
 public interface UserService {
 
     /**
-     * return success token or throw failed exception
+     * return success authDTO or throw failed exception
      */
-    String login(String username, String password);
+    LoginAuthDTO login(String username, String password);
 
     /**
      * complete or throw failed exception
@@ -17,15 +19,15 @@ public interface UserService {
     /**
      * return survey id list or throw failed exception
      */
-    List<Long> queryOwnSurvey(int id, String pageSize, String pageNo);
+    List<Long> queryOwnSurvey(int id, int pageSize, int pageNo);
 
     /**
      * return survey id list or throw failed exception
      */
-    List<Long> queryParticipateSurvey(int id, String pageSize, String pageNo);
+    List<Long> queryParticipateSurvey(int id, int pageSize, int pageNo);
 
     /**
      * return survey id list or throw failed exception
      */
-    List<Long> queryReceivedAnnouncement(int id, String pageSize, String pageNo);
+    List<Long> queryReceivedAnnouncement(int id, int pageSize, int pageNo);
 }

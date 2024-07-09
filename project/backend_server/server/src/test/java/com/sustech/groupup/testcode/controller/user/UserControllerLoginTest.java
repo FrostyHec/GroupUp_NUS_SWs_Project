@@ -11,7 +11,6 @@ import com.sustech.groupup.services.UserService;
 import com.sustech.groupup.testutils.AuthUtils;
 import com.sustech.groupup.testutils.RespChecker;
 import com.sustech.groupup.testutils.annotation.ControllerTest;
-import com.sustech.groupup.testutils.mapper.DatabaseManager;
 
 @ControllerTest
 public class UserControllerLoginTest {
@@ -33,9 +32,12 @@ public class UserControllerLoginTest {
 
         userService.register(username, password);
 
-        var token = authUtils.logAndGetAuth(username, password);
+        var data = authUtils.loginAndGetAuth(username, password);
+        var id = data.get("id").asLong();
+        var token = data.get("token").asText();
 
         assert StringUtils.isNotBlank(token);
+        assert id == 0;
     }
 
     @Test

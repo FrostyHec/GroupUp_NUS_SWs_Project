@@ -28,8 +28,8 @@ public class UserController {
 
     @PostMapping("/public/login")
     public Response login(@NonNull @RequestBody LoginDTO login) {
-        String token = userService.login(login.getUsername(),login.getPassword());
-        return Response.getSuccess(token);
+        var auth = userService.login(login.getUsername(), login.getPassword());
+        return Response.getSuccess(auth);
     }
 
     @PostMapping("/public/register")
@@ -40,26 +40,32 @@ public class UserController {
 
     @GetMapping("/{id}/survey/own")
     public Response queryOwnSurvey(@PathVariable int id,
-                                   @NonNull String pageSize,
-                                   @NonNull String pageNo
+                                   int pageSize,
+                                   int pageNo
     ) {
+        if (pageSize < -1 || pageSize == 0 || pageNo <= 0) {
+            return Response.getInternalError("bad-params");
+        }
         List<Long> res = userService.queryOwnSurvey(id, pageSize, pageNo);
         return Response.getSuccess(Map.of("survey_ids", res));
     }
 
     @GetMapping("/{id}/survey/participate")
     public Response queryParticipateSurvey(@PathVariable int id,
-                                           @NonNull String pageSize,
-                                           @NonNull String pageNo
+                                           int pageSize,
+                                           int pageNo
     ) {
+        if (pageSize < -1 || pageSize == 0 || pageNo <= 0) {
+            return Response.getInternalError("bad-params");
+        }
         List<Long> res = userService.queryParticipateSurvey(id, pageSize, pageNo);
         return Response.getSuccess(Map.of("survey_ids", res));
     }
 
     @GetMapping("/{id}/announcement/received")
     public Response queryReceivedAnnouncement(@PathVariable int id,
-                                              @NonNull String pageSize,
-                                              @NonNull String pageNo
+                                              int pageSize,
+                                              int pageNo
     ) {
         List<Long> res = userService.queryReceivedAnnouncement(id, pageSize, pageNo);
         return Response.getSuccess(Map.of("ids", res));

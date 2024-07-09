@@ -20,7 +20,7 @@ public class SurveyController {
     private final SurveyConverter surveyConverter;
 
     @GetMapping("/{number}")
-    public Response getSurveyInfoById (@PathVariable long number, @RequestHeader("username") String username) throws JsonProcessingException {
+    public Response getSurveyInfoById (@PathVariable long number) throws JsonProcessingException {
         var resp = surveyConverter.toDTO(surveyService.getSurveyById(number));
         return Response.getSuccess("success",resp);
     }
@@ -28,7 +28,7 @@ public class SurveyController {
     @PostMapping()
     public Response addSurvey (@RequestBody SurveyDTO surveyDTO) {
         SurveyEntity surveyEntity = surveyConverter.toEntity(surveyDTO);
-        surveyService.insertSurvey(surveyEntity);
+        surveyService.insertSurvey(surveyEntity, surveyDTO.getMembers(), surveyDTO.getOwners());
         return Response.getSuccess("success",surveyEntity.getId());
     }
 
@@ -36,7 +36,7 @@ public class SurveyController {
     public Response updateSurveyById (@PathVariable long id, @RequestBody SurveyDTO surveyDTO) {
         SurveyEntity surveyEntity = surveyConverter.toEntity(surveyDTO);
         surveyEntity.setId(id);
-        surveyService.updateSurvey(surveyEntity);
+        surveyService.updateSurvey(surveyEntity, surveyDTO.getMembers(), surveyDTO.getOwners());
         return Response.getSuccess("success",surveyDTO);
     }
 

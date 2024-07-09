@@ -24,10 +24,10 @@ public class SurveyConverter {
         surveyDTO.setDescription(surveyEntity.getDescription());
         surveyDTO.setCreateAt(surveyEntity.getCreateAt());
         surveyDTO.setUpdateAt(surveyEntity.getUpdateAt());
-        surveyDTO.setPersonalInfo(objectMapper.readTree(surveyEntity.getPersonalInfo()));
-        surveyDTO.setQuestions(objectMapper.readTree(surveyEntity.getQuestions()));
+        surveyDTO.setPersonalInfo(surveyEntity.getPersonalInfo());
+        surveyDTO.setQuestions(surveyEntity.getQuestions());
 
-        surveyDTO.setRestriction(objectMapper.readTree(surveyEntity.getGroupRestriction()));
+        surveyDTO.setGroupRestriction(surveyEntity.getGroupRestriction());
         surveyDTO.setOwners(surveyService.getOwnerIdBySurveyId(surveyEntity.getId()));
         surveyDTO.setMembers(surveyService.getMemberIdBySurveyId(surveyEntity.getId()));
         return surveyDTO;
@@ -39,8 +39,9 @@ public class SurveyConverter {
         surveyEntity.setCreateAt(surveyDTO.getCreateAt());
         surveyEntity.setUpdateAt(surveyDTO.getUpdateAt());
         surveyEntity.setStatus(SurveyStatus.CLOSED);
-        surveyEntity.setPersonalInfo(surveyDTO.getPersonalInfo().asText());
-        surveyEntity.setQuestions(surveyDTO.getQuestions().asText());
+        surveyEntity.setPersonalInfo(surveyDTO.getPersonalInfo());
+        surveyEntity.setQuestions(surveyDTO.getQuestions());
+        surveyEntity.setGroupRestriction(surveyDTO.getGroupRestriction());
         return surveyEntity;
     }
 

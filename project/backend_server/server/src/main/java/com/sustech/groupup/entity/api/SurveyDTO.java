@@ -25,7 +25,7 @@ public class SurveyDTO {
 //    @JsonToStringField
     private JsonNode questions;//json
 
-    private JsonNode restriction;
+    private JsonNode groupRestriction;
 
     private List<Long> owners;
     private List<Long> members;

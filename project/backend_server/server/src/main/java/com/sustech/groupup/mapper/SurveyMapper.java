@@ -42,6 +42,18 @@ public interface SurveyMapper extends BaseMapper<SurveyEntity> {
             """)
     List<Long> queryParticipateSurvey(int id, int pageSize, int pageNo);
 
+
+    @Insert("insert into survey_member (member_id, survey_id) VALUES (#{member_id}, #{survey_id})")
+    void insertSurveyMember(@Param("member_id") Long MemberId, @Param("survey_id") Long SurveyId);
+
+    @Insert("insert into survey_owner (owner_id, survey_id) VALUES (#{owner_id}, #{survey_id})")
+    void insertSurveyOwner(@Param("owner_id") Long OwnerId, @Param("survey_id") Long SurveyId);
+
+    @Delete("delete from survey_owner where survey_id= #{survey_id}")
+    void deleteSurveyOwnerById(@Param("survey_id") Long SurveyId);
+
+    @Delete("delete from survey_member where survey_id= #{survey_id}")
+    void deleteSurveyMemberById(@Param("survey_id") Long SurveyId);
     @Select("""
             select true from survey_owner where owner_id = #{id} and survey_id = #{surveyId}
             """)

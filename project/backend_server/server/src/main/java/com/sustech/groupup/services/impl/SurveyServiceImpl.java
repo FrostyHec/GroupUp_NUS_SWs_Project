@@ -6,6 +6,7 @@ import com.sustech.groupup.services.SurveyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 
 @Service
@@ -29,13 +30,29 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
-    public void insertSurvey(SurveyEntity survey) {
+    public void insertSurvey(SurveyEntity survey, List<Long> ownerIds, List<Long> memberIds) {
         surveyMapper.insert(survey);
+        for (Long ownerId : ownerIds) {
+            surveyMapper.insertSurveyOwner(ownerId,survey.getId());
+        }
+        for (Long memberId : memberIds) {
+            surveyMapper.insertSurveyMember(memberId,survey.getId());
+        }
+        //后续可以数据库批处理优化
     }
 
     @Override
-    public void updateSurvey(SurveyEntity survey) {
+    public void updateSurvey(SurveyEntity survey, List<Long> ownerIds, List<Long> memberIds) {
         surveyMapper.updateById(survey);
+        surveyMapper.deleteSurveyOwnerById(survey.getId());
+        for (Long ownerId : ownerIds) {
+            surveyMapper.insertSurveyOwner(ownerId,survey.getId());
+        }
+        surveyMapper.deleteSurveyMemberById(survey.getId());
+        for (Long memberId : memberIds) {
+            surveyMapper.insertSurveyMember(memberId,survey.getId());
+        }
+        //后续可以数据库批处理优化
     }
 
     @Override
@@ -46,6 +63,8 @@ public class SurveyServiceImpl implements SurveyService {
     @Override
     public void deleteSurveyById(long surveyId) {
         surveyMapper.deleteById(surveyId);
+        surveyMapper.deleteSurveyOwnerById(surveyId);
+        surveyMapper.deleteSurveyMemberById(surveyId);
     }
 
 }

@@ -17,12 +17,12 @@ public class QueryConverter {
     private final QueryService queryService;
     private final ObjectMapper objectMapper;
 
-    public QueryDTO toDTO(QueryEntity queryEntity) throws JsonProcessingException {
+    public QueryDTO toDTO(QueryEntity queryEntity) {
         QueryDTO queryDTO = new QueryDTO();
         queryDTO.setCreateAt(queryEntity.getCreateAt());
         queryDTO.setUpdateAt(queryEntity.getUpdateAt());
-        queryDTO.setPersonalInfo(objectMapper.readTree(queryEntity.getPersonalInfo()));
-        queryDTO.setQuestionsAnswer(objectMapper.readTree(queryEntity.getQuestionsAnswer()));
+        queryDTO.setPersonalInfo(queryEntity.getPersonalInfo());
+        queryDTO.setQuestionsAnswer(queryEntity.getQuestionsAnswer());
         return queryDTO;
     }
     public QueryEntity toEntity(QueryDTO queryDTO) {
@@ -30,9 +30,9 @@ public class QueryConverter {
         queryEntity.setStatus(QueryStatus.EDITING);
         queryEntity.setCreateAt(queryDTO.getCreateAt());
         queryEntity.setUpdateAt(queryDTO.getUpdateAt());
-        queryEntity.setPersonalInfo(queryDTO.getPersonalInfo().asText());
-        queryEntity.setQuestionsAnswer(queryDTO.getQuestionsAnswer().asText());
-        queryEntity.setMemberID(1);//应该从token中获得
+        queryEntity.setPersonalInfo(queryDTO.getPersonalInfo());
+        queryEntity.setQuestionsAnswer(queryDTO.getQuestionsAnswer());
+        queryEntity.setMemberId(1);//应该从token中获得
         return queryEntity;
     }
 }

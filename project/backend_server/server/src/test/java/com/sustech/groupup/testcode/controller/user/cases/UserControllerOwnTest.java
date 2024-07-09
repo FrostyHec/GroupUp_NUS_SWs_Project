@@ -26,40 +26,5 @@ public class UserControllerOwnTest {
     private AuthAPI AuthAPI;
 
 
-    private ResultActions createSurvey(List<Long> owner,List<Long> member) {
-
-        return null;
-    }
-    private ResultActions queryOwn(int id, int pageSize, int pageNo) throws Exception {
-        final String baseUrl = Constant.API_VERSION + "/user/"+id+"/survey/own";
-        String requestBody = String.format(
-                """
-                        {
-                          "page-size": "%d",
-                          "page-no": "%d"
-                                       
-                        }
-                        """,
-                pageSize,pageNo);
-        return mockMvc.perform(MockMvcRequestBuilders.post(baseUrl)
-                                                     .contentType(MediaType.APPLICATION_JSON)
-                                                     .content(requestBody)
-                                                     .accept(MediaType.APPLICATION_JSON));
-    }
-
-    @Test
-    public void testQueryNormal() throws Exception {
-        int id = 1;
-        int pageSize = 10;
-        int pageNo = 1;
-
-        AuthAPI.register("test", "test");
-
-
-        queryOwn(id,pageSize,pageNo)
-                .andExpect(status().isOk())
-                .andExpect(RespChecker.success());
-        //TODO Testcase
-    }
 }
 

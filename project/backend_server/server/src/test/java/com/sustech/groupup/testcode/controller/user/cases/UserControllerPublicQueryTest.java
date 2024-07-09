@@ -1,4 +1,4 @@
-package com.sustech.groupup.testcode.controller.user;
+package com.sustech.groupup.testcode.controller.user.cases;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.sustech.groupup.config.Constant;
 import com.sustech.groupup.entity.api.UserPublicQueryDTO;
-import com.sustech.groupup.testcode.controller.APIWrapper;
+import com.sustech.groupup.testcode.controller.user.AuthAPI;
 import com.sustech.groupup.testutils.JsonUtils;
 import com.sustech.groupup.testutils.RespChecker;
 import com.sustech.groupup.testutils.annotation.ControllerTest;
@@ -25,7 +25,7 @@ public class UserControllerPublicQueryTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private APIWrapper APIWrapper;
+    private AuthAPI AuthAPI;
 
     private List<UserPublicQueryDTO> publicQuery(String username) throws Exception {
         final String baseUrl =
@@ -50,8 +50,8 @@ public class UserControllerPublicQueryTest {
 
     @Test
     public void testQueryExact() throws Exception {
-        APIWrapper.register("longzhi", "0");
-        APIWrapper.register("fei", "1");
+        AuthAPI.register("longzhi", "0");
+        AuthAPI.register("fei", "1");
         var data = publicQuery("longzhi");
         assert data.size() == 1;
         assert data.get(0).equals(new UserPublicQueryDTO(1, "longzhi"));
@@ -59,9 +59,9 @@ public class UserControllerPublicQueryTest {
 
     @Test
     public void testQueryAmbig() throws Exception {
-        APIWrapper.register("longzhi", "0");
-        APIWrapper.register("fei", "1");
-        APIWrapper.register("longzhi2", "2");
+        AuthAPI.register("longzhi", "0");
+        AuthAPI.register("fei", "1");
+        AuthAPI.register("longzhi2", "2");
         var data = publicQuery("longzhi");
         assert data.size() == 2;
         assert data.get(0).equals(new UserPublicQueryDTO(1, "longzhi"));
@@ -70,7 +70,7 @@ public class UserControllerPublicQueryTest {
 
     @Test
     public void testQueryNone() throws Exception {
-        APIWrapper.register("longzhi", "0");
+        AuthAPI.register("longzhi", "0");
         var data = publicQuery("fei");
         assert data.isEmpty();
     }

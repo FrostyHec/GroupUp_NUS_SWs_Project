@@ -1,4 +1,4 @@
-package com.sustech.groupup.testcode.controller.user;
+package com.sustech.groupup.testcode.controller.user.cases;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.sustech.groupup.config.Constant;
-import com.sustech.groupup.testcode.controller.APIWrapper;
+import com.sustech.groupup.testcode.controller.user.AuthAPI;
 import com.sustech.groupup.testutils.RespChecker;
 import com.sustech.groupup.testutils.annotation.ControllerTest;
 
@@ -23,7 +23,7 @@ public class UserControllerOwnTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private APIWrapper APIWrapper;
+    private AuthAPI AuthAPI;
 
 
     private ResultActions createSurvey(List<Long> owner,List<Long> member) {
@@ -53,7 +53,7 @@ public class UserControllerOwnTest {
         int pageSize = 10;
         int pageNo = 1;
 
-        APIWrapper.register("test", "test");
+        AuthAPI.register("test", "test");
 
 
         queryOwn(id,pageSize,pageNo)

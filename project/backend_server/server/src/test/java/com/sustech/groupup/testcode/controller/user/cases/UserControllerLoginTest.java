@@ -1,4 +1,4 @@
-package com.sustech.groupup.testcode.controller.user;
+package com.sustech.groupup.testcode.controller.user.cases;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.sustech.groupup.services.UserService;
-import com.sustech.groupup.testcode.controller.APIWrapper;
+import com.sustech.groupup.testcode.controller.user.AuthAPI;
 import com.sustech.groupup.testutils.RespChecker;
 import com.sustech.groupup.testutils.annotation.ControllerTest;
 
@@ -16,10 +16,10 @@ import com.sustech.groupup.testutils.annotation.ControllerTest;
 public class UserControllerLoginTest {
 
     @Autowired
-    private APIWrapper APIWrapper;
+    private AuthAPI AuthAPI;
 
     private ResultActions login(String username, String password) throws Exception {
-        return APIWrapper.login(username, password);
+        return AuthAPI.login(username, password);
     }
 
     @Autowired
@@ -32,7 +32,7 @@ public class UserControllerLoginTest {
 
         userService.register(username, password);
 
-        var data = APIWrapper.loginAndGetAuth(username, password);
+        var data = AuthAPI.loginAndGetAuth(username, password);
         var id = data.getId();
         var token = data.getToken();
 

@@ -1,4 +1,4 @@
-package com.sustech.groupup.testcode.controller.user;
+package com.sustech.groupup.testcode.controller.user.cases;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

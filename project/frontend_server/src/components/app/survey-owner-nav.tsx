@@ -38,7 +38,7 @@ export function WorkspaceNav() {
           Members
         </Link>
         <Link
-          href="recommendations"
+          href="match"
           className="text-muted-foreground transition-colors hover:text-foreground"
         >
           Recommendations

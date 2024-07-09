@@ -32,7 +32,7 @@ public class UserControllerLoginTest {
 
         userService.register(username, password);
 
-        var data = AuthAPI.loginAndGetAuth(username, password);
+        var data = AuthAPI.successfulLogin(username, password);
         var id = data.getId();
         var token = data.getToken();
 

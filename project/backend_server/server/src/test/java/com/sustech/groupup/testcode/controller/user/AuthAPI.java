@@ -42,11 +42,11 @@ public class AuthAPI {
                                                      .accept(MediaType.APPLICATION_JSON));
     }
 
-    public void register(String username, String password) {
+    public void forceRegister(String username, String password) {
         userService.register(username, password);
     }
 
-    public LoginAuthDTO loginAndGetAuth(String username, String password) throws Exception {
+    public LoginAuthDTO successfulLogin(String username, String password) throws Exception {
         var res = login(username, password).andExpect(status().isOk())
                                            .andExpect(RespChecker.success())
                                            .andReturn();
@@ -61,8 +61,8 @@ public class AuthAPI {
     }
 
     public LoginAuthDTO registerAndLogin(String username, String password) throws Exception {
-        register(username, password);
-        return loginAndGetAuth(username, password);
+        forceRegister(username, password);
+        return successfulLogin(username, password);
     }
 
 }

@@ -17,10 +17,12 @@ import com.sustech.groupup.testutils.JsonUtils;
 import com.sustech.groupup.testutils.RespChecker;
 
 import lombok.RequiredArgsConstructor;
+
 @Component
 @RequiredArgsConstructor
 public class AnnouncementAPI {
-    protected final MockMvc mockMvc;
+
+    private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
 
     public ResultActions create(long surveyID, LoginAuthDTO auth,
@@ -56,7 +58,8 @@ public class AnnouncementAPI {
     }
 
     public ResultActions getByUser(LoginAuthDTO auth, int pageSize, int pageNo) throws Exception {
-        final String baseUrl = Constant.API_VERSION + "/user/" + auth.getId() + "/announcement/received";
+        final String baseUrl =
+                Constant.API_VERSION + "/user/" + auth.getId() + "/announcement/received";
         return mockMvc.perform(MockMvcRequestBuilders.get(baseUrl)
                                                      .header("authorization",
                                                              "Bearer " + auth.getToken())
@@ -66,16 +69,10 @@ public class AnnouncementAPI {
     }
 
     public List<Long> successfulGetByUser(LoginAuthDTO auth, int pageSize, int pageNo) throws
-                                                                                                    Exception {
+                                                                                       Exception {
         var res = getByUser(auth, pageSize, pageNo)
                 .andExpect(RespChecker.success())
                 .andReturn();
-        List<Long> ans = new ArrayList<>();
-        var li = JsonUtils.toJsonData(res).get("ids");
-        assert li.isArray();
-        for (var i : li) {
-            ans.add(i.asLong());
-        }
-        return ans;
+        return JsonUtils.nodeToList(JsonUtils.toJsonData(res).get("ids"), Long.class);
     }
 }

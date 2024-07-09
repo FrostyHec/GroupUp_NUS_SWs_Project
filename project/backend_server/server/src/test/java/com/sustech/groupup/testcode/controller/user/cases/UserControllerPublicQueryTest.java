@@ -50,8 +50,8 @@ public class UserControllerPublicQueryTest {
 
     @Test
     public void testQueryExact() throws Exception {
-        AuthAPI.register("longzhi", "0");
-        AuthAPI.register("fei", "1");
+        AuthAPI.forceRegister("longzhi", "0");
+        AuthAPI.forceRegister("fei", "1");
         var data = publicQuery("longzhi");
         assert data.size() == 1;
         assert data.get(0).equals(new UserPublicQueryDTO(1, "longzhi"));
@@ -59,9 +59,9 @@ public class UserControllerPublicQueryTest {
 
     @Test
     public void testQueryAmbig() throws Exception {
-        AuthAPI.register("longzhi", "0");
-        AuthAPI.register("fei", "1");
-        AuthAPI.register("longzhi2", "2");
+        AuthAPI.forceRegister("longzhi", "0");
+        AuthAPI.forceRegister("fei", "1");
+        AuthAPI.forceRegister("longzhi2", "2");
         var data = publicQuery("longzhi");
         assert data.size() == 2;
         assert data.get(0).equals(new UserPublicQueryDTO(1, "longzhi"));
@@ -70,7 +70,7 @@ public class UserControllerPublicQueryTest {
 
     @Test
     public void testQueryNone() throws Exception {
-        AuthAPI.register("longzhi", "0");
+        AuthAPI.forceRegister("longzhi", "0");
         var data = publicQuery("fei");
         assert data.isEmpty();
     }

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sustech.groupup.utils.JsonStringTypeHandler;
 
 import lombok.AllArgsConstructor;
@@ -16,25 +17,24 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("user_table")
+@TableName("survey")
 public class SurveyEntity {
 
     @TableId(type = IdType.AUTO)
     private long id;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    private Timestamp createAt;
+    private Timestamp updateAt;
     private String name;
     private String description;
     private SurveyStatus status;
 
-    @TableField(typeHandler = JsonStringTypeHandler.class)
+  //  @TableField(typeHandler = JsonStringTypeHandler.class)
     private String personalInfo;//json
 
     @TableField(typeHandler = JsonStringTypeHandler.class)
     private String questions;//json
 
     @TableField(typeHandler = JacksonTypeHandler.class)
-    private RestrictionEntity groupRestriction;//json
+    private String groupRestriction;//json
 
-    private long creatorId;
 }

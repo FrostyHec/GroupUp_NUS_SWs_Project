@@ -20,6 +20,8 @@ public class Response {
     }
 
     public static Response getSuccess(Object data) {
+        System.out.println(data);
+        System.out.println(new Response(ResponseCodeType.SUCCESS, "success", data));
         return new Response(ResponseCodeType.SUCCESS, "", data);
     }
 

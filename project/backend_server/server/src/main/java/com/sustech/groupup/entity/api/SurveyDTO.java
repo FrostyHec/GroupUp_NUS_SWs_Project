@@ -1,7 +1,9 @@
 package com.sustech.groupup.entity.api;
 
+import java.sql.Timestamp;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sustech.groupup.annotation.JsonToStringField;
 import com.sustech.groupup.entity.db.RestrictionEntity;
 
@@ -16,15 +18,16 @@ public class SurveyDTO {
 
     private String name;
     private String description;
-    private String createAt;
-    private String updateAt;
+    private Timestamp createAt;
+    private Timestamp updateAt;
 
-    @JsonToStringField
-    private String personalInfo;//json
+ //   @JsonToStringField
+    private JsonNode personalInfo;//json
 
-    @JsonToStringField
-    private String questions;//json
-    private RestrictionEntity restriction;
+//    @JsonToStringField
+    private JsonNode questions;//json
+
+    private JsonNode restriction;
 
     private List<Long> owners;
     private List<Long> members;

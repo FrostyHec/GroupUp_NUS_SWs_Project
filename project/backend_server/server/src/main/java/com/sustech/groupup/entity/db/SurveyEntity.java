@@ -28,13 +28,11 @@ public class SurveyEntity {
     private String description;
     private SurveyStatus status;
 
-  //  @TableField(typeHandler = JsonStringTypeHandler.class)
-    private String personalInfo;//json
+    private JsonNode personalInfo;//json
 
-    @TableField(typeHandler = JsonStringTypeHandler.class)
-    private String questions;//json
+    private JsonNode questions;//json
 
-    @TableField(typeHandler = JacksonTypeHandler.class)
-    private String groupRestriction;//json
+    //@TableField(typeHandler = JacksonTypeHandler.class)
+    private JsonNode groupRestriction;//json
 
 }

@@ -11,8 +11,12 @@ import com.sustech.groupup.entity.db.AnnouncementEntity;
 public interface AnnouncementMapper extends BaseMapper<AnnouncementEntity> {
 
     @Select("""
-            select * from announcement where survey_id = #{surveyId}
-            limit #{pageSize} offset (#{pageNo}-1)*#{pageSize}
+            <script>
+                select * from announcement where survey_id = #{surveyId}
+                <if test="pageSize != -1">
+                    limit #{pageSize} offset (#{pageNo}-1)*#{pageSize}
+                </if>
+            </script>
             """)
     List<AnnouncementEntity> getAnnouncement(long surveyId, int pageSize, int pageNo);
 }

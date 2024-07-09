@@ -42,4 +42,17 @@ public interface SurveyMapper extends BaseMapper<SurveyEntity> {
             """)
     List<Long> queryParticipateSurvey(int id, int pageSize, int pageNo);
 
+    @Select("""
+            select true from survey_owner where owner_id = #{id} and survey_id = #{surveyId}
+            """)
+    boolean isOwner(long surveyId, long requestUserId);
+
+    @Select("""
+            select true from survey_member where member_id = #{id} and survey_id = #{survey}
+            """)
+    boolean isMember(long surveyId, long requestUserId);
+
+    default boolean isAccessable(long surveyId, long requestUserId) {
+        return isOwner(surveyId, requestUserId) || isMember(surveyId, requestUserId);
+    }
 }

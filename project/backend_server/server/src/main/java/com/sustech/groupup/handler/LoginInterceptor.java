@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -12,7 +13,7 @@ import com.sustech.groupup.exception.ExternalException;
 import com.sustech.groupup.utils.JwtUtil;
 import com.sustech.groupup.utils.Response;
 import com.sustech.groupup.utils.ResponseCodeType;
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class LoginInterceptor implements HandlerInterceptor {
@@ -23,16 +24,21 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(@NonNull HttpServletRequest request,
                              @NonNull HttpServletResponse response,
                              @NonNull Object handler) {
-
         String token = request.getHeader("Authorization");
-        String username = request.getHeader("username");
-        if (token == null || username == null|| !token.startsWith("Bearer ")){
+        if (token == null || !token.startsWith("Bearer ")){
             throwUnauthorizedException("no-auth");
         }
         token = token.substring(7);
-        if (!jwtUtil.validateToken(token, username)) {
+        try {
+            if (!jwtUtil.validateToken(token)) {
+                throwUnauthorizedException("auth-expired");
+            }
+        }catch (Exception e){
+            log.warn("auth-invalid:"+token,e);
             throwUnauthorizedException("invalid-auth");
         }
+        Long userId = jwtUtil.getSubject(token);
+        request.setAttribute("request_user_id", userId);
         return true;
     }
 

@@ -3,16 +3,19 @@ package com.sustech.groupup.controller.user;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeployment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sustech.groupup.config.Constant;
 import com.sustech.groupup.entity.api.LoginDTO;
-import com.sustech.groupup.entity.api.UserDTO;
+import com.sustech.groupup.entity.api.RegisterDTO;
+import com.sustech.groupup.entity.api.UserPublicQueryDTO;
 import com.sustech.groupup.services.UserService;
 import com.sustech.groupup.utils.Response;
 
@@ -33,41 +36,47 @@ public class UserController {
     }
 
     @PostMapping("/public/register")
-    public Response register(@RequestBody @NonNull UserDTO user) {
+    public Response register(@RequestBody @NonNull RegisterDTO user) {
         userService.register(user.getUsername(), user.getPassword());
         return Response.getSuccess();
     }
 
+    @GetMapping("/public/query")
+    public Response publicUserQuery(@RequestParam("find_username") @NonNull String findUsername) {
+        List<UserPublicQueryDTO> res = userService.queryUserLikeName(findUsername);
+        return Response.getSuccess(Map.of("users", res));
+    }
+
     @GetMapping("/{id}/survey/own")
-    public Response queryOwnSurvey(@PathVariable int id,
-                                   int pageSize,
-                                   int pageNo
+    public Response queryOwnSurvey(@PathVariable long id,
+                                   int page_size,
+                                   int page_no
     ) {
-        if (pageSize < -1 || pageSize == 0 || pageNo <= 0) {
+        if (page_size < -1 || page_size == 0 || page_no <= 0) {
             return Response.getInternalError("bad-params");
         }
-        List<Long> res = userService.queryOwnSurvey(id, pageSize, pageNo);
+        List<Long> res = userService.queryOwnSurvey(id, page_size, page_no);
         return Response.getSuccess(Map.of("survey_ids", res));
     }
 
     @GetMapping("/{id}/survey/participate")
-    public Response queryParticipateSurvey(@PathVariable int id,
-                                           int pageSize,
-                                           int pageNo
+    public Response queryParticipateSurvey(@PathVariable long id,
+                                           int page_size,
+                                           int page_no
     ) {
-        if (pageSize < -1 || pageSize == 0 || pageNo <= 0) {
+        if (page_size < -1 || page_size == 0 || page_no <= 0) {
             return Response.getInternalError("bad-params");
         }
-        List<Long> res = userService.queryParticipateSurvey(id, pageSize, pageNo);
+        List<Long> res = userService.queryParticipateSurvey(id, page_size, page_no);
         return Response.getSuccess(Map.of("survey_ids", res));
     }
 
     @GetMapping("/{id}/announcement/received")
-    public Response queryReceivedAnnouncement(@PathVariable int id,
-                                              int pageSize,
-                                              int pageNo
+    public Response queryReceivedAnnouncement(@PathVariable long id,
+                                              int page_size,
+                                              int page_no
     ) {
-        List<Long> res = userService.queryReceivedAnnouncement(id, pageSize, pageNo);
+        List<Long> res = userService.queryReceivedAnnouncement(id, page_size, page_no);
         return Response.getSuccess(Map.of("ids", res));
     }
 }

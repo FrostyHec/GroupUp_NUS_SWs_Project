@@ -1,4 +1,4 @@
-package com.sustech.groupup.testcode.controller.user;
+package com.sustech.groupup.testcode.controller.user.cases;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -75,5 +75,7 @@ public class UserControllerRegisterTest {
         var user = res.getFirst();
         assert user.getUsername().equals(username);
     }
+
+
 }
 

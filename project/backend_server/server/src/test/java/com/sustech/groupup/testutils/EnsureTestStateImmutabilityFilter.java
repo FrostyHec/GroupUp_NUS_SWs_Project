@@ -18,6 +18,7 @@ public class EnsureTestStateImmutabilityFilter implements BeforeEachCallback, Af
             databaseManager = SpringExtension.getApplicationContext(context).getBean(DatabaseManager.class);
         }
         databaseManager.clearDatabase();
+        databaseManager.resetAutoStart();
     }
 
     @Override
@@ -26,5 +27,6 @@ public class EnsureTestStateImmutabilityFilter implements BeforeEachCallback, Af
             databaseManager = SpringExtension.getApplicationContext(context).getBean(DatabaseManager.class);
         }
         databaseManager.clearDatabase();
+        databaseManager.resetAutoStart();
     }
 }

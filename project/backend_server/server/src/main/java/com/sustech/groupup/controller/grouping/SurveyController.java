@@ -35,8 +35,8 @@ public class SurveyController {
     @PostMapping()
     public Response addSurvey (@RequestBody SurveyDTO surveyDTO) {
         SurveyEntity surveyEntity = surveyConverter.toEntity(surveyDTO);
-        surveyService.insertSurvey(surveyEntity, surveyDTO.getMembers(), surveyDTO.getOwners());
-        return Response.getSuccess("success",surveyEntity.getId());
+        surveyService.insertSurvey(surveyEntity, surveyDTO.getOwners(),surveyDTO.getMembers());
+        return Response.getSuccess(Map.of("survey_id", surveyEntity.getId()));
     }
 
     @PutMapping("/{id}")
@@ -44,25 +44,25 @@ public class SurveyController {
         SurveyEntity surveyEntity = surveyConverter.toEntity(surveyDTO);
         surveyEntity.setId(id);
         surveyService.updateSurvey(surveyEntity, surveyDTO.getMembers(), surveyDTO.getOwners());
-        return Response.getSuccess("success",surveyDTO);
+        return Response.getSuccess();
     }
 
     @DeleteMapping("/{id}")
     public Response deleteSurveyById (@PathVariable long id) {
         surveyService.deleteSurveyById(id);
-        return Response.getSuccess("success");
+        return Response.getSuccess();
     }
 
     @PostMapping("/{id}/status")
     public Response updateSurveyStatusById (@PathVariable long id, @RequestParam int status) {
         surveyService.updateStatusBySurveyId(id,status);
-        return Response.getSuccess("success","");
+        return Response.getSuccess();
     }
 
     @GetMapping("/{id}/status")
     public Response getSurveyStatusById(@PathVariable long id) {
         SurveyEntity surveyEntity = surveyService.getSurveyById(id);
-        return Response.getSuccess("success",surveyEntity.getStatus());
+        return Response.getSuccess(Map.of("status",surveyEntity.getStatus()));
     }
 
     @GetMapping("/{id}/allquery")

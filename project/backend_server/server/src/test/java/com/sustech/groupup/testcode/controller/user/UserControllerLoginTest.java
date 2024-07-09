@@ -11,7 +11,6 @@ import com.sustech.groupup.services.UserService;
 import com.sustech.groupup.testutils.AuthUtils;
 import com.sustech.groupup.testutils.RespChecker;
 import com.sustech.groupup.testutils.annotation.ControllerTest;
-import com.sustech.groupup.testutils.mapper.DatabaseManager;
 
 @ControllerTest
 public class UserControllerLoginTest {
@@ -33,36 +32,39 @@ public class UserControllerLoginTest {
 
         userService.register(username, password);
 
-        var token = authUtils.logAndGetAuth(username, password);
+        var data = authUtils.loginAndGetAuth(username, password);
+        var id = data.get("id").asLong();
+        var token = data.get("token").asText();
 
         assert StringUtils.isNotBlank(token);
+        assert id == 0;
     }
 
     @Test
     public void testLoginNoUser() throws Exception {
-            String username = "longzhi";
-            String password = "123";
+        String username = "longzhi";
+        String password = "123";
 
-            login(username, password)
-                    .andExpect(status().isOk())
-                    .andExpect(RespChecker.noFound())
-                    .andExpect(RespChecker.message("user-no-found"));
+        login(username, password)
+                .andExpect(status().isOk())
+                .andExpect(RespChecker.noFound())
+                .andExpect(RespChecker.message("user-no-found"));
 
     }
 
     @Test
     public void testLoginWrongPassword() throws Exception {
-            String username = "longzhi";
-            String password = "123";
-            String wrongPassword = "12345";
+        String username = "longzhi";
+        String password = "123";
+        String wrongPassword = "12345";
 
-            assert !password.equals(wrongPassword);
-            userService.register(username, password);
+        assert !password.equals(wrongPassword);
+        userService.register(username, password);
 
-            login(username, wrongPassword)
-                    .andExpect(status().isOk())
-                    .andExpect(RespChecker.badRequest())
-                    .andExpect(RespChecker.message("wrong-password"));
+        login(username, wrongPassword)
+                .andExpect(status().isOk())
+                .andExpect(RespChecker.badRequest())
+                .andExpect(RespChecker.message("wrong-password"));
     }
 }
 

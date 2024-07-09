@@ -23,6 +23,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(@NonNull HttpServletRequest request,
                              @NonNull HttpServletResponse response,
                              @NonNull Object handler) {
+
         String token = request.getHeader("Authorization");
         String username = request.getHeader("username");
         if (token == null || username == null|| !token.startsWith("Bearer ")){

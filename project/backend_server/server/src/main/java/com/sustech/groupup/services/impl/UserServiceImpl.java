@@ -10,7 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.sustech.groupup.entity.db.UserEntity;
+import com.sustech.groupup.entity.api.LoginAuthDTO;
 import com.sustech.groupup.exception.ExternalException;
+import com.sustech.groupup.mapper.SurveyMapper;
 import com.sustech.groupup.mapper.UserMapper;
 import com.sustech.groupup.services.UserService;
 import com.sustech.groupup.utils.JwtUtil;
@@ -25,8 +27,9 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final SurveyMapper surveyMapper;
     @Override
-    public String login(String username, String password) {
+    public LoginAuthDTO login(String username, String password) {
         QueryWrapper<UserEntity> queryWrapper = Wrappers.query();
         queryWrapper.eq("username", username);
         List<UserEntity> users = userMapper.selectList(queryWrapper);
@@ -39,7 +42,8 @@ public class UserServiceImpl implements UserService {
             throw new ExternalException(Response.getBadRequest("wrong-password"));
         }
 
-        return jwtUtil.generateToken(username);
+        String token=  jwtUtil.generateToken(username);
+        return new LoginAuthDTO(users.getFirst().getId(), token);
     }
 
     @Override
@@ -54,17 +58,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Long> queryOwnSurvey(int id, String pageSize, String pageNo) {
-        return null;//TODO
+    public List<Long> queryOwnSurvey(int id, int pageSize, int pageNo) {
+        return surveyMapper.queryOwnSurvey(id, pageSize, pageNo);
     }
 
     @Override
-    public List<Long> queryParticipateSurvey(int id, String pageSize, String pageNo) {
-        return null;//TODO
+    public List<Long> queryParticipateSurvey(int id, int pageSize, int pageNo) {
+        return surveyMapper.queryParticipateSurvey(id, pageSize, pageNo);
     }
 
     @Override
-    public List<Long> queryReceivedAnnouncement(int id, String pageSize, String pageNo) {
+    public List<Long> queryReceivedAnnouncement(int id, int pageSize, int pageNo) {
         return null;//TODO
     }
 }

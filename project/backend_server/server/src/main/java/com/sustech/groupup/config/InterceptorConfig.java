@@ -20,6 +20,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
     }
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        if(!Constant.AUTH_ENABLED) return;
         // 鉴权拦截器
         registry.addInterceptor(loginInterceptor)
                 .excludePathPatterns("/**/public/**");

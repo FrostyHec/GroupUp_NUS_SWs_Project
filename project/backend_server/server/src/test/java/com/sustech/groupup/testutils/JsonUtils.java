@@ -1,4 +1,4 @@
-package com.sustech.groupup;
+package com.sustech.groupup.testutils;
 
 import java.io.UnsupportedEncodingException;
 

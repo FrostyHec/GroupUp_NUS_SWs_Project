@@ -46,11 +46,11 @@ public class SurveyServiceImpl implements SurveyService {
         surveyMapper.updateById(survey);
         surveyMapper.deleteSurveyOwnerById(survey.getId());
         for (Long ownerId : ownerIds) {
-            surveyMapper.insertSurveyOwner(survey.getId(), ownerId);
+            surveyMapper.insertSurveyOwner(ownerId,survey.getId());
         }
         surveyMapper.deleteSurveyMemberById(survey.getId());
         for (Long memberId : memberIds) {
-            surveyMapper.insertSurveyMember(survey.getId(), memberId);
+            surveyMapper.insertSurveyMember(memberId,survey.getId());
         }
         //后续可以数据库批处理优化
     }

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { CirclePlus, Check, ChevronsUpDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import * as React from "react";
+import { CirclePlus, Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -13,7 +13,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 import {
   Dialog,
   DialogContent,
@@ -22,51 +22,51 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
 
 const groups = [
   {
-    label: 'Personal Account',
+    label: "Personal Account",
     workspaces: [
       {
         id: 0,
-        label: 'Alicia Koch',
-        value: 'personal',
+        label: "Alicia Koch",
+        value: "personal",
       },
     ],
   },
   {
-    label: 'Workspaces',
+    label: "Workspaces",
     workspaces: [
       {
         id: 1,
-        label: 'Acme Inc.',
-        value: 'acme-inc',
+        label: "Acme Inc.",
+        value: "acme-inc",
       },
       {
         id: 2,
-        label: 'Monsters Inc.',
-        value: 'monsters',
+        label: "Monsters Inc.",
+        value: "monsters",
       },
     ],
   },
 ];
 
-type Workspace = (typeof groups)[number]['workspaces'][number];
+type Workspace = (typeof groups)[number]["workspaces"][number];
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -74,9 +74,7 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 
 interface WorkspaceSwitcherProps extends PopoverTriggerProps {}
 
-export default function WorkspaceSwitcher({
-  className,
-}: WorkspaceSwitcherProps) {
+export default function SurveySwitcher({ className }: WorkspaceSwitcherProps) {
   const [open, setOpen] = React.useState(false);
   const [showNewWorkspaceDialog, setShowNewWorkspaceDialog] =
     React.useState(false);
@@ -96,18 +94,14 @@ export default function WorkspaceSwitcher({
             role="combobox"
             aria-expanded={open}
             aria-label="Select a workspace"
-            className={cn('w-[200px] justify-between', className)}
+            className={cn("w-[200px] justify-between", className)}
           >
-            <Avatar className="mr-2 h-5 w-5">
-              <AvatarImage
-                src={`https://avatar.vercel.sh/${selectedWorkspace.value}.png`}
-                alt={selectedWorkspace.label}
-                className="grayscale"
-              />
-              <AvatarFallback>SC</AvatarFallback>
-            </Avatar>
-            {selectedWorkspace.label}
-            <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+            <div
+              className="font-bold text-3xl bg-gradient-to-r from-indigo-400 to-cyan-400 text-transparent
+    bg-clip-text hover:cursor-pointer"
+            >
+              GroupUp
+            </div>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
@@ -137,10 +131,10 @@ export default function WorkspaceSwitcher({
                       {workspace.label}
                       <Check
                         className={cn(
-                          'ml-auto h-4 w-4',
+                          "ml-auto h-4 w-4",
                           selectedWorkspace.value === workspace.value
-                            ? 'opacity-100'
-                            : 'opacity-0'
+                            ? "opacity-100"
+                            : "opacity-0"
                         )}
                       />
                     </CommandItem>
@@ -188,13 +182,13 @@ export default function WorkspaceSwitcher({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="free">
-                    <span className="font-medium">Free</span> -{' '}
+                    <span className="font-medium">Free</span> -{" "}
                     <span className="text-muted-foreground">
                       Trial for two weeks
                     </span>
                   </SelectItem>
                   <SelectItem value="pro">
-                    <span className="font-medium">Pro</span> -{' '}
+                    <span className="font-medium">Pro</span> -{" "}
                     <span className="text-muted-foreground">
                       $9/month per user
                     </span>

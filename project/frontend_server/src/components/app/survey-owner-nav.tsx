@@ -11,19 +11,37 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import WorkspaceSwitcher from '@/components/app/workspace-switcher';
-import DarkModeToggle from '@/components/app/dark-mode-toggle';
+import SurveySwitcher from '@/components/app/nav-survey-swithcer';
+import ThemeSwitcher from './nav-theme-switcher';
 
-export function WorkspaceNav() {
+export function SurveyOwnerNav() {
   return (
     <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
-        <WorkspaceSwitcher />
+        <SurveySwitcher />
         <Link
           href="dashboard"
           className="text-foreground transition-colors hover:text-foreground"
         >
           Dashboard
+        </Link>
+        <Link
+            href="form"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+        >
+          Form
+        </Link>
+        <Link
+            href="info"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+        >
+          Info
+        </Link>
+        <Link
+            href="members"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+        >
+          Members
         </Link>
         <Link
           href="groups"
@@ -32,22 +50,10 @@ export function WorkspaceNav() {
           Groups
         </Link>
         <Link
-          href="members"
+          href="restrictions"
           className="text-muted-foreground transition-colors hover:text-foreground"
         >
-          Members
-        </Link>
-        <Link
-          href="match"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          Recommendations
-        </Link>
-        <Link
-          href="settings"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          Settings
+          Restrictions
         </Link>
       </nav>
       <Sheet>
@@ -59,7 +65,7 @@ export function WorkspaceNav() {
         </SheetTrigger>
         <SheetContent side="left">
           <nav className="grid gap-6 text-lg font-medium">
-            <WorkspaceSwitcher />
+            <SurveySwitcher />
             <Link href="dashboard" className="hover:text-foreground">
               Dashboard
             </Link>
@@ -101,6 +107,7 @@ export function WorkspaceNav() {
             />
           </div>
         </form>
+        <ThemeSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="secondary" size="icon" className="rounded-full">
@@ -117,7 +124,7 @@ export function WorkspaceNav() {
             <DropdownMenuItem>Logout</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <DarkModeToggle />
+
       </div>
     </header>
   );

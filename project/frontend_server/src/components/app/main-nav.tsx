@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import { CircleUser, Menu, Search } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Link from "next/link";
+import { CircleUser, Menu, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,17 +8,17 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import WorkspaceSwitcher from '@/components/app/workspace-switcher';
-import DarkModeToggle from '@/components/app/dark-mode-toggle';
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import SurveySwithcer from "@/components/app/nav-survey-swithcer";
+import ThemeSwitcher from "./nav-theme-switcher";
 
 export function MainNav() {
   return (
     <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
-        <WorkspaceSwitcher />
+        <SurveySwithcer />
         <Link
           href="/dashboard"
           className="text-foreground transition-colors hover:text-foreground"
@@ -34,14 +34,14 @@ export function MainNav() {
       </nav>
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="shrink-0 md:hidden">
+          <Button variant="outline" size="icon" className="shrink-0">
             <Menu className="h-5 w-5" />
             <span className="sr-only">Toggle navigation menu</span>
           </Button>
         </SheetTrigger>
         <SheetContent side="left">
           <nav className="grid gap-6 text-lg font-medium">
-            <WorkspaceSwitcher />
+            <SurveySwithcer />
             <Link href="/dashboard" className="hover:text-foreground">
               Dashboard
             </Link>
@@ -54,17 +54,8 @@ export function MainNav() {
           </nav>
         </SheetContent>
       </Sheet>
-      <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-        <form className="ml-auto flex-1 sm:flex-initial">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search products..."
-              className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
-            />
-          </div>
-        </form>
+      <div className="flex w-full justify-end items-center gap-4 md:gap-2 lg:gap-4">
+        <ThemeSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="secondary" size="icon" className="rounded-full">
@@ -81,7 +72,6 @@ export function MainNav() {
             <DropdownMenuItem>Logout</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <DarkModeToggle />
       </div>
     </header>
   );

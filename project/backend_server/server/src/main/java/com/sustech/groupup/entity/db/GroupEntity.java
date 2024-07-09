@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GroupEntity {
     @TableId(type = IdType.AUTO)
-    private long id;
+    private Long id;
     private long surveyId;
 }

@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @TableName("user_table")
 public class UserEntity {
     @TableId(type = IdType.AUTO)
-    private long id;
+    private Long id;
     private String username;
     private String password;
 }

@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @TableName("query")
 public class QueryEntity {
     @TableId(type = IdType.AUTO)
-    private long id;
+    private Long id;
     private QueryStatus status;
 
     private Timestamp createAt;

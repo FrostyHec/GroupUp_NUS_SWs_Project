@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class SurveyEntity {
 
     @TableId(type = IdType.AUTO)
-    private long id;
+    private Long id;
     private Timestamp createAt;
     private Timestamp updateAt;
     private String name;
@@ -32,7 +32,6 @@ public class SurveyEntity {
 
     private JsonNode questions;//json
 
-    //@TableField(typeHandler = JacksonTypeHandler.class)
     private JsonNode groupRestriction;//json
 
 }

@@ -33,10 +33,10 @@ public class SurveyServiceImpl implements SurveyService {
     public void insertSurvey(SurveyEntity survey, List<Long> ownerIds, List<Long> memberIds) {
         surveyMapper.insert(survey);
         for (Long ownerId : ownerIds) {
-            surveyMapper.insertSurveyOwner(survey.getId(), ownerId);
+            surveyMapper.insertSurveyOwner(ownerId,survey.getId());
         }
         for (Long memberId : memberIds) {
-            surveyMapper.insertSurveyMember(survey.getId(), memberId);
+            surveyMapper.insertSurveyMember(memberId,survey.getId());
         }
         //后续可以数据库批处理优化
     }

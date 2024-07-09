@@ -27,7 +27,7 @@ public class SurveyConverter {
         surveyDTO.setPersonalInfo(surveyEntity.getPersonalInfo());
         surveyDTO.setQuestions(surveyEntity.getQuestions());
 
-        surveyDTO.setRestriction(surveyEntity.getGroupRestriction());
+        surveyDTO.setGroupRestriction(surveyEntity.getGroupRestriction());
         surveyDTO.setOwners(surveyService.getOwnerIdBySurveyId(surveyEntity.getId()));
         surveyDTO.setMembers(surveyService.getMemberIdBySurveyId(surveyEntity.getId()));
         return surveyDTO;
@@ -41,6 +41,7 @@ public class SurveyConverter {
         surveyEntity.setStatus(SurveyStatus.CLOSED);
         surveyEntity.setPersonalInfo(surveyDTO.getPersonalInfo());
         surveyEntity.setQuestions(surveyDTO.getQuestions());
+        surveyEntity.setGroupRestriction(surveyDTO.getGroupRestriction());
         return surveyEntity;
     }
 

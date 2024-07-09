@@ -1,8 +1,6 @@
 package com.sustech.groupup.controller.grouping;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import java.util.Map;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sustech.groupup.entity.api.SurveyDTO;
 import com.sustech.groupup.entity.converter.SurveyConverter;
@@ -37,7 +35,7 @@ public class SurveyController {
     @PostMapping()
     public Response addSurvey (@RequestBody SurveyDTO surveyDTO) {
         SurveyEntity surveyEntity = surveyConverter.toEntity(surveyDTO);
-        surveyService.insertSurvey(surveyEntity, surveyDTO.getMembers(), surveyDTO.getOwners());
+        surveyService.insertSurvey(surveyEntity, surveyDTO.getOwners(),surveyDTO.getMembers());
         return Response.getSuccess(Map.of("survey_id", surveyEntity.getId()));
     }
 

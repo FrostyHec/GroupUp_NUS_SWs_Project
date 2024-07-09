@@ -32,4 +32,10 @@ public class JsonUtils {
                                                                JsonProcessingException {
         return toJson(result).get("data");
     }
+
+    public static <T> T toJsonObject(MvcResult result, Class<T> type) throws
+                                                                  UnsupportedEncodingException,
+                                                                  JsonProcessingException {
+        return objectMapper.treeToValue(toJsonData(result),type);
+    }
 }

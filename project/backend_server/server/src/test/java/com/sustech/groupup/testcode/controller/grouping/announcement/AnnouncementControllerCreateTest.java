@@ -4,10 +4,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
-import com.sustech.groupup.entity.api.AnnouncementDTO;
 import com.sustech.groupup.testcode.controller.APIWrapper;
 import com.sustech.groupup.testutils.JsonUtils;
 import com.sustech.groupup.testutils.RespChecker;
@@ -30,7 +27,19 @@ public class AnnouncementControllerCreateTest {
         var res = apiWrapper.createAnnouncement(surveyID,auth,dto)
                 .andExpect(RespChecker.success())
                 .andReturn();
-        assert JsonUtils.toJson(res).get("data").get("id").asLong() == 1;
+        assert JsonUtils.toJsonData(res).get("id").asLong() == 1;
+    }
+
+    @Test
+    public void testNoPrivilege() throws Exception {
+        var user1= apiWrapper.registerAndLogin("longzhi","123");
+        var user2 = apiWrapper.registerAndLogin("fei","123");
+
+        var sid = apiWrapper.createTemplateSurvey(user1,List.of(user1.getId()),List.of());
+
+        apiWrapper.createAnnouncement(sid,user2,apiWrapper.getTemplateAnnouncementDTO())
+                .andExpect(RespChecker.unauthorized())
+                .andExpect(RespChecker.message("no-privilege"));
     }
 }
 

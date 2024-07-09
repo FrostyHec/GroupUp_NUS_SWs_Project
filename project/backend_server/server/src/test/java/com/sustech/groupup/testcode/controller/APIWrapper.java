@@ -64,6 +64,10 @@ public class APIWrapper {
     public LoginAuthDTO templateUserLogin() throws Exception {
         String username = "username";
         String password = "password";
+        return registerAndLogin(username,password);
+    }
+
+    public LoginAuthDTO registerAndLogin(String username,String password) throws Exception {
         register(username, password);
         return loginAndGetAuth(username, password);
     }

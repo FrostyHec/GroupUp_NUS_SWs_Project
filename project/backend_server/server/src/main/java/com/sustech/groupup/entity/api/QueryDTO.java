@@ -19,8 +19,8 @@ public class QueryDTO {
     private Timestamp updateAt;
 
     //@JsonToStringField
-    private String personalInfo;//json
+    private JsonNode personalInfo;//json
 
     //@JsonToStringField
-    private String questionsAnswer;//json
+    private JsonNode questionsAnswer;//json
 }

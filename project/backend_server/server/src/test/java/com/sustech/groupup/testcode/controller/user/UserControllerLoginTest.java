@@ -40,29 +40,29 @@ public class UserControllerLoginTest {
 
     @Test
     public void testLoginNoUser() throws Exception {
-            String username = "longzhi";
-            String password = "123";
+        String username = "longzhi";
+        String password = "123";
 
-            login(username, password)
-                    .andExpect(status().isOk())
-                    .andExpect(RespChecker.noFound())
-                    .andExpect(RespChecker.message("user-no-found"));
+        login(username, password)
+                .andExpect(status().isOk())
+                .andExpect(RespChecker.noFound())
+                .andExpect(RespChecker.message("user-no-found"));
 
     }
 
     @Test
     public void testLoginWrongPassword() throws Exception {
-            String username = "longzhi";
-            String password = "123";
-            String wrongPassword = "12345";
+        String username = "longzhi";
+        String password = "123";
+        String wrongPassword = "12345";
 
-            assert !password.equals(wrongPassword);
-            userService.register(username, password);
+        assert !password.equals(wrongPassword);
+        userService.register(username, password);
 
-            login(username, wrongPassword)
-                    .andExpect(status().isOk())
-                    .andExpect(RespChecker.badRequest())
-                    .andExpect(RespChecker.message("wrong-password"));
+        login(username, wrongPassword)
+                .andExpect(status().isOk())
+                .andExpect(RespChecker.badRequest())
+                .andExpect(RespChecker.message("wrong-password"));
     }
 }
 

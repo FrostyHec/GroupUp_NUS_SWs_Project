@@ -41,4 +41,5 @@ public interface SurveyMapper extends BaseMapper<SurveyEntity> {
             </script>
             """)
     List<Long> queryParticipateSurvey(int id, int pageSize, int pageNo);
+
 }

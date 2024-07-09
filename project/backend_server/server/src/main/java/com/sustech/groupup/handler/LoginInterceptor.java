@@ -32,6 +32,8 @@ public class LoginInterceptor implements HandlerInterceptor {
         if (!jwtUtil.validateToken(token)) {
             throwUnauthorizedException("invalid-auth");
         }
+        Long userId = jwtUtil.getSubject(token);
+        request.setAttribute("request_user_id", userId);
         return true;
     }
 

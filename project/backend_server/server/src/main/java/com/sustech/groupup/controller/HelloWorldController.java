@@ -41,12 +41,6 @@ public class HelloWorldController {
     public Response testExternalException() {
         throw new ExternalException(Response.getBadRequest("test exception"));
     }
-
-    @GetMapping("/logintest/public")
-    public String loginTest() {
-        String token = jwtUtil.generateToken("longzhi");
-        return token;
-    }
     @GetMapping("/requiredAuth")
     public String requiredAuth(){
         return "You have passed the authentication!";

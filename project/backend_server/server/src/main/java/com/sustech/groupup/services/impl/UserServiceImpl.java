@@ -35,16 +35,17 @@ public class UserServiceImpl implements UserService {
         QueryWrapper<UserEntity> queryWrapper = Wrappers.query();
         queryWrapper.eq("username", username);
         List<UserEntity> users = userMapper.selectList(queryWrapper);
-
         if (users.isEmpty()) {
             throw new ExternalException(Response.getNotFound("user-no-found"));
         } else if (users.size() > 1) {
             throw new ExternalException(Response.getInternalError("user-duplicate"));
-        } else if (!passwordEncoder.matches(password, users.getFirst().getPassword())) {
+        }
+        UserEntity user = users.getFirst();
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new ExternalException(Response.getBadRequest("wrong-password"));
         }
 
-        String token = jwtUtil.generateToken(username);
+        String token = jwtUtil.generateToken(user.getId());
         return new LoginAuthDTO(users.getFirst().getId(), token);
     }
 

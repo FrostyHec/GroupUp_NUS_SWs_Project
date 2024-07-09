@@ -54,3 +54,12 @@ create table group_member(
      member_id int8,
     primary key (group_id, member_id)
 );
+
+create table announcement(
+    id serial primary key,
+    survey_id int8,
+    create_at timestamp,
+    update_at timestamp,
+    title varchar,
+    description varchar
+)

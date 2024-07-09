@@ -1,18 +1,15 @@
 package com.sustech.groupup.testcode.controller.grouping.announcement;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Map;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.sustech.groupup.config.Constant;
-import com.sustech.groupup.mapper.UserMapper;
+import com.sustech.groupup.entity.api.AnnouncementDTO;
+import com.sustech.groupup.testcode.controller.APIWrapper;
+import com.sustech.groupup.testutils.JsonUtils;
 import com.sustech.groupup.testutils.RespChecker;
 import com.sustech.groupup.testutils.annotation.ControllerTest;
 
@@ -20,38 +17,20 @@ import com.sustech.groupup.testutils.annotation.ControllerTest;
 public class AnnouncementControllerCreateTest {
 
     @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private UserMapper mapper;
-
-    private ResultActions create(long surveyID, String title, String description, String createAt,
-                                 String updateAt) throws Exception {
-        String requestBody = String.format(
-                """
-                        {
-                          "title": "%s",
-                          "description": "%s"
-                          "create_at": "%s",
-                          "update_at": "%s"
-                                      
-                        }
-                        """,
-                title,description,createAt,updateAt);
-        String baseUrl = Constant.API_VERSION + "/survey/"+surveyID+"/register";
-        return mockMvc.perform(MockMvcRequestBuilders.post(baseUrl)
-                                                     .contentType(MediaType.APPLICATION_JSON)
-                                                     .content(requestBody)
-                                                     .accept(MediaType.APPLICATION_JSON));
-    }
-
+    private APIWrapper apiWrapper;
     @Test
-    public void testRegisterOK() throws Exception {
+    public void testCreateOK() throws Exception {
+        var dto = apiWrapper.getTemplateAnnouncementDTO();
+        dto.setTitle("123");
+        dto.setDescription("123");
+
+        var auth = apiWrapper.templateUserLogin();
+        var surveyID = apiWrapper.createTemplateSurvey(auth, List.of(auth.getId()),List.of());
+
+        var res = apiWrapper.createAnnouncement(surveyID,auth,dto)
+                .andExpect(RespChecker.success())
+                .andReturn();
+        assert JsonUtils.toJson(res).get("data").get("id").asLong() == 1;
     }
-
-    @Test
-    public void testRegisterDuplicate() throws Exception {
-    }
-
-
 }
 

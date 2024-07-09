@@ -5,18 +5,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.catalina.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.sustech.groupup.config.Constant;
 import com.sustech.groupup.entity.api.UserPublicQueryDTO;
-import com.sustech.groupup.testutils.AuthUtils;
+import com.sustech.groupup.testcode.controller.APIWrapper;
 import com.sustech.groupup.testutils.JsonUtils;
 import com.sustech.groupup.testutils.RespChecker;
 import com.sustech.groupup.testutils.annotation.ControllerTest;
@@ -28,7 +25,7 @@ public class UserControllerPublicQueryTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private AuthUtils authUtils;
+    private APIWrapper APIWrapper;
 
     private List<UserPublicQueryDTO> publicQuery(String username) throws Exception {
         final String baseUrl =
@@ -53,8 +50,8 @@ public class UserControllerPublicQueryTest {
 
     @Test
     public void testQueryExact() throws Exception {
-        authUtils.register("longzhi", "0");
-        authUtils.register("fei", "1");
+        APIWrapper.register("longzhi", "0");
+        APIWrapper.register("fei", "1");
         var data = publicQuery("longzhi");
         assert data.size() == 1;
         assert data.get(0).equals(new UserPublicQueryDTO(1, "longzhi"));
@@ -62,9 +59,9 @@ public class UserControllerPublicQueryTest {
 
     @Test
     public void testQueryAmbig() throws Exception {
-        authUtils.register("longzhi", "0");
-        authUtils.register("fei", "1");
-        authUtils.register("longzhi2", "2");
+        APIWrapper.register("longzhi", "0");
+        APIWrapper.register("fei", "1");
+        APIWrapper.register("longzhi2", "2");
         var data = publicQuery("longzhi");
         assert data.size() == 2;
         assert data.get(0).equals(new UserPublicQueryDTO(1, "longzhi"));
@@ -73,7 +70,7 @@ public class UserControllerPublicQueryTest {
 
     @Test
     public void testQueryNone() throws Exception {
-        authUtils.register("longzhi", "0");
+        APIWrapper.register("longzhi", "0");
         var data = publicQuery("fei");
         assert data.isEmpty();
     }

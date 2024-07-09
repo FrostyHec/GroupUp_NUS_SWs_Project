@@ -28,4 +28,8 @@ public class JsonUtils {
                                                            JsonProcessingException {
         return objectMapper.readTree(result.getResponse().getContentAsString());
     }
+    public static JsonNode toJsonData(MvcResult result) throws UnsupportedEncodingException,
+                                                               JsonProcessingException {
+        return toJson(result).get("data");
+    }
 }

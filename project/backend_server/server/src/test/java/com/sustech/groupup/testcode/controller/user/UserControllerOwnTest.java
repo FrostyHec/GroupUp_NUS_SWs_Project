@@ -3,7 +3,6 @@ package com.sustech.groupup.testcode.controller.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.sustech.groupup.config.Constant;
-import com.sustech.groupup.testutils.AuthUtils;
+import com.sustech.groupup.testcode.controller.APIWrapper;
 import com.sustech.groupup.testutils.RespChecker;
 import com.sustech.groupup.testutils.annotation.ControllerTest;
 
@@ -24,7 +23,7 @@ public class UserControllerOwnTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private AuthUtils authUtils;
+    private APIWrapper APIWrapper;
 
 
     private ResultActions createSurvey(List<Long> owner,List<Long> member) {
@@ -54,13 +53,13 @@ public class UserControllerOwnTest {
         int pageSize = 10;
         int pageNo = 1;
 
-        authUtils.register("test", "test");
+        APIWrapper.register("test", "test");
 
 
         queryOwn(id,pageSize,pageNo)
                 .andExpect(status().isOk())
                 .andExpect(RespChecker.success());
-        //TODO
+        //TODO Testcase
     }
 }
 

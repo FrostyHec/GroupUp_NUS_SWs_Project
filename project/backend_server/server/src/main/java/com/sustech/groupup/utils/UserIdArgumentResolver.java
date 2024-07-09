@@ -14,7 +14,7 @@ public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.getParameterType().equals(Long.class) &&
+        return parameter.getParameterType().equals(long.class) &&
                parameter.getParameterName().equals("request_user_id");
     }
 
@@ -24,6 +24,6 @@ public class UserIdArgumentResolver implements HandlerMethodArgumentResolver {
                                   NativeWebRequest webRequest,
                                   WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-        return (Long) request.getAttribute("request_user_id");
+        return (long) request.getAttribute("request_user_id");
     }
 }

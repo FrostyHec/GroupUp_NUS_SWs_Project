@@ -14,13 +14,16 @@ import lombok.RequiredArgsConstructor;
 public class InterceptorConfig implements WebMvcConfigurer {
 
     private final LoginInterceptor loginInterceptor;
+
+    private final RunArgs runArgs;
     @Bean
     public LoginInterceptor getLoginInterceptor() {
         return this.loginInterceptor;
     }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        if(!Constant.AUTH_ENABLED) return;
+        if (!runArgs.authEnabled) return;
         // 鉴权拦截器
         registry.addInterceptor(loginInterceptor)
                 .excludePathPatterns("/**/public/**");

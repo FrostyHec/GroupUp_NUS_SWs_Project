@@ -3,6 +3,8 @@ package com.sustech.groupup.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sustech.groupup.entity.db.SurveyEntity;
 
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -42,7 +44,6 @@ public interface SurveyMapper extends BaseMapper<SurveyEntity> {
             """)
     List<Long> queryParticipateSurvey(int id, int pageSize, int pageNo);
 
-
     @Insert("insert into survey_member (member_id, survey_id) VALUES (#{member_id}, #{survey_id})")
     void insertSurveyMember(@Param("member_id") Long MemberId, @Param("survey_id") Long SurveyId);
 
@@ -54,13 +55,14 @@ public interface SurveyMapper extends BaseMapper<SurveyEntity> {
 
     @Delete("delete from survey_member where survey_id= #{survey_id}")
     void deleteSurveyMemberById(@Param("survey_id") Long SurveyId);
+
     @Select("""
-            select true from survey_owner where owner_id = #{id} and survey_id = #{surveyId}
+            select (select true from survey_owner where owner_id = #{requestUserId} and survey_id = #{surveyId} limit 1) is not null
             """)
     boolean isOwner(long surveyId, long requestUserId);
 
     @Select("""
-            select true from survey_member where member_id = #{id} and survey_id = #{survey}
+             select (select true from survey_member where member_id = #{requestUserId} and survey_id = #{surveyId} limit 1) is not null
             """)
     boolean isMember(long surveyId, long requestUserId);
 

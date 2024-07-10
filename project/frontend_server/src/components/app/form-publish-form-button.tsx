@@ -13,9 +13,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "./ui/alert-dialog";
-import { Button } from "./ui/button";
-import { toast } from "./ui/use-toast";
+} from "../ui/alert-dialog";
+import { Button } from "../ui/button";
+import { toast } from "../ui/use-toast";
 import {
   Tooltip,
   TooltipContent,

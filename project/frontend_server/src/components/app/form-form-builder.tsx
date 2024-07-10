@@ -6,15 +6,23 @@ import PreviewDialogBtn from "./form-preview-dialog-button";
 import PublishFormBtn from "./form-publish-form-button";
 import SaveFormBtn from "./form-save-form-button";
 import Designer from "./form-designer";
-import { DndContext, MouseSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
+import {
+  DndContext,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import DragOverlayWrapper from "./form-drag-overlay-wrapper";
 import useDesigner from "../hooks/useDesigner";
-import { LoaderCircle, ArrowLeft, ArrowRight } from 'lucide-react';
+import { LoaderCircle, ArrowLeft, ArrowRight } from "lucide-react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { toast } from "../ui/use-toast";
 import Link from "next/link";
 import Confetti from "react-confetti";
+import { Tooltip } from "recharts";
+import { TooltipProvider } from "../ui/tooltip";
 
 function FormBuilder({ form }: { form: Form }) {
   const { setElements, setSelectedElement } = useDesigner();
@@ -57,7 +65,12 @@ function FormBuilder({ form }: { form: Form }) {
   if (form.published) {
     return (
       <>
-        <Confetti width={window.innerWidth} height={window.innerHeight} recycle={false} numberOfPieces={1000} />
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          numberOfPieces={1000}
+        />
         <div className="flex flex-col items-center justify-center h-full w-full">
           <div className="max-w-md">
             <h1 className="text-center text-4xl font-bold text-primary border-b pb-2 mb-10">
@@ -103,29 +116,31 @@ function FormBuilder({ form }: { form: Form }) {
   }
 
   return (
-    <DndContext sensors={sensors}>
-      <main className="flex flex-col w-full">
-        <nav className="flex justify-between border-b-2 p-4 gap-3 items-center">
-          <h2 className="truncate font-medium">
-            <span className="text-muted-foreground mr-2">Form:</span>
-            {form.name}
-          </h2>
-          <div className="flex items-center gap-2">
-            <PreviewDialogBtn />
-            {!form.published && (
-              <>
-                <SaveFormBtn id={form.id} />
-                <PublishFormBtn id={form.id} />
-              </>
-            )}
+    <TooltipProvider delayDuration={0}>
+      <DndContext sensors={sensors}>
+        <main className="flex flex-col w-full">
+          <nav className="flex justify-between border-b-2 p-4 gap-3 items-center">
+            <h2 className="truncate font-medium">
+              <span className="text-muted-foreground mr-2">Form:</span>
+              {form.name}
+            </h2>
+            <div className="flex items-center gap-2">
+              <PreviewDialogBtn />
+              {!form.published && (
+                <>
+                  <SaveFormBtn id={form.id} />
+                  <PublishFormBtn id={form.id} />
+                </>
+              )}
+            </div>
+          </nav>
+          <div className="flex w-full flex-grow items-center justify-center relative overflow-y-auto h-[200px] bg-accent bg-[url(/paper.svg)] dark:bg-[url(/paper-dark.svg)]">
+            <Designer />
           </div>
-        </nav>
-        <div className="flex w-full flex-grow items-center justify-center relative overflow-y-auto h-[200px] bg-accent bg-[url(/paper.svg)] dark:bg-[url(/paper-dark.svg)]">
-          <Designer />
-        </div>
-      </main>
-      <DragOverlayWrapper />
-    </DndContext>
+        </main>
+        <DragOverlayWrapper />
+      </DndContext>
+    </TooltipProvider>
   );
 }
 

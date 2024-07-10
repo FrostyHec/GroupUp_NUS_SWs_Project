@@ -1,7 +1,7 @@
 "use server";
 
 
-import { FormElementInstance } from "@/components/FormElements";
+import { FormElementInstance } from "@/components/app/form-form-elements";
 import { formSchema, formSchemaType } from "@/schemas/form";
 // import prisma from "@/lib/prisma"; // Orginally the data is stored using prisma
 // import { currentUser } from "@clerk/nextjs"; // Orginally the user data is managed by clerk

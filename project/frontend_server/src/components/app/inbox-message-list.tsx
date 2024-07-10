@@ -1,22 +1,22 @@
-"use client";
 import { ComponentProps } from "react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistance } from "date-fns";
 
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Mail, mails } from "@/components/data/inbox-data";
+import { Badge } from "../ui/badge";
+import { ScrollArea } from "../ui/scroll-area";
+import { Separator } from "../ui/separator";
+import { Mail } from "../data/inbox-data";
 import { useMail } from "@/actions/message";
 
 interface MailListProps {
   items: Mail[];
 }
 
-function InboxMessageList({ items = mails }: MailListProps) {
+export function InboxMessageList({ items }: MailListProps) {
   const [mail, setMail] = useMail();
 
   return (
-    <ScrollArea className="container h-screen lg:w-1/2 rounded-md p-4">
+    <ScrollArea className="h-screen">
       <div className="flex flex-col gap-2 p-4 pt-0">
         {items.map((item) => (
           <button
@@ -48,14 +48,16 @@ function InboxMessageList({ items = mails }: MailListProps) {
                       : "text-muted-foreground"
                   )}
                 >
-                  {formatDistanceToNow(new Date(item.date), {
+                  {formatDistance(item.date, new Date(), {
                     addSuffix: true,
                   })}
                 </div>
               </div>
               <div className="text-xs font-medium">{item.subject}</div>
             </div>
-            <div className="text-xs text-muted-foreground">{item.text}</div>
+            <div className="line-clamp-2 text-xs text-muted-foreground">
+              {item.text.substring(0, 300)}
+            </div>
             {item.labels.length ? (
               <div className="flex items-center gap-2">
                 {item.labels.map((label) => (
@@ -85,5 +87,3 @@ function getBadgeVariantFromLabel(
 
   return "secondary";
 }
-
-export default InboxMessageList;

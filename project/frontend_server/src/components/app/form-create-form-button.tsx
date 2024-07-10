@@ -4,7 +4,7 @@ import { formSchema, formSchemaType } from "@/schemas/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { ImSpinner2 } from "react-icons/im";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,11 +13,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
-import { toast } from "./ui/use-toast";
+} from "../ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { toast } from "../ui/use-toast";
 import { CreateForm } from "@/actions/form";
 import { BsFileEarmarkPlus } from "react-icons/bs";
 import { useRouter } from "next/navigation";
@@ -35,7 +35,7 @@ function CreateFormBtn() {
         title: "Success",
         description: "Form created successfully",
       });
-      router.push(`/builder/${formId}`);
+      router.push(`/survey/${formId}/dashboard`);
     } catch (error) {
       toast({
         title: "Error",
@@ -53,7 +53,7 @@ function CreateFormBtn() {
           className="group border border-primary/20 h-[190px] items-center justify-center flex flex-col hover:border-primary hover:cursor-pointer border-dashed gap-4"
         >
           <BsFileEarmarkPlus className="h-8 w-8 text-muted-foreground group-hover:text-primary" />
-          <p className="font-bold text-xl text-muted-foreground group-hover:text-primary">Create new form</p>
+          <p className="font-bold text-xl text-muted-foreground group-hover:text-primary">Create new survey</p>
         </Button>
       </DialogTrigger>
       <DialogContent>

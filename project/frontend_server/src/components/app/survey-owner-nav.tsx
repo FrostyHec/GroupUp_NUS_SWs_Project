@@ -9,8 +9,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import SurveySwitcher from '@/components/app/nav-survey-swithcer';
 import ThemeSwitcher from './nav-theme-switcher';
 
@@ -56,57 +54,7 @@ export function SurveyOwnerNav() {
           Restrictions
         </Link>
       </nav>
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="shrink-0 md:hidden">
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle navigation menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left">
-          <nav className="grid gap-6 text-lg font-medium">
-            <SurveySwitcher />
-            <Link href="dashboard" className="hover:text-foreground">
-              Dashboard
-            </Link>
-            <Link
-              href="groups"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Groups
-            </Link>
-            <Link
-              href="members"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Members
-            </Link>
-            <Link
-              href="recommendations"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Recommendations
-            </Link>
-            <Link
-              href="settings"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Settings
-            </Link>
-          </nav>
-        </SheetContent>
-      </Sheet>
-      <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-        <form className="ml-auto flex-1 sm:flex-initial">
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search products..."
-              className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
-            />
-          </div>
-        </form>
+      <div className="flex w-full justify-end items-center gap-4 md:gap-2 lg:gap-4">
         <ThemeSwitcher />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -124,7 +72,6 @@ export function SurveyOwnerNav() {
             <DropdownMenuItem>Logout</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
       </div>
     </header>
   );

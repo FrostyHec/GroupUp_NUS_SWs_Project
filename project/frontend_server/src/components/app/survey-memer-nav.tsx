@@ -26,16 +26,16 @@ export function SurveyMemberNav() {
           Dashboard
         </Link>
         <Link
-          href="groups"
+          href="form"
           className="text-muted-foreground transition-colors hover:text-foreground"
         >
-          Groups
+          Form
         </Link>
         <Link
-          href="members"
+          href="info"
           className="text-muted-foreground transition-colors hover:text-foreground"
         >
-          Members
+          Info
         </Link>
         <Link
           href="match"
@@ -44,52 +44,12 @@ export function SurveyMemberNav() {
           Recommendations
         </Link>
         <Link
-          href="settings"
+          href="groups"
           className="text-muted-foreground transition-colors hover:text-foreground"
         >
-          Settings
+          Groups
         </Link>
       </nav>
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="shrink-0 md:hidden">
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle navigation menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left">
-          <nav className="grid gap-6 text-lg font-medium">
-            <SurveySwitcher />
-            <Link href="dashboard" className="hover:text-foreground">
-              Dashboard
-            </Link>
-            <Link
-              href="groups"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Groups
-            </Link>
-            <Link
-              href="members"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Members
-            </Link>
-            <Link
-              href="recommendations"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Recommendations
-            </Link>
-            <Link
-              href="settings"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Settings
-            </Link>
-          </nav>
-        </SheetContent>
-      </Sheet>
       <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
         <form className="ml-auto flex-1 sm:flex-initial">
           <div className="relative">

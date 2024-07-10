@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link";
 import { CircleUser, Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,51 +11,35 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import SurveySwithcer from "@/components/app/nav-survey-swithcer";
 import ThemeSwitcher from "./nav-theme-switcher";
+import { usePathname } from 'next/navigation'
+import { cn } from "@/lib/utils";
+import { Router } from "next/router";
 
 export function MainNav() {
+  const router = usePathname();
   return (
     <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
         <SurveySwithcer />
         <Link
           href="/dashboard"
-          className="text-foreground transition-colors hover:text-foreground"
+          className={cn("transition-colors hover:text-foreground",
+            router === "/dashboard" ? "text-foreground" : "text-muted-foreground"
+          )}
         >
           Dashboard
         </Link>
         <Link
           href="/inbox"
-          className="text-muted-foreground transition-colors hover:text-foreground"
+          className={cn("transition-colors hover:text-foreground",
+            router === "/inbox" ? "text-foreground" : "text-muted-foreground"
+          )}
         >
           Inbox
         </Link>
       </nav>
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant="outline" size="icon" className="shrink-0">
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle navigation menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left">
-          <nav className="grid gap-6 text-lg font-medium">
-            <SurveySwithcer />
-            <Link href="/dashboard" className="hover:text-foreground">
-              Dashboard
-            </Link>
-            <Link
-              href="/inbox"
-              className="text-muted-foreground hover:text-foreground"
-            >
-              Inbox
-            </Link>
-          </nav>
-        </SheetContent>
-      </Sheet>
       <div className="flex w-full justify-end items-center gap-4 md:gap-2 lg:gap-4">
         <ThemeSwitcher />
         <DropdownMenu>

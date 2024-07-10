@@ -1,8 +1,8 @@
 import React from "react";
-import useDesigner from "./hooks/useDesigner";
+import useDesigner from "../hooks/useDesigner";
 import { FormElements } from "./form-form-elements";
-import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
 import {
   Sheet,
   SheetClose,

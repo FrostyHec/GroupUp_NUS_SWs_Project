@@ -89,20 +89,12 @@ export default function SurveySwitcher({ className }: WorkspaceSwitcherProps) {
     >
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            aria-expanded={open}
-            aria-label="Select a workspace"
-            className={cn("w-[200px] justify-between", className)}
-          >
-            <div
-              className="font-bold text-3xl bg-gradient-to-r from-indigo-400 to-cyan-400 text-transparent
+          <div
+            className="font-bold text-3xl bg-gradient-to-r from-indigo-400 to-cyan-400 text-transparent
     bg-clip-text hover:cursor-pointer"
-            >
-              GroupUp
-            </div>
-          </Button>
+          >
+            GroupUp
+          </div>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>

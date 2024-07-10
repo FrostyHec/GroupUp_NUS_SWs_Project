@@ -2,12 +2,11 @@ spring:
   application:
     name: groupup
   profiles:
-    active: dev
+    active: prod
   jackson:
     property-naming-strategy: SNAKE_CASE
 
 jwt:
-  auth-enable: true
+  auth-enable: false
   secret: secret12740184018403rujdfcu9hv9nsdzsajsz0ehfUO(vhqoCQfsecret12740184018403rujdfcu9hv9nsdzsajsz0ehfUO(vhqoCQf
   expiration: 86400000
-

@@ -62,4 +62,21 @@ create table announcement(
     update_at timestamp,
     title varchar,
     description varchar
-)
+);
+create table request_grouping(
+    id serial primary key ,
+    from_id int8, -- creator
+    to_group bool,
+    to_id int8,
+    create_at timestamp,
+    message varchar,
+    remain_required_accept int, -- 还有几个人没有accept
+    status int -- 1 accepted / 2 denied / 3 wait
+);
+create table response_group_request(
+    create_at timestamp,
+    update_at timestamp,
+    request_id int8,
+    user_id int8,
+    response_type int --1 accept, 2 denied, 3 wait[排在前面]
+);

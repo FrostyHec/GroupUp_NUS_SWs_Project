@@ -129,3 +129,24 @@ export function userReceivedAnouncements({
   };
   return response;
 }
+
+export function usersInfo({ user_id }: any) {
+  const response = {
+    code: "200",
+    msg: "success",
+    data: {
+      users: [
+        {
+          username: "Mertie",
+        },
+        {
+          username: "Rebeca",
+        },
+        {
+          username: "Sydnie",
+        },
+      ],
+    },
+  };
+  return response;
+}

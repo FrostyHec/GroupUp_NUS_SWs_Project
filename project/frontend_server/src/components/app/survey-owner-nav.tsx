@@ -47,12 +47,6 @@ export function SurveyOwnerNav() {
         >
           Groups
         </Link>
-        <Link
-          href="restrictions"
-          className="text-muted-foreground transition-colors hover:text-foreground"
-        >
-          Restrictions
-        </Link>
       </nav>
       <div className="flex w-full justify-end items-center gap-4 md:gap-2 lg:gap-4">
         <ThemeSwitcher />

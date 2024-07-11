@@ -1,6 +1,7 @@
-import { MoreHorizontal, PlusCircle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+"use client";
+import { useState } from "react";
+import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,14 +9,33 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogPortal,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -23,39 +43,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  surveyAllgroupsMembersInfo,
+  surveyGroupAddMember,
+} from "@/controller/survey-groups";
+import { SurveyUserSearch } from "@/components/app/survey-user-search";
 
-const allGroups = [
-  {
-    id: 1,
-    name: 'a',
-    status: 'full',
-  },
-  {
-    id: 2,
-    name: 'b',
-    status: 'incomplete',
-  },
-];
-
-const fullGroups = [
-  {
-    id: 1,
-    name: 'a',
-    status: 'full',
-  },
-];
-
-const incompleteGroups = [
-  {
-    id: 2,
-    name: 'b',
-    status: 'incomplete',
-  },
-];
-
-export function GroupsTable({ groups }: any) {
+export function GroupsTable({
+  surveyID,
+  groups,
+}: {
+  surveyID: number;
+  groups: any;
+}) {
   return (
     <Card x-chunk="dashboard-06-chunk-0">
       <CardHeader>
@@ -68,8 +70,8 @@ export function GroupsTable({ groups }: any) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>ID</TableHead>
+              <TableHead>Members</TableHead>
               <TableHead>
                 <span className="sr-only">Actions</span>
               </TableHead>
@@ -77,10 +79,45 @@ export function GroupsTable({ groups }: any) {
           </TableHeader>
           <TableBody>
             {groups.map((group: any) => (
-              <TableRow key={group.id}>
-                <TableCell className="font-medium">{group.name}</TableCell>
+              <TableRow key={group.group_id}>
+                <TableCell className="font-medium">{group.group_id}</TableCell>
                 <TableCell>
-                  <Badge variant="outline">{group.status}</Badge>
+                  <div className="flex flex-wrap gap-2">
+                    {group.members.map((member: any) => (
+                      <Card key={member.id}>
+                        <CardContent className="font-medium">
+                          {member.username}
+                        </CardContent>
+                        <CardFooter>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button aria-haspopup="true" variant="ghost">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem>Edit</DropdownMenuItem>
+                              <DropdownMenuItem>Delete</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </CardFooter>
+                      </Card>
+                    ))}
+                    <SurveyUserSearch
+                      callback={(userID) => {
+                        surveyGroupAddMember({
+                          surveyID: surveyID,
+                          groupID: group.group_id,
+                          userID: userID.userID,
+                        });
+                      }}
+                    >
+                      <Button aria-label="Add Member" variant="ghost">
+                        <PlusCircle className="h-4 w-4" />
+                      </Button>
+                    </SurveyUserSearch>
+                  </div>
                 </TableCell>
                 <TableCell>
                   <DropdownMenu>
@@ -111,7 +148,8 @@ export function GroupsTable({ groups }: any) {
   );
 }
 
-export default function Groups() {
+export default function Groups({ params }: { params: { id: number } }) {
+  const allGroups = surveyAllgroupsMembersInfo({ surveyID: params.id });
   return (
     <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -132,13 +170,13 @@ export default function Groups() {
             </div>
           </div>
           <TabsContent value="all">
-            <GroupsTable groups={allGroups} />
+            <GroupsTable groups={allGroups} surveyID={params.id} />
           </TabsContent>
           <TabsContent value="full">
-            <GroupsTable groups={fullGroups} />
+            <GroupsTable groups={allGroups} surveyID={params.id} />
           </TabsContent>
           <TabsContent value="incomplete">
-            <GroupsTable groups={incompleteGroups} />
+            <GroupsTable groups={allGroups} surveyID={params.id} />
           </TabsContent>
         </Tabs>
       </main>

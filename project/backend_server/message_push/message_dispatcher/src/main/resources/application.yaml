@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: groupup
+  profiles:
+    active: dev
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+

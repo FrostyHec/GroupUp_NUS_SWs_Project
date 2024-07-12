@@ -1,11 +1,13 @@
-package com.sustech.groupup.handler;
+package com.sustech.groupup.config;
+
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import com.sustech.groupup.handler.JsonNodeTypeHandler;
 
 @Configuration
 @MapperScan("com.sustech.groupup.mapper")

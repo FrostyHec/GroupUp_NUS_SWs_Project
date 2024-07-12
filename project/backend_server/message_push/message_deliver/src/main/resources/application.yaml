@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: groupup
+  profiles:
+    active: dev
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+  aop:
+    proxy-target-class: true
+env:
+  on-k8s: false

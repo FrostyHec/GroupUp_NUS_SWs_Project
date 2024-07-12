@@ -3,17 +3,19 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.1</version>
-        <relativePath /> <!-- lookup parent from repository -->
+        <groupId>backend_server</groupId>
+        <artifactId>backend_server</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>backend_server</groupId>
-    <artifactId>backend_server</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>org.example</groupId>
+    <artifactId>message_push</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>message_dispatcher</module>
+        <module>message_deliver</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -21,10 +23,4 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <modules>
-        <module>server</module>
-        <module>message_push</module>
-    </modules>
-
-    <packaging>pom</packaging>
 </project>

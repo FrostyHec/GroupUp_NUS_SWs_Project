@@ -9,8 +9,8 @@
         <relativePath>../pom.xml</relativePath> <!-- 确保路径正确 -->
     </parent>
 
-    <groupId>com.example</groupId>
-    <artifactId>demo</artifactId>
+    <groupId>com.sustech.groupup</groupId>
+    <artifactId>server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>demo</name>
     <description>Demo project for Spring Boot</description>

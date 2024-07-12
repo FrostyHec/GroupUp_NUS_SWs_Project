@@ -25,11 +25,12 @@ export default function LogIn() {
     const formData = new FormData(event.target);
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
-    const response = userLogIn({ username: username, password: password }).data;
-    cookies.set("token", response.data.token);
-    if (response.code == "200") {
-      router.push("/dashboard");
-    }
+    userLogIn({ username: username, password: password }).then((res) => {
+      cookies.set("token", res.data.data.token);
+      if (res.data.code == "200") {
+        router.push("/dashboard");
+      }
+    });
   };
   return (
     <main className="flex justify-center items-center h-screen">

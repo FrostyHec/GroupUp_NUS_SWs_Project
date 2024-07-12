@@ -23,7 +23,7 @@ public class RequestConverter {
         else {
             entity.setRemainRequiredAccept(1);
         }
-        entity.setStatus(1);
+        entity.setStatus(0);
         return entity;
     }
 }

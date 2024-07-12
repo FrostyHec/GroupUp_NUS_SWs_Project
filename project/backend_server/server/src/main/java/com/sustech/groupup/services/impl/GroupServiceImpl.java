@@ -36,4 +36,14 @@ public class GroupServiceImpl implements GroupService {
         groupMapper.deleteMemberByGroupIdAndMemberId(groupId, memberId);
     }
 
+    @Override
+    public void addGroupMember(Long groupId, Long memberId) {
+        groupMapper.insertMemberByGroupId(groupId, memberId);
+    }
+
+    @Override
+    public void createGroup(GroupEntity groupEntity) {
+        groupMapper.insert(groupEntity);
+    }
+
 }

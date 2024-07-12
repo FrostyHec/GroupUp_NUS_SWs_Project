@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sustech.groupup.entity.db.GroupEntity;
 import org.apache.catalina.Group;
 import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -21,4 +23,7 @@ public interface GroupMapper extends BaseMapper<GroupEntity> {
 
     @Delete("delete from group_member where group_id=#{groupId}")
     void deleteAllMembersByGroupId(Long groupId);
+
+    @Insert("insert into group_member (group_id, member_id) VALUES (#{groupId},#{memberId})")
+    void insertMemberByGroupId(Long groupId, Long memberId);
 }

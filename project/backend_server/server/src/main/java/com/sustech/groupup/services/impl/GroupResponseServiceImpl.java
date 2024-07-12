@@ -6,6 +6,8 @@ import com.sustech.groupup.services.GroupResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class GroupResponseServiceImpl implements GroupResponseService {
@@ -13,5 +15,10 @@ public class GroupResponseServiceImpl implements GroupResponseService {
     @Override
     public void createResponse(GroupResponseEntity responseEntity) {
         groupResponseMapper.insert(responseEntity);
+    }
+
+    @Override
+    public List<GroupResponseEntity> getAllResponsesByGroupId(Long groupId) {
+        return groupResponseMapper.getGroupResponseByRequestId(groupId);
     }
 }

@@ -26,5 +26,5 @@ public class RequestEntity {
     private Timestamp createAt;
     private String message;
     private int remainRequiredAccept;
-    private int status;
+    private int status; //0 for wait, 1 for accept, 2 for reject
 }

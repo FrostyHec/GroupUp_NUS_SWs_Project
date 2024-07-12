@@ -9,4 +9,6 @@ public interface GroupService {
     int getMembersCountByGroupId(Long id);
     void deleteGroupById(Long id);
     void deleteGroupMemberByGroupIdAndMemberId(Long groupId, Long memberId);
+    void addGroupMember(Long groupId, Long memberId);
+    void createGroup(GroupEntity group);
 }

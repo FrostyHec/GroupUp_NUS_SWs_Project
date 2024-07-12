@@ -4,10 +4,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.sustech.groupup.config.Constant;
+import com.sustech.groupup.entity.api.GroupResponseDTO;
 import com.sustech.groupup.entity.api.RequestDTO;
+import com.sustech.groupup.entity.converter.GroupResponseConverter;
 import com.sustech.groupup.entity.converter.RequestConverter;
+import com.sustech.groupup.entity.db.GroupEntity;
+import com.sustech.groupup.entity.db.GroupResponseEntity;
 import com.sustech.groupup.entity.db.RequestEntity;
 import com.sustech.groupup.mapper.GroupMapper;
+import com.sustech.groupup.services.GroupResponseService;
 import com.sustech.groupup.services.GroupService;
 import com.sustech.groupup.services.RequestService;
 import com.sustech.groupup.utils.Response;
@@ -24,7 +29,9 @@ import java.util.Map;
 public class GroupController {
     private final GroupService groupService;
     private final RequestService requestService;
+    private final GroupResponseService groupResponseService;
     private final RequestConverter requestConverter;
+    private final GroupResponseConverter groupResponseConverter;
 
     @GetMapping("/{number}")
     public Response getGroupMemberListById (@PathVariable long number) {
@@ -50,6 +57,32 @@ public class GroupController {
         if (groupService.getMembersCountByGroupId(groupId)==1){
             groupService.deleteGroupById(groupId);
         }
+        return Response.getSuccess("success","");
+    }
+
+    @PostMapping("/response")
+    public Response response(@PathVariable long id,@RequestBody GroupResponseDTO groupResponseDTO) {
+        GroupResponseEntity groupResponseEntity= groupResponseConverter.toEntity(groupResponseDTO);
+        groupResponseService.createResponse(groupResponseEntity);
+        RequestEntity requestEntity=requestService.getRequestById(groupResponseEntity.getRequestId());
+        System.out.println(requestEntity);
+        requestEntity.setRemainRequiredAccept(requestEntity.getRemainRequiredAccept()-1);
+        if(requestEntity.getRemainRequiredAccept()==0){
+            requestEntity.setStatus(requestService.getRequestStatus(requestEntity));
+            if (requestEntity.getStatus()==1){
+                if (requestEntity.isToGroup()){
+                    groupService.addGroupMember(requestEntity.getToId(),requestEntity.getFromId());
+                }
+                else {
+                    GroupEntity groupEntity=new GroupEntity();
+                    groupEntity.setSurveyId(id);
+                    groupService.createGroup(groupEntity);
+                    groupService.addGroupMember(groupEntity.getId(),groupResponseEntity.getUserId());
+                    groupService.addGroupMember(groupEntity.getId(),requestEntity.getFromId());
+                }
+            }
+        }
+        requestService.updateRequest(requestEntity);
         return Response.getSuccess("success","");
     }
 }

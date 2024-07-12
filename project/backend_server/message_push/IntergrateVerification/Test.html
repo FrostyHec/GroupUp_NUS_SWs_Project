@@ -18,7 +18,7 @@
     <input type="text" id="message">
 </div>
 <button onclick="sendMessage()">Send Message</button>
-
+<button onclick="receiveMessages(document.getElementById('senderId').value)">Set Sender</button>
 <h2>Received Messages</h2>
 <ul id="messages"></ul>
 
@@ -28,24 +28,31 @@
         const receiverId = document.getElementById('receiverId').value;
         const content = document.getElementById('message').value;
 
-        fetch(`http://localhost:8080/api/v1/send/${senderId}`, {
+        fetch(`http://localhost:7078/api/v1/msg_push`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ senderId, receiverId, content })
+            body: JSON.stringify({
+                "message_id":null,
+                "from_id":senderId,
+                "to_id":receiverId,
+                "type":1,
+                "required_ack":false,
+                "body":content
+            })
         });
     }
 
     function receiveMessages(id) {
-        const eventSource = new EventSource(`api/v1/register/${id}`);
+        const eventSource = new EventSource(`http://localhost:7076/api/v1/sse/register/${id}`);
 
         eventSource.onmessage = function(event) {
             const message = JSON.parse(event.data);
             const messagesList = document.getElementById('messages');
-            const newMessage = document.createElement('li');
-            newMessage.textContent = `From ${message.senderId}: ${message.content}`;
-            messagesList.appendChild(newMessage);
+            const newMessage = document.createElement('li'); // 明确创建的元素类型
+            newMessage.textContent = JSON.stringify(message); // 将JSON对象转换为字符串
+            messagesList.appendChild(newMessage); // 追加到列表中
         };
 
         eventSource.onerror = function(event) {
@@ -55,7 +62,7 @@
     }
 
     // Replace 'yourReceiverId' with the actual receiver ID
-    receiveMessages('yourReceiverId');
+
 </script>
 </body>
 </html>

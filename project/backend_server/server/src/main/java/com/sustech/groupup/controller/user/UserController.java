@@ -21,10 +21,12 @@ import com.sustech.groupup.utils.Response;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping(Constant.API_VERSION + "/user")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
     private final UserService userService;
@@ -33,6 +35,13 @@ public class UserController {
     public Response login(@NonNull @RequestBody LoginDTO login) {
         var auth = userService.login(login.getUsername(), login.getPassword());
         return Response.getSuccess(auth);
+    }
+
+
+    @GetMapping("/public/test")
+    public Response login() {
+      log.info("testing");
+      return Response.getSuccess("test");
     }
 
     @PostMapping("/public/register")

@@ -27,7 +27,7 @@ import reactor.test.StepVerifier;
 
 @ControllerTest
 public class SingleMessageTest {
-
+// 必须要启动msg_deliver!
     @Autowired
     private API api;
     @Autowired
@@ -175,5 +175,4 @@ public class SingleMessageTest {
         Thread.sleep(smallWait);
         assert unackedMapper.selectById(mid) == null;
     }
-
 }

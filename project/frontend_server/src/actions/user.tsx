@@ -1,15 +1,15 @@
 "use client";
 import useSWR from "swr";
 import axios from "axios";
-import { useCookies } from "next-client-cookies";
+import {useCookies} from "next-client-cookies";
 
 //用户注册
 //POST
 //<backend>/user/public/register
 export async function userSignUp({
-  username,
-  password,
-}: {
+                                   username,
+                                   password,
+                                 }: {
   username: string;
   password: string;
 }) {
@@ -17,13 +17,12 @@ export async function userSignUp({
     username,
     password,
   };
-  await axios
-    .post(`${process.env.NEXT_PUBLIC_API_URL}/user/public/register`, {
-      data: body,
-    })
-    .then((res) => {
-      return res;
-    });
+  // await axios
+  //   .post(`${process.env.NEXT_PUBLIC_API_URL}/user/public/register`, body)
+  //   .then((res) => {
+  //     return res;
+  //   });
+  return await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/public/register`, body);
 }
 
 //用户登录
@@ -41,9 +40,7 @@ export async function userLogIn({
     password,
   };
   await axios
-    .post(`${process.env.NEXT_PUBLIC_API_URL}/user/public/login`, {
-      data: body,
-    })
+    .post(`${process.env.NEXT_PUBLIC_API_URL}/user/public/login`, body)
     .then((res) => {
       return res;
     });

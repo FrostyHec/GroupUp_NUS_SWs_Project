@@ -25,13 +25,17 @@ export default function SignUp() {
     const formData = new FormData(event.target);
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
-    const response = userSignUp({
+     userSignUp({
       username: username,
       password: password,
-    }).data;
-    if (response.code == "200") {
-      router.push("/login");
-    }
+    }).then(
+        resp =>{
+          const response = resp.data
+          if (response.code == "200") {
+            router.push("/login");
+          }
+        }
+    );
   };
   return (
     <main className="flex justify-center items-center h-screen">

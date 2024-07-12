@@ -5,4 +5,4 @@ spring:
     password: password
     driver-class-name: org.postgresql.Driver
 server:
-  port: 7079
+  port: 7073

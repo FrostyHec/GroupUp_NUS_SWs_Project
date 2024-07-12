@@ -7,4 +7,7 @@ import org.springframework.stereotype.Component;
 public class RunArgs {
     @Value("${env.on-k8s}")
     public boolean onK8s;
+
+    @Value("${server.port}")
+    public int port;
 }

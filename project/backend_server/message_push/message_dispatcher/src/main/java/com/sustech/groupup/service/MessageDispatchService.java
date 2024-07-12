@@ -2,8 +2,7 @@ package com.sustech.groupup.service;
 
 import org.junit.platform.commons.util.StringUtils;
 import org.springframework.stereotype.Service;
-import com.sustech.groupup.entity.MessageDTO;
-import com.sustech.groupup.entity.MessageType;
+import com.sustech.groupup.entity.SingleMessageDTO;
 import com.sustech.groupup.mapper.UnackedMapper;
 import com.sustech.groupup.mapper.UnposedMapper;
 import com.sustech.groupup.mapper.SSEIPMapper;
@@ -18,7 +17,7 @@ public class MessageDispatchService {
     private final UnposedMapper unposedMapper;
     private final UnackedMapper unackedMapper;
     private final MessageDeliver messageDeliver;
-    public long push(MessageDTO msg) {
+    public long push(SingleMessageDTO msg) {
         String ip = sseipMapper.findSSEIP(msg);
         if(StringUtils.isBlank(ip)){//没有这个sse连接
             switch (msg.getType()){
@@ -37,7 +36,7 @@ public class MessageDispatchService {
                     unackedMapper.deleteIfExists(msg);
                 }
             }
-            return msg.getFromId();
+            return msg.getMessageId();
         }
         //调用这个ip把消息发给pusher
         return messageDeliver.pushMessage(ip,msg);

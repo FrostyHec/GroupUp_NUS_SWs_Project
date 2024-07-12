@@ -5,7 +5,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -15,11 +14,13 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.sustech.groupup.config.RunArgs;
 import com.sustech.groupup.entity.MessagePacketDTO;
 import com.sustech.groupup.entity.PushDTO;
+import com.sustech.groupup.entity.SSEIPEntity;
 import com.sustech.groupup.entity.SingleMessageDTO;
 import com.sustech.groupup.exception.InternalException;
-import com.sustech.groupup.mapper.SSEIPMapper;
-import com.sustech.groupup.mapper.UnackedMapper;
-import com.sustech.groupup.mapper.UnposedMapper;
+import com.sustech.groupup.mapper.wrapped.SSEIPMapper;
+import com.sustech.groupup.mapper.wrapped.UnackedMapper;
+import com.sustech.groupup.mapper.wrapped.UnposedMapper;
+import com.sustech.groupup.utils.Response;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,7 @@ public class SSEService {
     private final Map<Long, SseEmitter> clients = new ConcurrentHashMap<>();
 
     public SseEmitter register(long uid) {
-        sseipMapper.insert(uid, getSelfIp());//假连接优于丢失连接管理。先记录再创建
+        sseipMapper.insertOrUpdate(new SSEIPEntity(uid, getSelfIp()));//假连接优于丢失连接管理。先记录再创建
         SseEmitter emitter = new SseEmitter();
         emitter.onCompletion(() -> {
             log.info("emitter complete:" + uid);
@@ -50,6 +51,7 @@ public class SSEService {
         } catch (Exception e) {
             throw new InternalException("unknown-internal-error", e);
         }
+        log.info("connection established on uid:" + uid);
         return emitter;
     }
 
@@ -63,15 +65,17 @@ public class SSEService {
                                       .filter(SingleMessageDTO::isRequiredAck)
                                       .toList();
         unackedMapper.insert(requiredAckList);
-        unackedMapper.deleteByIds(unposeds);
+        if (!unposeds.isEmpty()) {
+            unackedMapper.deleteByIds(unposeds);
+        }
     }
 
     private void sendMsg(SseEmitter emitter, PushDTO dto) throws IOException {
-        emitter.send(dto, MediaType.APPLICATION_JSON);
+        emitter.send(Response.getSuccess(dto), MediaType.APPLICATION_JSON);
     }
 
     private void sseClosed(long uid) {
-        sseipMapper.remove(uid);
+        sseipMapper.deleteById(uid);
         clients.remove(uid);
     }
 
@@ -80,7 +84,7 @@ public class SSEService {
             return System.getenv("POD_IP");
         } else {
             try {
-                return InetAddress.getLocalHost().getHostAddress();
+                return InetAddress.getLocalHost().getHostAddress()+":"+runArgs.port;
             } catch (UnknownHostException e) {
                 throw new InternalException("unknown-internal-error", e);
             }

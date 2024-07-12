@@ -1,8 +1,10 @@
-package com.sustech.groupup.handler;
+package com.sustech.groupup.config;
 
 import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.sustech.groupup.handler.JsonNodeTypeHandler;
+
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

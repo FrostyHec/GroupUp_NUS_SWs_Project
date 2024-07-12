@@ -3,10 +3,14 @@ package com.sustech.groupup.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
+import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInterceptor;
-import com.sustech.groupup.utils.DynamicMapNameHelper;
-import com.sustech.groupup.utils.DynamicTableNameType;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.sustech.groupup.handler.JsonNodeTypeHandler;
+import com.sustech.groupup.handler.DynamicMapNameHelper;
+import com.sustech.groupup.handler.DynamicTableNameType;
 
 @Configuration
 public class MybatisPlusConfig {
@@ -23,5 +27,13 @@ public class MybatisPlusConfig {
         interceptor.addInnerInterceptor(dynamicTableNameInnerInterceptor);
         return interceptor;
     }
-
+    @Bean
+    public ConfigurationCustomizer mybatisConfigurationCustomizer() {
+        return new ConfigurationCustomizer() {
+            @Override
+            public void customize(MybatisConfiguration configuration) {
+                configuration.getTypeHandlerRegistry().register(JsonNode.class, JsonNodeTypeHandler.class);
+            }
+        };
+    }
 }

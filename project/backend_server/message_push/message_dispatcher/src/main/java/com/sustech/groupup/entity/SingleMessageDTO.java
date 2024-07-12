@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName(value = "msg_unposed")
-public class MessageDTO {
+public class SingleMessageDTO {
     // if msg type is new, the messageId field will be ignored for creation
     @TableId(type = IdType.ASSIGN_ID)
     private Long messageId;

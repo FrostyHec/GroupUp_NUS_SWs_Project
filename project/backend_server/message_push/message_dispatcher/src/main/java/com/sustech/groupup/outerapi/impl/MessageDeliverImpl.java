@@ -7,8 +7,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.sustech.groupup.entity.MessageDTO;
-import com.sustech.groupup.exception.ExternalException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sustech.groupup.config.Constant;
+import com.sustech.groupup.entity.SingleMessageDTO;
 import com.sustech.groupup.exception.InternalException;
 import com.sustech.groupup.outerapi.MessageDeliver;
 import com.sustech.groupup.utils.Response;
@@ -22,10 +23,11 @@ public class MessageDeliverImpl implements MessageDeliver {
 
     private final RestTemplate restTemplate;
 
+    private final ObjectMapper objectMapper;
     @Override
-    public long pushMessage(String handlerIp, MessageDTO msg) {
-        String url = "http://" + handlerIp + "/sse/push";
-        var response = restTemplate.postForEntity(url, msg, Response.class);
+    public long pushMessage(String handlerIp, SingleMessageDTO msg) {
+        String url = "http://" + handlerIp + Constant.API_VERSION + "/sse/push";
+        var response = restTemplate.postForEntity(url,objectMapper.valueToTree(msg) , Response.class);
         if (response.getStatusCode() != HttpStatus.OK
             || Objects.isNull(response.getBody())
             || response.getBody().getCode() != ResponseCodeType.SUCCESS.getCode()) {
@@ -33,6 +35,6 @@ public class MessageDeliverImpl implements MessageDeliver {
             throw new InternalException("unknown-push-failure",
                                         new RuntimeException(response.toString()));
         }
-        return ((Map<String,Long>)response.getBody().getData()).get("mid");
+        return ((Map<String, Long>) response.getBody().getData()).get("mid");
     }
 }

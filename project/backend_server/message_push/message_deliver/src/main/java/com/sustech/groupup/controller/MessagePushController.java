@@ -24,12 +24,12 @@ public class MessagePushController {
 
     private final SSEService service;
 
-    @GetMapping("register/{uid}")
+    @GetMapping("/register/{uid}")
     public SseEmitter register(@PathVariable long uid) {
         return service.register(uid);
     }
 
-    @PostMapping("push")
+    @PostMapping("/push")
     public Response push(@RequestBody SingleMessageDTO dto) {
         long id =  service.push(dto);
         return Response.getSuccess(Map.of("mid",id));

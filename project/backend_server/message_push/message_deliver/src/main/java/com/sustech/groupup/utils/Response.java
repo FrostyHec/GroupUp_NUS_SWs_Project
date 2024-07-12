@@ -1,6 +1,7 @@
 package com.sustech.groupup.utils;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 public class Response {

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sustech.groupup.config.Constant;
-import com.sustech.groupup.entity.MessageDTO;
+import com.sustech.groupup.entity.SingleMessageDTO;
 import com.sustech.groupup.entity.MessageType;
 import com.sustech.groupup.exception.ExternalException;
 import com.sustech.groupup.service.MessageDispatchService;
@@ -26,7 +26,7 @@ public class MessageDispatchController {
     private final MessageDispatchService service;
 
     @PostMapping
-    public Response push(@RequestBody MessageDTO msg) {
+    public Response push(@RequestBody SingleMessageDTO msg) {//TODO fromId没鉴权
         if (msg.getType() != MessageType.NEW && msg.getMessageId() == null) {
             throw new ExternalException(Response.getBadRequest("msgid-missing"));
         }

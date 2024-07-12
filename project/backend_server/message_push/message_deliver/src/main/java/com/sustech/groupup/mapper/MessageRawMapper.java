@@ -8,11 +8,10 @@ import org.apache.ibatis.annotations.Select;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.sustech.groupup.annotation.DynamicTableNameMapper;
 import com.sustech.groupup.entity.SingleMessageDTO;
-import com.sustech.groupup.utils.DynamicTableNameType;
+import com.sustech.groupup.handler.DynamicTableNameType;
+@Mapper
+public interface MessageRawMapper extends BaseMapper<SingleMessageDTO> {
 
-@DynamicTableNameMapper(type = DynamicTableNameType.MESSAGE_DTO,name = "unacked")
-public interface UnackedMapper extends BaseMapper<SingleMessageDTO> {
-
-    @Select("select * from msg_unacked where to_id=#{toId} ")
+    @Select("select * from msg where to_id=#{toId} ")
     List<SingleMessageDTO> selectByToId(long toId);
 }

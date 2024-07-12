@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -13,22 +12,28 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { UsernameSearch } from "@/controller/components-survey-user-search-dialog";
 
-export function SurveyUserSearch({
+export function SurveyUserSearchDialog({
   callback,
   children,
 }: {
   callback: ({ userID }: { userID: any }) => void;
   children: React.ReactNode;
 }) {
-  const [userId, setUserId] = useState("");
+  const [username, setUsername] = useState("");
+  const [selectedUserID, setSelectedUserID] = useState(0);
 
   const handleInputChange = (e: any) => {
-    setUserId(e.target.value);
+    setUsername(e.target.value);
+  };
+
+  const handleSelectUser = ({ userID }: { userID: number }) => {
+    setSelectedUserID(userID);
   };
 
   const handleSubmit = () => {
-    callback({ userID: userId });
+    callback({ userID: selectedUserID });
   };
   return (
     <Dialog>
@@ -40,18 +45,15 @@ export function SurveyUserSearch({
         </DialogHeader>
         <div className="flex items-center space-x-2">
           <div className="grid flex-1 gap-2">
-            <Label htmlFor="id" className="sr-only">
-              Link
-            </Label>
             <Input
-              id="user_id"
-              defaultValue="User ID"
-              value={userId}
+              id="username"
+              value={username}
               onChange={handleInputChange}
             />
           </div>
           <Button className="px-3">Search</Button>
         </div>
+        <UsernameSearch username={username} callback={handleSelectUser} />
         <DialogFooter className="sm:justify-start">
           <DialogClose asChild>
             <Button type="button" variant="secondary">

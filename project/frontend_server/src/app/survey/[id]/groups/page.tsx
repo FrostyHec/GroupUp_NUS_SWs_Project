@@ -49,7 +49,7 @@ import {
   surveyAllgroupsMembersInfo,
   surveyGroupAddMember,
 } from "@/controller/survey-groups";
-import { SurveyUserSearch } from "@/components/app/survey-user-search";
+import { SurveyUserSearchDialog } from "@/components/app/survey-user-search-dialog";
 
 export function GroupsTable({
   surveyID,
@@ -104,19 +104,19 @@ export function GroupsTable({
                         </CardFooter>
                       </Card>
                     ))}
-                    <SurveyUserSearch
-                      callback={(userID) => {
+                    <SurveyUserSearchDialog
+                      callback={({ userID }: { userID: number }) => {
                         surveyGroupAddMember({
                           surveyID: surveyID,
                           groupID: group.group_id,
-                          userID: userID.userID,
+                          userID: userID,
                         });
                       }}
                     >
                       <Button aria-label="Add Member" variant="ghost">
                         <PlusCircle className="h-4 w-4" />
                       </Button>
-                    </SurveyUserSearch>
+                    </SurveyUserSearchDialog>
                   </div>
                 </TableCell>
                 <TableCell>

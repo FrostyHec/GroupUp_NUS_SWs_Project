@@ -41,13 +41,9 @@ export function userLogIn({
   return { data: response };
 }
 
-export function userUsernameSearch({
-  find_username,
-}: {
-  find_username: string;
-}) {
+export function userUsernameSearch({ findUsername }: { findUsername: string }) {
   const request = {
-    find_username: find_username,
+    find_username: findUsername,
   };
   const response = {
     code: "200",

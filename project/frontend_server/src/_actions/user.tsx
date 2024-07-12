@@ -6,63 +6,47 @@ import { useCookies } from "next-client-cookies";
 //用户注册
 //POST
 //<backend>/user/public/register
-export function userSignUp({
+export async function userSignUp({
   username,
   password,
 }: {
   username: string;
   password: string;
 }) {
-  const cookies = useCookies();
-  const token = cookies.get("token") as string;
   const body = {
     username,
     password,
   };
   const fetcher = (url: string) =>
-    axios
-      .post(url, { headers: { Authorization: "Bearer " + token }, data: body })
-      .then((res) => res.data);
-  const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/public/register`,
-    fetcher
+    axios.post(url, { data: body }).then((res) => res.data);
+  await fetcher(`${process.env.NEXT_PUBLIC_API_URL}/user/public/register`).then(
+    (res) => {
+      return res;
+    }
   );
-  return {
-    data,
-    isLoading,
-    isError: error,
-  };
 }
 
 //用户登录
 //POST
 //<backend>/user/public/login
-export function userLogIn({
+export async function userLogIn({
   username,
   password,
 }: {
   username: string;
   password: string;
 }) {
-  const cookies = useCookies();
-  const token = cookies.get("token") as string;
   const body = {
     username,
     password,
   };
   const fetcher = (url: string) =>
-    axios
-      .post(url, { headers: { Authorization: "Bearer " + token }, data: body })
-      .then((res) => res.data);
-  const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/public/login`,
-    fetcher
+    axios.post(url, { data: body }).then((res) => res.data);
+  await fetcher(`${process.env.NEXT_PUBLIC_API_URL}/user/public/login`).then(
+    (res) => {
+      return res;
+    }
   );
-  return {
-    data,
-    isLoading,
-    isError: error,
-  };
 }
 
 //查询用户信息

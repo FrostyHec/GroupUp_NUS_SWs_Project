@@ -1,148 +1,201 @@
+"use client";
+import useSWR from "swr";
+import axios from "axios";
 import { useCookies } from "next-client-cookies";
 
-export function userSignUp({
+//用户注册
+//POST
+//<backend>/user/public/register
+export async function userSignUp({
   username,
   password,
 }: {
   username: string;
   password: string;
 }) {
-  const request = {
-    username: username,
-    password: password,
+  const body = {
+    username,
+    password,
   };
-  const response = {
-    code: "200",
-    msg: "success",
-    data: {},
-  };
-  return { data: response };
+  await axios
+    .post(`${process.env.NEXT_PUBLIC_API_URL}/user/public/register`, {
+      data: body,
+    })
+    .then((res) => {
+      return res;
+    });
 }
 
-export function userLogIn({
+//用户登录
+//POST
+//<backend>/user/public/login
+export async function userLogIn({
   username,
   password,
 }: {
   username: string;
   password: string;
 }) {
-  const request = {
-    username: username,
-    password: password,
+  const body = {
+    username,
+    password,
   };
-  const response = {
-    code: "200",
-    msg: "success",
-    data: {
-      id: 1,
-      token: "example_token",
-    },
-  };
-  return { data: response };
+  await axios
+    .post(`${process.env.NEXT_PUBLIC_API_URL}/user/public/login`, {
+      data: body,
+    })
+    .then((res) => {
+      return res;
+    });
 }
 
+//查询用户信息
+//GET
+//<backend>/user/public/query
 export function userUsernameSearch({ findUsername }: { findUsername: string }) {
-  const request = {
-    find_username: findUsername,
+  const cookies = useCookies();
+  const fetcher = (url: string) =>
+    axios
+      .get(url, {
+        headers: { Authorization: "Bearer " + cookies.get("token") },
+        params: { find_username: findUsername },
+      })
+      .then((res) => res.data);
+  const { data, error, isLoading } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_URL}/user/public/query`,
+    fetcher
+  );
+  return {
+    data,
+    isLoading,
+    isError: error,
   };
-  const response = {
-    code: "200",
-    msg: "success",
-    data: {
-      users: [
-        {
-          id: 1,
-          username: "Jacob",
-        },
-        {
-          id: 2,
-          username: "Jason",
-        },
-      ],
-    },
-  };
-  return { data: response };
 }
+
+//查询用户own的问卷
+//GET
+//<backend>/user/{id}/survey/own
 export function userAllOwnSurveys({
-  page_size,
-  page_no,
+  userID,
+  pageSize,
+  pageNo,
 }: {
-  page_size: number;
-  page_no: number;
+  userID: number;
+  pageSize: number;
+  pageNo: number;
 }) {
-  const request = {
-    page_size: page_size,
-    page_no: page_no,
+  const cookies = useCookies();
+  const token = cookies.get("token") as string;
+  const fetcher = (url: string) =>
+    axios
+      .get(url, {
+        headers: { Authorization: "Bearer " + token },
+        params: { page_size: pageSize, page_no: pageNo },
+      })
+      .then((res) => res.data);
+  const { data, error, isLoading } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/survey/own`,
+    fetcher
+  );
+  return {
+    data,
+    isLoading,
+    isError: error,
   };
-  const response = {
-    code: "200",
-    msg: "success",
-    data: {
-      survey_ids: [1, 2, 3],
-    },
-  };
-  return { data: response };
 }
 
+//查询用户participate的问卷
+//GET
+//<backend>/user/{id}/survey/participate
 export function userAllParticipateSurveys({
-  page_size,
-  page_no,
+  userID,
+  pageSize,
+  pageNo,
 }: {
-  page_size: number;
-  page_no: number;
+  userID: number;
+  pageSize: number;
+  pageNo: number;
 }) {
-  const request = {
-    page_size: page_size,
-    page_no: page_no,
+  const cookies = useCookies();
+  const token = cookies.get("token") as string;
+  const fetcher = (url: string) =>
+    axios
+      .get(url, {
+        headers: { Authorization: "Bearer " + token },
+        params: { page_size: pageSize, page_no: pageNo },
+      })
+      .then((res) => res.data);
+  const { data, error, isLoading } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/survey/participate`,
+    fetcher
+  );
+  return {
+    data,
+    isLoading,
+    isError: error,
   };
-  const response = {
-    code: "200",
-    msg: "success",
-    data: {
-      survey_ids: [4, 5, 6],
-    },
-  };
-  return { data: response };
 }
 
+//查询用户[收到]的所有公告
+//GET
+//<backend>/user/{id}/announcement/received
 export function userReceivedAnouncements({
-  page_size,
-  page_no,
+  userID,
+  pageSize,
+  pageNo,
 }: {
-  page_size: number;
-  page_no: number;
+  userID: number;
+  pageSize: number;
+  pageNo: number;
 }) {
-  const request = {
-    page_size: page_size,
-    page_no: page_no,
+  const cookies = useCookies();
+  const token = cookies.get("token") as string;
+  const fetcher = (url: string) =>
+    axios
+      .get(url, {
+        headers: { Authorization: "Bearer " + token },
+        params: { page_size: pageSize, page_no: pageNo },
+      })
+      .then((res) => res.data);
+  const { data, error, isLoading } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/announcement/received`,
+    fetcher
+  );
+  return {
+    data,
+    isLoading,
+    isError: error,
   };
-  const response = {
-    code: "200",
-    msg: "success",
-    data: {
-      ids: [1, 2, 3],
-    },
-  };
-  return { data: response };
 }
 
-export function usersInfo({ user_id }: any) {
-  const response = {
-    code: "200",
-    msg: "success",
-    data: {
-      users: [
-        {
-          username: "Mertie",
-        },
-        {
-          username: "Rebeca",
-        },
-        {
-          username: "Sydnie",
-        },
-      ],
-    },
+//查询用户[收到]的所有组队结果
+//GET
+//<backend>/user/{id}/sendrequest
+export function usersInfo({
+  userID,
+  pageSize,
+  pageNo,
+}: {
+  userID: number;
+  pageSize: number;
+  pageNo: number;
+}) {
+  const cookies = useCookies();
+  const token = cookies.get("token") as string;
+  const fetcher = (url: string) =>
+    axios
+      .get(url, {
+        headers: { Authorization: "Bearer " + token },
+        params: { page_size: pageSize, page_no: pageNo },
+      })
+      .then((res) => res.data);
+  const { data, error, isLoading } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/sendrequest`,
+    fetcher
+  );
+  return {
+    data,
+    isLoading,
+    isError: error,
   };
-  return { data: response };
 }

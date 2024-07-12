@@ -25,7 +25,10 @@ export default function SignUp() {
     const formData = new FormData(event.target);
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
-    const response = userSignUp({ username: username, password: password });
+    const response = userSignUp({
+      username: username,
+      password: password,
+    }).data;
     if (response.code == "200") {
       router.push("/login");
     }

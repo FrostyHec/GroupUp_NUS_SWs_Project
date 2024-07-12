@@ -27,7 +27,7 @@ public class SurveyController {
     private final SurveyConverter surveyConverter;
 
     @GetMapping("/{number}")
-    public Response getSurveyInfoById (@PathVariable long number) throws JsonProcessingException {
+    public Response getSurveyById (@PathVariable long number) throws JsonProcessingException {
         var resp = surveyConverter.toDTO(surveyService.getSurveyById(number));
         return Response.getSuccess("success",resp);
     }
@@ -80,6 +80,6 @@ public class SurveyController {
     @DeleteMapping("/{id}/allquery")
     public Response deleteQueryBySurveyId(@PathVariable long id) {
         queryService.deletQueryBySurveyId(id);
-        return Response.getSuccess("success");
+        return Response.getSuccess("success","");
     }
 }

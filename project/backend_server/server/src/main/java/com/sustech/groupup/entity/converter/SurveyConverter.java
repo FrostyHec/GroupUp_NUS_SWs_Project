@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 public class SurveyConverter {
 
     private final SurveyService surveyService;
-    private final ObjectMapper objectMapper;
 
     public SurveyDTO toDTO(SurveyEntity surveyEntity) throws JsonProcessingException {
 

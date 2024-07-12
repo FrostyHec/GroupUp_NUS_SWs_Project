@@ -66,7 +66,7 @@ public class SSEService {
                                       .toList();
         unackedMapper.insert(requiredAckList);
         if (!unposeds.isEmpty()) {
-            unackedMapper.deleteByIds(unposeds);
+            unposedMapper.deleteByIds(unposeds);
         }
     }
 

@@ -26,4 +26,8 @@ public class UnposedMapper {
     public boolean insertOrUpdate(SingleMessageDTO dto) {
         return mapper.insertOrUpdate(dto);
     }
+
+    public int deleteByIds(List<SingleMessageDTO> unposeds) {
+       return mapper.deleteByIds(unposeds);
+    }
 }

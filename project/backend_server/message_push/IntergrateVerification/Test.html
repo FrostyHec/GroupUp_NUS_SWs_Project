@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SSE Example</title>
+</head>
+<body>
+<h1>SSE Example</h1>
+<div>
+    <label for="senderId">Sender ID:</label>
+    <input type="text" id="senderId">
+</div>
+<div>
+    <label for="receiverId">Receiver ID:</label>
+    <input type="text" id="receiverId">
+</div>
+<div>
+    <label for="message">Message:</label>
+    <input type="text" id="message">
+</div>
+<button onclick="sendMessage()">Send Message</button>
+
+<h2>Received Messages</h2>
+<ul id="messages"></ul>
+
+<script>
+    function sendMessage() {
+        const senderId = document.getElementById('senderId').value;
+        const receiverId = document.getElementById('receiverId').value;
+        const content = document.getElementById('message').value;
+
+        fetch(`/send/${senderId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ senderId, receiverId, content })
+        });
+    }
+
+    function receiveMessages(id) {
+        const eventSource = new EventSource(`/receive/${id}`);
+
+        eventSource.onmessage = function(event) {
+            const message = JSON.parse(event.data);
+            const messagesList = document.getElementById('messages');
+            const newMessage = document.createElement('li');
+            newMessage.textContent = `From ${message.senderId}: ${message.content}`;
+            messagesList.appendChild(newMessage);
+        };
+
+        eventSource.onerror = function(event) {
+            console.error('Error receiving messages', event);
+            eventSource.close();
+        };
+    }
+
+    // Replace 'yourReceiverId' with the actual receiver ID
+    receiveMessages('yourReceiverId');
+</script>
+</body>
+</html>

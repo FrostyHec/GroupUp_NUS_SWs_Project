@@ -6,9 +6,9 @@ export function surveyAllgroupsMembersInfo({
 }: {
   surveyID: number;
 }) {
-  const groups = surveyAllGroups({ id: id }).data.list;
+  const groups = surveyAllGroups({ id: id }).data.data.list;
   const groupMembersInfo = groups.map((group) => {
-    const usernames = usersInfo(group.group_member).data.users;
+    const usernames = usersInfo(group.group_member).data.data.users;
     const members = usernames.map((username, index) => ({
       id: group.group_member[index],
       username: username.username,

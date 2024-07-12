@@ -56,7 +56,7 @@ export function surveyInfo({ id }: any) {
       },
     },
   };
-  return response;
+  return { data: response };
 }
 
 //<backend>/survey
@@ -68,7 +68,7 @@ export function surveyCreate({ info }: any) {
       survey_id: 1,
     },
   };
-  return response;
+  return { data: response };
 }
 
 //<backend>/survey/{id}
@@ -78,7 +78,7 @@ export function surveyUpdateInfo({ info }: any) {
     msg: "success",
     data: {},
   };
-  return response;
+  return { data: response };
 }
 
 //<backend>/survey/{id}/status
@@ -88,7 +88,7 @@ export function surveyUpdateStatus() {
     msg: "success",
     data: {},
   };
-  return response;
+  return { data: response };
 }
 
 //<backend>/survey/{id}/status
@@ -98,7 +98,7 @@ export function surveyStatus() {
     msg: "success",
     data: {},
   };
-  return response;
+  return { data: response };
 }
 
 //<backend>/survey/{id}
@@ -108,5 +108,5 @@ export function surveyDelete() {
     msg: "success",
     data: {},
   };
-  return response;
+  return { data: response };
 }

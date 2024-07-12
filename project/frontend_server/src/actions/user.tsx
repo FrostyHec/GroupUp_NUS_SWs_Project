@@ -16,7 +16,7 @@ export function userSignUp({
     msg: "success",
     data: {},
   };
-  return response;
+  return { data: response };
 }
 
 export function userLogIn({
@@ -38,7 +38,7 @@ export function userLogIn({
       token: "example_token",
     },
   };
-  return response;
+  return { data: response };
 }
 
 export function userUsernameSearch({
@@ -65,7 +65,7 @@ export function userUsernameSearch({
       ],
     },
   };
-  return response;
+  return { data: response };
 }
 export function userAllOwnSurveys({
   page_size,
@@ -85,7 +85,7 @@ export function userAllOwnSurveys({
       survey_ids: [1, 2, 3],
     },
   };
-  return response;
+  return { data: response };
 }
 
 export function userAllParticipateSurveys({
@@ -106,7 +106,7 @@ export function userAllParticipateSurveys({
       survey_ids: [4, 5, 6],
     },
   };
-  return response;
+  return { data: response };
 }
 
 export function userReceivedAnouncements({
@@ -127,7 +127,7 @@ export function userReceivedAnouncements({
       ids: [1, 2, 3],
     },
   };
-  return response;
+  return { data: response };
 }
 
 export function usersInfo({ user_id }: any) {
@@ -148,5 +148,5 @@ export function usersInfo({ user_id }: any) {
       ],
     },
   };
-  return response;
+  return { data: response };
 }

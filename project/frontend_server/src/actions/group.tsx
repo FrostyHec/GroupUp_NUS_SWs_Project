@@ -8,7 +8,7 @@ export function surveyGroupInfo({ id }: any) {
       member_id: [1, 2, 3],
     },
   };
-  return response;
+  return { data: response };
 }
 
 //<backend>/survey/{id}/allgroup
@@ -30,7 +30,7 @@ export function surveyAllGroups({ id }: { id: number }) {
       ],
     },
   };
-  return response;
+  return { data: response };
 }
 
 //<backend>/survey/{id}/requestgroup
@@ -46,7 +46,7 @@ export function surveyGroupRequest({
     msg: "success",
     data: {},
   };
-  return response;
+  return { data: response };
 }
 
 //<backend>/survey/{id}/leavegroup
@@ -62,5 +62,5 @@ export function surveyGroupLeave({
     msg: "success",
     data: {},
   };
-  return response;
+  return { data: response };
 }

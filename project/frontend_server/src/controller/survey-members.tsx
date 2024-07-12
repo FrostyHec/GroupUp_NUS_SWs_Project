@@ -3,10 +3,10 @@ import { usersInfo } from "@/actions/user";
 
 export function surveyAllMembersInfo({ surveyID: id }: { surveyID: number }) {
   const survey = surveyInfo({ id: id });
-  const ownerIDs = survey.data.info.owners;
-  const memberIDs = survey.data.info.members;
-  const ownerUsernames = usersInfo(ownerIDs).data.users;
-  const memberUsernames = usersInfo(memberIDs).data.users;
+  const ownerIDs = survey.data.data.info.owners;
+  const memberIDs = survey.data.data.info.members;
+  const ownerUsernames = usersInfo(ownerIDs).data.data.users;
+  const memberUsernames = usersInfo(memberIDs).data.data.users;
   const owners = ownerUsernames.map((ownerUsername, index) => ({
     id: ownerIDs[index],
     username: ownerUsername.username,

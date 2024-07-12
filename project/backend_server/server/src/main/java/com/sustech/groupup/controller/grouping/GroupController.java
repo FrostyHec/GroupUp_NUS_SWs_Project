@@ -43,14 +43,14 @@ public class GroupController {
     }
 
     @PostMapping("/requestgroup")
-    public Response requestgroup (@RequestBody RequestDTO requestDTO) {
+    public Response requestGroup (@RequestBody RequestDTO requestDTO) {
         RequestEntity requestEntity=requestConverter.toEntity(requestDTO);
         requestService.createRequest(requestEntity);
         return Response.getSuccess("success", Map.of("request_id:" ,requestEntity.getId()));
     }
 
     @DeleteMapping("/leavegroup")
-    public Response leavegroup (@RequestBody JsonNode request) {
+    public Response leaveGroup (@RequestBody JsonNode request) {
         Long groupId = request.get("to_group").asLong();
         Long memberId = request.get("from_id").asLong();
         groupService.deleteGroupMemberByGroupIdAndMemberId(groupId,memberId);
@@ -65,7 +65,6 @@ public class GroupController {
         GroupResponseEntity groupResponseEntity= groupResponseConverter.toEntity(groupResponseDTO);
         groupResponseService.createResponse(groupResponseEntity);
         RequestEntity requestEntity=requestService.getRequestById(groupResponseEntity.getRequestId());
-        System.out.println(requestEntity);
         requestEntity.setRemainRequiredAccept(requestEntity.getRemainRequiredAccept()-1);
         if(requestEntity.getRemainRequiredAccept()==0){
             requestEntity.setStatus(requestService.getRequestStatus(requestEntity));

@@ -1,11 +1,17 @@
 package com.sustech.groupup.controller.grouping;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sustech.groupup.entity.api.GroupWithMemberDTO;
 import com.sustech.groupup.entity.api.SurveyDTO;
 import com.sustech.groupup.entity.converter.SurveyConverter;
+import com.sustech.groupup.entity.db.GroupEntity;
 import com.sustech.groupup.entity.db.QueryEntity;
 import com.sustech.groupup.entity.db.SurveyEntity;
+import com.sustech.groupup.mapper.GroupMapper;
+import com.sustech.groupup.services.GroupService;
 import com.sustech.groupup.services.QueryService;
 import com.sustech.groupup.services.SurveyService;
 import com.sustech.groupup.utils.Response;
@@ -16,6 +22,7 @@ import com.sustech.groupup.config.Constant;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -24,7 +31,9 @@ import java.util.Map;
 public class SurveyController {
     private final SurveyService surveyService;
     private final QueryService queryService;
+    private final GroupService groupService;
     private final SurveyConverter surveyConverter;
+    private final GroupMapper groupMapper;
 
     @GetMapping("/{number}")
     public Response getSurveyById (@PathVariable long number) throws JsonProcessingException {
@@ -81,5 +90,16 @@ public class SurveyController {
     public Response deleteQueryBySurveyId(@PathVariable long id) {
         queryService.deletQueryBySurveyId(id);
         return Response.getSuccess("success","");
+    }
+
+    @GetMapping("/{id}/allgroup")
+    public Response getGroupList(@PathVariable long id,
+                                 @RequestParam(defaultValue = "-1") int pageSize,
+                                 @RequestParam(defaultValue = "1") int pageNo) {
+        IPage<GroupWithMemberDTO> queryResult= groupService.getGroupList(pageNo, pageSize, id);
+        Map<String, Object> data = new HashMap<>();
+        data.put("total_size", queryResult.getSize());
+        data.put("list", queryResult.getRecords());
+        return Response.getSuccess("success",data);
     }
 }

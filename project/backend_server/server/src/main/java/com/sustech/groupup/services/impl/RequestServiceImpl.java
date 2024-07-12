@@ -1,6 +1,10 @@
 package com.sustech.groupup.services.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sustech.groupup.entity.db.GroupResponseEntity;
+import com.sustech.groupup.entity.db.QueryEntity;
 import com.sustech.groupup.entity.db.RequestEntity;
 import com.sustech.groupup.mapper.GroupMapper;
 import com.sustech.groupup.mapper.GroupResponseMapper;
@@ -32,7 +36,7 @@ public class RequestServiceImpl implements RequestService {
     public int getRequestStatus(RequestEntity requestEntity) {
         List<GroupResponseEntity> responseEntityList=groupResponseMapper.getGroupResponseByRequestId(requestEntity.getId());
         for(GroupResponseEntity responseEntity:responseEntityList){
-            if (!responseEntity.isResponseType()) return 2;
+            if (responseEntity.getResponseType()==2) return 2;
         }
         return 1;
     }
@@ -41,4 +45,15 @@ public class RequestServiceImpl implements RequestService {
     public void updateRequest(RequestEntity requestEntity) {
         requestMapper.updateById(requestEntity);
     }
+
+    @Override
+    public IPage<RequestEntity> getRequestListByFromId(Long fromId, int pageSize, int pageNo) {
+        QueryWrapper<RequestEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("from_id", fromId);
+        Page<RequestEntity> page = new Page<>(pageNo, pageSize== -1 ? Long.MAX_VALUE : pageSize);
+        return requestMapper.selectPage(page,queryWrapper);
+    }
+
+
+
 }

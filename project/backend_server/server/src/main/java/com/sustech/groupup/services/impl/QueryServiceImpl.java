@@ -42,6 +42,7 @@ public class QueryServiceImpl implements QueryService {
     @Override
     public IPage<QueryEntity> getQueryList(Long surveyId, int pageSize, int pageNo, String queryOwner) {
         QueryWrapper<QueryEntity> queryWrapper = new QueryWrapper<>();
+
         queryWrapper.eq("survey_id", surveyId);
         Page<QueryEntity> page = new Page<>(pageNo, pageSize== -1 ? Long.MAX_VALUE : pageSize);
         return queryMapper.selectPage(page, queryWrapper);
@@ -51,4 +52,9 @@ public class QueryServiceImpl implements QueryService {
     public void deletQueryBySurveyId(long id) {
         queryMapper.deleteBySurveyId(id);
     }
+
+//    @Override
+//    public Long getQueryIdByMemberIdAndSurveyId(long memberId, long surveyId) {
+//        return queryMapper.getQueryIdByMemberIdAndSurveyId(memberId, surveyId);
+//    }
 }

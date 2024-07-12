@@ -17,6 +17,7 @@ import java.sql.Timestamp;
 public class QueryDTO {
     private Timestamp createAt;
     private Timestamp updateAt;
+    private Long memberId;
 
     //@JsonToStringField
     private JsonNode personalInfo;//json

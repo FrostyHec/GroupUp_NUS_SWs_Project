@@ -21,5 +21,5 @@ public class GroupResponseEntity {
     private Timestamp updateAt;
     private Long requestId;
     private Long userId;
-    private boolean responseType;
+    private int responseType;
 }

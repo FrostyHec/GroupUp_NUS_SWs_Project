@@ -1,8 +1,13 @@
 package com.sustech.groupup.controller.user;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.sustech.groupup.entity.api.GroupWithMemberDTO;
+import com.sustech.groupup.entity.db.RequestEntity;
+import com.sustech.groupup.services.RequestService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeployment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
     private final UserService userService;
+    private final RequestService requestService;
 
     @PostMapping("/public/login")
     public Response login(@NonNull @RequestBody LoginDTO login) {
@@ -79,4 +85,16 @@ public class UserController {
         List<Long> res = userService.queryReceivedAnnouncement(id, page_size, page_no);
         return Response.getSuccess(Map.of("ids", res));
     }
+
+    @GetMapping("/{id}/sendrequest")
+    public Response getRequestListByFromId(@PathVariable long id,
+                                             @RequestParam(defaultValue = "-1") int pageSize,
+                                             @RequestParam(defaultValue = "1") int pageNo) {
+        IPage<RequestEntity> queryResult= requestService.getRequestListByFromId(id, pageNo, pageSize);
+        Map<String, Object> data = new HashMap<>();
+        data.put("total_size", queryResult.getSize());
+        data.put("list", queryResult.getRecords());
+        return Response.getSuccess("success",data);
+    }
+
 }

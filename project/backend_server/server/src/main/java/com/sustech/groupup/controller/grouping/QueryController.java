@@ -26,7 +26,7 @@ public class QueryController {
     private final QueryService queryService;
 
     @GetMapping("/{number}")
-    public Response getQueryById (@PathVariable long number, @PathVariable String surveyId) throws JsonProcessingException {
+    public Response getQueryById (@PathVariable long number) {
         var resp = queryConverter.toDTO(queryService.getQueryById(number));
         return Response.getSuccess("success",Map.of("query",resp));
     }
@@ -53,7 +53,7 @@ public class QueryController {
         return Response.getSuccess("success");
     }
 
-    @PostMapping("/{number}/status")
+    @PutMapping("/{number}/status")
     public Response updateSurveyStatusById (@PathVariable long number, @RequestParam int status) {
         queryService.updateStatusByQueryId(number,status);
         return Response.getSuccess("success","");
@@ -65,5 +65,8 @@ public class QueryController {
         return Response.getSuccess("success",Map.of("status",queryEntity.getStatus()));
     }
 
-
+//    @GetMapping("/user/{id}")
+//    public Response getQueryByUserId(@PathVariable long surveyId,@PathVariable long id) {
+//        return Response.getSuccess ("success",Map.of("query_id",queryService.getQueryIdByMemberIdAndSurveyId(id,surveyId)));
+//    }
 }

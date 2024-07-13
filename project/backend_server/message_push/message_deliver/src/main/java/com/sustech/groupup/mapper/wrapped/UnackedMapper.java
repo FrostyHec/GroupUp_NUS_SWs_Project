@@ -11,8 +11,6 @@ import com.sustech.groupup.mapper.MessageRawMapper;
 
 import lombok.RequiredArgsConstructor;
 
-//TODO  find ways for fixing the annotation failure
-
 @DynamicTableNameMapper(type = DynamicTableNameType.MESSAGE_DTO, name = "unacked")
 @RequiredArgsConstructor
 public class UnackedMapper {

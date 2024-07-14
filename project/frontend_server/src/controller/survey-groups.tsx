@@ -1,39 +1,56 @@
-import { surveyAllGroups } from "@/actions/group";
-import { usersInfo } from "@/actions/user";
+"use client";
+import { surveyAllGroupsUpdate } from "@/actions/group";
 
-export function surveyAllgroupsMembersInfo({
-  surveyID: id,
+export async function surveyGroupAddMember({
+  token,
+  allGroups,
+  surveyID,
+  groupID,
+  userID,
 }: {
+  token: string;
+  allGroups: any;
   surveyID: number;
+  groupID: number;
+  userID: number;
 }) {
-  const groups = surveyAllGroups({ id: id }).data.data.list;
-  const groupMembersInfo = groups.map((group) => {
-    const usernames = usersInfo(group.group_member).data.data.users;
-    const members = usernames.map((username, index) => ({
-      id: group.group_member[index],
-      username: username.username,
-    }));
-    return { group_id: group.id, members };
-  });
-  return groupMembersInfo;
+  const group = allGroups.find((group: any) => (group.id as number) == groupID);
+  if (group) {
+    const memberIDs = group.group_member;
+    if (memberIDs.includes(userID)) {
+      return;
+    }
+    memberIDs.push(userID);
+    await surveyAllGroupsUpdate({ token, surveyID, allGroups });
+  }
 }
 
-export function surveyGroupAddMember({
-  surveyID,
-  groupID,
-  userID,
-}: {
-  surveyID: number;
-  groupID: number;
-  userID: number;
-}) {}
-
 export function surveyGroupDeleteMember({
+  token,
+  allGroups,
   surveyID,
   groupID,
   userID,
 }: {
+  token: string;
+  allGroups: any;
   surveyID: number;
   groupID: number;
   userID: number;
-}) {}
+}) {
+  const group = allGroups.find((group: any) => (group.id as number) == groupID);
+  if (group) {
+    const memberIDs = group.group_member;
+    const newMemberIDs = memberIDs.filter(
+      (memberID: number) => memberID !== userID
+    );
+    const newGroup = {
+      ...group,
+      group_member: newMemberIDs,
+    };
+    const newAllGroups = allGroups.map((group: any) =>
+      group.id === groupID ? newGroup : group
+    );
+    surveyAllGroupsUpdate({ token, surveyID, allGroups: newAllGroups });
+  }
+}

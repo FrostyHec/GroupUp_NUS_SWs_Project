@@ -2,13 +2,18 @@ import { useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
 import { userUsernameSearch } from "@/actions/user";
 
@@ -88,13 +93,39 @@ export function UsernameSearch({
   callback: ({ userID }: { userID: number }) => void;
 }) {
   const [pageIndex, setPageIndex] = useState(1);
-  const { users } = userUsernameSearch({ findUsername: username }).data.data;
-  const { data } = getTableData(pageIndex, 5, users);
+  const { data, isLoading, isError } = userUsernameSearch({
+    findUsername: username,
+  });
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+  const users = data.data.users;
+  const pageSize = 5;
+  const { data: tableData } = getTableData(pageIndex, pageSize, users);
+  const hasPrevious = pageIndex > 1;
+  const hasNext = pageIndex < users.length / pageSize;
   return (
     <div>
-      <Page data={data} callback={callback} />
-      <button onClick={() => setPageIndex(pageIndex - 1)}>Previous</button>
-      <button onClick={() => setPageIndex(pageIndex + 1)}>Next</button>
+      <Page data={tableData} callback={callback} />
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              className={
+                hasPrevious ? undefined : "pointer-events-none opacity-50"
+              }
+              onClick={() => setPageIndex(pageIndex - 1)}
+            />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              className={hasNext ? undefined : "pointer-events-none opacity-50"}
+              onClick={() => setPageIndex(pageIndex + 1)}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 }

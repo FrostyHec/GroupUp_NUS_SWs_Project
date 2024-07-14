@@ -62,6 +62,25 @@ export function surveyAllGroups({
   };
 }
 
+//修改组队集
+//PUT
+//<backend>/survey/{id}/allgroup
+export async function surveyAllGroupsUpdate({
+  token,
+  surveyID,
+  allGroups,
+}: {
+  token: string;
+  surveyID: number;
+  allGroups: any;
+}) {
+  return await axios.put(
+    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/allgroup`,
+    { list: allGroups },
+    { headers: { Authorization: "Bearer " + token } }
+  );
+}
+
 //发起组队
 //POST
 //<backend>/survey/{id}/requestgroup

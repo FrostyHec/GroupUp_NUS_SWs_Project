@@ -1,3 +1,4 @@
+"use client";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,7 +14,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -25,9 +25,34 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { surveyAllMembersInfo } from "@/controller/survey-members";
+import { SurveyUserSearchDialog } from "@/components/app/survey-user-search-dialog";
+import { useCookies } from "next-client-cookies";
+import { userInfo } from "@/actions/user";
+import { surveyInfo } from "@/actions/survey";
+import {
+  surveyAddMember,
+  surveyDeleteMember,
+} from "@/controller/survey-members";
 
-export function MembersTable({ members }: any) {
+function UsernameTableCell({ userID }: { userID: number }) {
+  const { data, isLoading, isError } = userInfo({
+    userID,
+  });
+  if (isLoading) return <TableCell>Loading...</TableCell>;
+  if (isError) return <TableCell>Error</TableCell>;
+  return <TableCell className="font-medium">{data.data.username}</TableCell>;
+}
+
+export function MembersTable({
+  surveyID,
+  surveyInfo,
+  members,
+}: {
+  surveyID: number;
+  surveyInfo: any;
+  members: any;
+}) {
+  const cookies = useCookies();
   return (
     <Card x-chunk="dashboard-06-chunk-0">
       <CardHeader>
@@ -46,9 +71,9 @@ export function MembersTable({ members }: any) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {members.owners.map((member: any) => (
-              <TableRow key={member.id}>
-                <TableCell className="font-medium">{member.username}</TableCell>
+            {members.owners.map((memberID: number) => (
+              <TableRow key={memberID}>
+                <UsernameTableCell userID={memberID} />
                 <TableCell>
                   <Badge variant="outline">Owner</Badge>
                 </TableCell>
@@ -61,17 +86,15 @@ export function MembersTable({ members }: any) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))}
-            {members.members.map((member: any) => (
-              <TableRow key={member.id}>
-                <TableCell className="font-medium">{member.username}</TableCell>
+            {members.members.map((memberID: number) => (
+              <TableRow key={memberID}>
+                <UsernameTableCell userID={memberID} />
                 <TableCell>
                   <Badge variant="outline">Member</Badge>
                 </TableCell>
@@ -84,9 +107,22 @@ export function MembersTable({ members }: any) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() =>
+                            surveyDeleteMember({
+                              token: cookies.get("token") as string,
+                              surveyID,
+                              surveyInfo,
+                              userID: memberID,
+                            })
+                          }
+                        >
+                          Delete
+                        </Button>
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -105,7 +141,14 @@ export function MembersTable({ members }: any) {
 }
 
 export default function Members({ params }: { params: { id: number } }) {
-  const allMembers = surveyAllMembersInfo({ surveyID: params.id });
+  const cookies = useCookies();
+  const { data, isLoading, isError } = surveyInfo({ surveyID: params.id });
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+  const allMembers = {
+    owners: data.data.info.owners,
+    members: data.data.info.members,
+  };
   return (
     <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -117,22 +160,45 @@ export default function Members({ params }: { params: { id: number } }) {
               <TabsTrigger value="ungrouped">Ungrouped</TabsTrigger>
             </TabsList>
             <div className="ml-auto flex items-center gap-2">
-              <Button size="sm" className="h-8 gap-1">
-                <PlusCircle className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Add Members
-                </span>
-              </Button>
+              <SurveyUserSearchDialog
+                callback={({ userID }: { userID: number }) => {
+                  surveyAddMember({
+                    token: cookies.get("token") as string,
+                    surveyID: params.id,
+                    surveyInfo: data.data.info,
+                    userID: userID,
+                  });
+                }}
+              >
+                <Button size="sm" className="h-8 gap-1">
+                  <PlusCircle className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                    Add Members
+                  </span>
+                </Button>
+              </SurveyUserSearchDialog>
             </div>
           </div>
           <TabsContent value="all">
-            <MembersTable members={allMembers} />
+            <MembersTable
+              surveyID={params.id}
+              surveyInfo={data.data.info}
+              members={allMembers}
+            />
           </TabsContent>
           <TabsContent value="grouped">
-            <MembersTable members={allMembers} />
+            <MembersTable
+              surveyID={params.id}
+              surveyInfo={data.data.info}
+              members={allMembers}
+            />
           </TabsContent>
           <TabsContent value="ungrouped">
-            <MembersTable members={allMembers} />
+            <MembersTable
+              surveyID={params.id}
+              surveyInfo={data.data.info}
+              members={allMembers}
+            />
           </TabsContent>
         </Tabs>
       </main>

@@ -1,5 +1,9 @@
 import { useCookies } from "next-client-cookies";
 
+export const userId = 1;
+export const userName = "John Doe";
+
+
 export function userSignUp({
   username,
   password,

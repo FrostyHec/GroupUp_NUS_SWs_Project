@@ -2,9 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import FieldForm from "./info-field";
-import EditButton from "./info-edit-button";
 import { getPersonalInfo } from "@/actions/personal-info";
-import { useRouter } from "next/router";
 import { Field, ProfileData } from "@/actions/personal-info";
 import Avatar, { genConfig } from "react-nice-avatar";
 import { AvatarFullConfig } from "./info-avatar-types";
@@ -14,7 +12,6 @@ import { LoaderCircle } from "lucide-react";
 
 const defaultProfileData: ProfileData = {
   name: "",
-  gender: "male",
   avatar: genConfig(),
   fields: [],
 };
@@ -76,29 +73,28 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ personalId, surveyId }) => {
   }
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <Card className="max-w-sm rounded overflow-hidden shadow-lg dark:shadow-slate-400">
-        <CardContent>
-          <div className="flex flex-col items-center my-7 space-y-4">
-            <Avatar style={{ width: "10rem", height: "10rem" }} {...avatar} />
-            <Button onClick={handleAvatarChange} className="text-xs">
-              Randomize an avatar
-            </Button>
-          </div>
-
+    <Card className="max-w-sm rounded-2xl overflow-hidden shadow-lg dark:shadow-slate-400 h-[600px] w-[450px] p-5">
+      <CardContent>
+        <div className="flex flex-col items-center my-7 space-y-4 h-1/2">
+          <Avatar style={{ width: "10rem", height: "10rem" }} {...avatar} />
+          <Button onClick={handleAvatarChange} className="text-xs">
+            Randomize an avatar
+          </Button>
+        </div>
+        <div className="items-center my-7 space-y-4 h-2/3">
           {profileData.fields.map((field, index) => (
             <FieldForm
               key={index}
               label={field.label}
               value={fieldValues[index]}
               placeholder={field.placeHolder}
-              editMode={false}
+              editMode={true}
               onChange={(newValue) => handleInputChange(index, newValue)}
             />
           ))}
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

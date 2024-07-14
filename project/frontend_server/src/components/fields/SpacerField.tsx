@@ -1,6 +1,6 @@
 "use client";
 
-import { ElementsType, FormElement, FormElementInstance } from "../app/form-form-elements";
+import { ElementsType, FormElement, FormElementInstance } from "../../schemas/form";
 import { Label } from "../ui/label";
 import { z } from "zod";
 import { useForm } from "react-hook-form";

@@ -1,9 +1,7 @@
 "use client";
-
 import * as React from "react";
 import { CirclePlus, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -14,15 +12,6 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/ui/command";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -37,36 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const groups = [
-  {
-    label: "Personal Account",
-    workspaces: [
-      {
-        id: 0,
-        label: "Alicia Koch",
-        value: "personal",
-      },
-    ],
-  },
-  {
-    label: "Workspaces",
-    workspaces: [
-      {
-        id: 1,
-        label: "Acme Inc.",
-        value: "acme-inc",
-      },
-      {
-        id: 2,
-        label: "Monsters Inc.",
-        value: "monsters",
-      },
-    ],
-  },
-];
-
-type Workspace = (typeof groups)[number]["workspaces"][number];
+import { useRouter, useParams, usePathname } from "next/navigation";
+import { userAllOwnSurveys, userAllParticipateSurveys } from "@/actions/user";
+import { sampleSurvey } from "../data/survey-data";
+import useSurveys from "../hooks/useSurveys";
+import { MdSettingsBackupRestore } from "react-icons/md";
+import { set } from "date-fns";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -74,132 +39,118 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 
 interface WorkspaceSwitcherProps extends PopoverTriggerProps {}
 
-export default function SurveySwitcher({ className }: WorkspaceSwitcherProps) {
-  const [open, setOpen] = React.useState(false);
-  const [showNewWorkspaceDialog, setShowNewWorkspaceDialog] =
-    React.useState(false);
-  const [selectedWorkspace, setSelectedWorkspace] = React.useState<Workspace>(
-    groups[0].workspaces[0]
-  );
+// 1. 获取到当前用户的ID
+// 2. 从数据库中获取到当前用户的所有的Survey
+// 3. 路由有两种，如果Router当前是在Survey界面，可以获取到当前的Survey ID
+// 4. 如果Router在主界面，则回到自己的看板界面
+export default function SurveySwitcher() {
+  const router = useRouter();
+  const params = useParams();
+  const { ownSurveyId, participateSurveyId, currentSurveyId, setCurrentSurveyId, setRole } = useSurveys();
+  const allOwnSurveys = sampleSurvey
+    .filter((survey) => ownSurveyId.includes(survey.id))
+    .map((survey) => ({
+      label: survey.name,
+      value: String(survey.id),
+    }));
+  const allParticipateSurveys = sampleSurvey
+    .filter((survey) => participateSurveyId.includes(survey.id))
+    .map((survey) => ({
+      label: survey.name,
+      value: String(survey.id),
+    }));
 
+  const [open, setOpen] = React.useState(false);
   return (
-    <Dialog
-      open={showNewWorkspaceDialog}
-      onOpenChange={setShowNewWorkspaceDialog}
-    >
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <div
-            className="font-bold text-3xl bg-gradient-to-r from-indigo-400 to-cyan-400 text-transparent
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <div
+          className="font-bold text-3xl bg-gradient-to-r from-indigo-400 to-cyan-400 text-transparent
     bg-clip-text hover:cursor-pointer"
-          >
-            GroupUp
-          </div>
-        </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
-          <Command>
-            <CommandList>
-              <CommandInput placeholder="Search workspace..." />
-              <CommandEmpty>No workspace found.</CommandEmpty>
-              {groups.map((group) => (
-                <CommandGroup key={group.label} heading={group.label}>
-                  {group.workspaces.map((workspace) => (
-                    <CommandItem
-                      key={workspace.value}
-                      onSelect={() => {
-                        setSelectedWorkspace(workspace);
-                        setOpen(false);
-                      }}
-                      className="text-sm"
-                    >
-                      <Avatar className="mr-2 h-5 w-5">
-                        <AvatarImage
-                          src={`https://avatar.vercel.sh/${workspace.value}.png`}
-                          alt={workspace.label}
-                          className="grayscale"
-                        />
-                        <AvatarFallback>SC</AvatarFallback>
-                      </Avatar>
-                      {workspace.label}
-                      <Check
-                        className={cn(
-                          "ml-auto h-4 w-4",
-                          selectedWorkspace.value === workspace.value
-                            ? "opacity-100"
-                            : "opacity-0"
-                        )}
-                      />
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              ))}
-            </CommandList>
-            <CommandSeparator />
-            <CommandList>
-              <CommandGroup>
-                <DialogTrigger asChild>
-                  <CommandItem
-                    onSelect={() => {
-                      setOpen(false);
-                      setShowNewWorkspaceDialog(true);
-                    }}
-                  >
-                    <CirclePlus className="mr-2 h-5 w-5" />
-                    Create Workspace
-                  </CommandItem>
-                </DialogTrigger>
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create workspace</DialogTitle>
-          <DialogDescription>
-            Add a new workspace to manage products and customers.
-          </DialogDescription>
-        </DialogHeader>
-        <div>
-          <div className="space-y-4 py-2 pb-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Workspace name</Label>
-              <Input id="name" placeholder="Acme Inc." />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="plan">Subscription plan</Label>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a plan" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="free">
-                    <span className="font-medium">Free</span> -{" "}
-                    <span className="text-muted-foreground">
-                      Trial for two weeks
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="pro">
-                    <span className="font-medium">Pro</span> -{" "}
-                    <span className="text-muted-foreground">
-                      $9/month per user
-                    </span>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+        >
+          GroupUp
         </div>
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => setShowNewWorkspaceDialog(false)}
-          >
-            Cancel
-          </Button>
-          <Button type="submit">Continue</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </PopoverTrigger>
+      <PopoverContent className="w-[200px] p-0">
+        <Command>
+          <CommandInput placeholder="Search workspace..." />
+          <CommandEmpty>No survey found.</CommandEmpty>
+          <CommandList>
+            <CommandGroup>
+              <CommandItem
+                key="main"
+                onSelect={() => {
+                  console.log("Dashboard is selected.");
+                  setCurrentSurveyId(0);
+                  setOpen(false);
+                  setRole("main");
+                  router.push("/dashboard");
+                }}
+                className="text-sm hover:cursor-pointer"
+              >
+                Dashboard
+                <Check
+                  className={cn(
+                    "ml-auto h-4 w-4",
+                    currentSurveyId === 0 ? "opacity-100" : "opacity-0"
+                  )}
+                />
+              </CommandItem>
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading="Survey you owned">
+              {allOwnSurveys.map((survey) => (
+                <CommandItem
+                  key={survey.value}
+                  value={survey.value}
+                  onSelect={() => {
+                    console.log("One owner survey is selected.");
+                    setCurrentSurveyId(Number(survey.value));
+                    setOpen(false);
+                    setRole("owner");
+                    router.push(`/survey/${survey.value}/dashboard`);
+                  }}
+                  className="text-sm hover:cursor-pointer"
+                >
+                  {survey.label}
+                  <Check
+                    className={cn(
+                      "ml-auto h-4 w-4",
+                      currentSurveyId === Number(survey.value) ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup heading="Survey you participated in">
+              {allParticipateSurveys.map((survey) => (
+                <CommandItem
+                  key={survey.value}
+                  value={survey.value}
+                  onSelect={() => {
+                    console.log("One participarted survey is selected.");
+                    setCurrentSurveyId(Number(survey.value));
+                    setOpen(false);
+                    setRole("member");
+                    router.push(`/survey/${survey.value}/dashboard`);
+                  }}
+                  className="text-sm hover:cursor-pointer"
+                >
+                  {survey.label}
+                  <Check
+                    className={cn(
+                      "ml-auto h-4 w-4",
+                      currentSurveyId === Number(survey.value) ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+          <CommandSeparator />
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }

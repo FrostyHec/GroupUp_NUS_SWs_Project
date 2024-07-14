@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useCallback, useRef, useState, useTransition } from "react";
-import { FormElementInstance, FormElements } from "./form-form-elements";
+import { FormElementInstance, FormElements } from "../../schemas/form";
 import { Button } from "../ui/button";
 import { HiCursorClick } from "react-icons/hi";
-import { toast } from "../ui/use-toast";
+import { toast } from "sonner";
 import { ImSpinner2 } from "react-icons/im";
 import { SubmitForm } from "@/actions/form";
+import { useParams } from "next/navigation";
 
-function FormSubmitComponent({ formUrl, content }: { content: FormElementInstance[]; formUrl: string }) {
+function FormSubmitComponent({ content, surveyId }: { content: FormElementInstance[], surveyId: number }) {
   const formValues = useRef<{ [key: string]: string }>({});
   const formErrors = useRef<{ [key: string]: boolean }>({});
   const [renderKey, setRenderKey] = useState(new Date().getTime());
@@ -38,27 +39,24 @@ function FormSubmitComponent({ formUrl, content }: { content: FormElementInstanc
   }, []);
 
   const submitForm = async () => {
+    console.log("submitting form");
     formErrors.current = {};
     const validForm = validateForm();
     if (!validForm) {
       setRenderKey(new Date().getTime());
-      toast({
-        title: "Error",
-        description: "please check the form for errors",
-        variant: "destructive",
+      toast("Error",{
+        description: "please check the form for errors"
       });
       return;
     }
 
     try {
       const jsonContent = JSON.stringify(formValues.current);
-      await SubmitForm(formUrl, jsonContent);
+      await SubmitForm(surveyId, jsonContent);
       setSubmitted(true);
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Something went wrong",
-        variant: "destructive",
+      toast("Error",{
+        description: "Something went wrong"
       });
     }
   };

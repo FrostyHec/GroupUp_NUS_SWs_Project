@@ -1,5 +1,5 @@
 import React from "react";
-import { FormElement } from "./form-form-elements";
+import { FormElement } from "../../schemas/form";
 import { Button } from "../ui/button";
 import { useDraggable } from "@dnd-kit/core";
 import { cn } from "@/lib/utils";

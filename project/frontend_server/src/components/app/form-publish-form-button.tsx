@@ -16,12 +16,6 @@ import {
 } from "../ui/alert-dialog";
 import { Button } from "../ui/button";
 import { toast } from "../ui/use-toast";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@radix-ui/react-tooltip";
 
 function PublishFormBtn({ id }: { id: number }) {
   const [loading, startTransition] = useTransition();

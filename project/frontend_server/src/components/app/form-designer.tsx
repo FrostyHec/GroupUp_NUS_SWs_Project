@@ -5,7 +5,7 @@ import DesignerSidebar from "./form-designer-siderbar";
 import { DragEndEvent, useDndMonitor, useDraggable, useDroppable } from "@dnd-kit/core";
 import { cn } from "@/lib/utils";
 import useDesigner from "../hooks/useDesigner";
-import { ElementsType, FormElementInstance, FormElements } from "./form-form-elements";
+import { ElementsType, FormElementInstance, FormElements } from "../../schemas/form";
 import { idGenerator } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Trash2 } from 'lucide-react';

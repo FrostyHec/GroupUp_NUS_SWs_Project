@@ -1,0 +1,72 @@
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
+import useSurveys from "../hooks/useSurveys";
+import { sampleSurvey } from "../data/survey-data";
+
+export function SurveyMemberNav() {
+  const router = usePathname();
+  const { currentSurveyId } = useSurveys();
+  const status = sampleSurvey.filter(
+    (survey) => survey.id === currentSurveyId
+  )[0].status;
+  return (
+    <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
+      <Link
+        href="dashboard"
+        className={cn(
+          "text-foreground transition-colors hover:text-foreground",
+          router.startsWith("/survey") && router.endsWith("dashboard")
+            ? "text-foreground"
+            : "text-muted-foreground"
+        )}
+      >
+        Dashboard
+      </Link>
+      <Link
+        href="form"
+        className={cn(
+          "text-foreground transition-colors hover:text-foreground",
+          router.startsWith("/survey") && router.endsWith("form") && status === "open"
+            ? "text-foreground"
+            : "text-muted-foreground"
+        )}
+      >
+        Form
+      </Link>
+      <Link
+        href="info"
+        className={cn(
+          "text-foreground transition-colors hover:text-foreground",
+          router.startsWith("/survey") && router.endsWith("info") && status === "open"
+            ? "text-foreground"
+            : "text-muted-foreground"
+        )}
+      >
+        Info
+      </Link>
+      <Link
+        href="match"
+        className={cn(
+          "text-foreground transition-colors hover:text-foreground",
+          router.startsWith("/survey") && router.endsWith("match") && status === "open"
+            ? "text-foreground"
+            : "text-muted-foreground"
+        )}
+      >
+        Recommendations
+      </Link>
+      <Link
+        href="groups"
+        className={cn(
+          "text-foreground transition-colors hover:text-foreground",
+          router.startsWith("/survey") && router.endsWith("groups")
+            ? "text-foreground"
+            : "text-muted-foreground"
+        )}
+      >
+        Groups
+      </Link>
+    </nav>
+  );
+}

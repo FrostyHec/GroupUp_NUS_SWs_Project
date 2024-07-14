@@ -1,38 +1,20 @@
-"use server";
-
-
-import { FormElementInstance } from "@/components/app/form-form-elements";
+import { FormElementInstance } from "@/schemas/form";
+import { sampleSurvey } from "@/components/data/survey-data";
+import { sampleFormSubmission } from "@/components/data/query-data";
+import {
+  FormSubmission,
+  PersonalInfoFieldInput,
+  PersonalInfoInput,
+  Survey,
+} from "@/schemas/survey";
 import { surveySchema, surveySchemaType } from "@/schemas/survey";
+import { userId } from "@/actions/user";
+import { useState } from "react";
 // import prisma from "@/lib/prisma"; // Orginally the data is stored using prisma
 // import { currentUser } from "@clerk/nextjs"; // Orginally the user data is managed by clerk
 
-class UserNotFoundErr extends Error {}
 class FormNotFoundErr extends Error {}
-
-export type Form = {
-  id: number;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  published: boolean;
-  name: string;
-  description: string;
-  content: string;
-  visits: number;
-  submissions: number;
-  shareURL: string;
-  FormSubmissions: FormSubmission[];
-};
-
-export type FormSubmission = {
-  id: number;
-  createdAt: Date;
-  formId: number;
-  form: Form;
-  content: string;
-};
-
-let forms : Array<Form> = [];
+class FormSubmissionNotFoundErr extends Error {}
 
 export async function GetFormStats() {
   const visits = 0;
@@ -48,98 +30,106 @@ export async function GetFormStats() {
   };
 }
 
-export async function CreateForm(data: surveySchemaType) {
+export async function CreateSurvey(data: surveySchemaType) {
   const validation = surveySchema.safeParse(data);
   if (!validation.success) {
     throw new Error("form not valid");
   }
   const { name, description } = data;
-  const form = {
-    id: forms.length + 1,
-    userId: "1",
-    createdAt: new Date(),
-    updatedAt: new Date(),
+  const survey: Survey = {
+    id: sampleSurvey.length + 1,
+    name: name ? name : "Untitled",
+    description: description ? description : "No description",
+    create_at: String(new Date()),
+    update_at: String(new Date()),
     published: false,
-    name: name ? name : "Untitled Form",
-    description: description ? description : "",
-    content: "[]",
-    visits: 0,
-    submissions: 0,
-    shareURL: "http://localhost:3000/forms/" + (forms.length + 1),
-    FormSubmissions: [],
+    personal_info: null,
+    owners: [userId],
+    members: [],
+    content: "",
+    status: "closed",
+    group_restrictions: null,
   };
-  forms.push(form);
-  console.log("Created form: ", form);
-  return form.id;
+  sampleSurvey.push(survey);
+  console.log("Created survey: ", survey);
+  return survey.id;
 }
 
-export async function GetForms() {
+export async function GetSurveys() {
   console.log("Get forms");
-  return forms;
+  return sampleSurvey;
 }
 
-export async function GetFormById(id: number) {
+export async function GetSurveyById(id: number) {
   console.log("Get form by id: ", id);
-  let formContent = forms.find((f) => f.id === id);
+  console.log("sampleSurvey: ", sampleSurvey);
+  let formContent = sampleSurvey.find((f) => f.id === id);
   return formContent;
 }
 
-export async function UpdateFormContent(id: number, jsonContent: string) {
+export async function UpdateSurveyContent(id: number, jsonContent: string) {
   console.log("Update form content id: ", id);
-
-  let formContent = forms.find((f) => f.id === id);
-  if(!formContent) {
+  let formContent = sampleSurvey.find((f) => f.id === id);
+  if (!formContent) {
     throw new FormNotFoundErr();
   }
   formContent.content = jsonContent;
-  formContent.updatedAt = new Date();
+  formContent.update_at = String(new Date());
   return formContent;
 }
 
 export async function PublishForm(id: number) {
-  console.log("Published form id: ", id)
-  let formContent = forms.find((f) => f.id === id);
-  if(!formContent) {
+  console.log("Published form id: ", id);
+  let formContent = sampleSurvey.find((f) => f.id === id);
+  if (!formContent) {
     throw new FormNotFoundErr();
   }
-  formContent.published = true;
+  formContent.status = "open";
   return formContent;
 }
 
-export async function GetFormContentByUrl(formUrl: string) {
-  console.log("Get form content by url: ", formUrl);
-  let formContent = forms.find((f) => f.shareURL === formUrl && f.content);
-  if(!formContent) {
-    throw new FormNotFoundErr();
-  }
-  formContent.visits += 1;
-  return formContent;
+export async function FormSubmissionExists(id: number) {
+  console.log("Check form submission exists by id: ", id);
+  let formSubmission = sampleFormSubmission.find(
+    (f) => f.survey_id === id && f.member_id === userId
+  );
+  return formSubmission;
 }
 
-export async function SubmitForm(formUrl: string, content: string) {
-  console.log("Submit form by url: ", formUrl);
+export async function CreateFormSubmission(
+  id: number,
+  personal_info: PersonalInfoInput
+) {
+  console.log("Create form submission by id: ", id);
+  let formContent = sampleSurvey.find((f) => f.id === id);
+  if (!formContent) {
+    throw new FormNotFoundErr();
+  }
+  let submission: FormSubmission = {
+    id: sampleFormSubmission.length + 1,
+    create_at: String(new Date()),
+    update_at: String(new Date()),
+    personal_info: personal_info,,
+    survey_id: id,
+    member_id: userId,
+    status: "edit", // Updated the status property to be of type "edit" | "done"
+    content: "",
+  };
+  sampleFormSubmission.push(submission);
+  return submission;
+}
+
+export async function SubmitForm(id: number, content: string) {
+  console.log("Submit form by id: ", id);
   console.log("Content: ", content);
-  let formContent = forms.find((f) => f.shareURL === formUrl);
-  if(!formContent) {
-    throw new FormNotFoundErr();
+  let formSubmission = sampleFormSubmission.find(
+    (f) => f.survey_id === id && f.member_id === userId
+  );
+  if (!formSubmission) {
+    throw new FormSubmissionNotFoundErr();
   }
-  formContent.submissions += 1;
-  formContent.FormSubmissions.push({
-    id: formContent.FormSubmissions.length + 1,
-    createdAt: new Date(),
-    formId: formContent.id,
-    form: formContent,
-    content,
-  });
-  return formContent;
+  formSubmission.content = content;
+  formSubmission.update_at = String(new Date());
+  formSubmission.status = "done";
+  return formSubmission;
 }
-
-export async function GetFormWithSubmissions(id: number) {
-  console.log("Get form with submissions: ", id);
-  let formContent = forms.find((f) => f.id === id);
-  if(!formContent) {
-    throw new FormNotFoundErr();
-  }
-  return formContent;
-}
-

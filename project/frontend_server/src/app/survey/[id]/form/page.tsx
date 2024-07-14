@@ -1,4 +1,5 @@
-import { GetFormById } from "@/actions/form";
+"use client";
+import { GetSurveyById } from "@/actions/form";
 import FormBuilder from "@/components/app/form-form-builder";
 import DesignerContextProvider from "@/components/context/DesignerContext";
 import React from "react";
@@ -10,9 +11,8 @@ async function BuilderPage({
     id: string;
   };
 }) {
-  console.log(params);
   const { id } = params;
-  const form = await GetFormById(Number(id));
+  const form = await GetSurveyById(Number(id));
   if (!form) {
     throw new Error("form not found");
   }

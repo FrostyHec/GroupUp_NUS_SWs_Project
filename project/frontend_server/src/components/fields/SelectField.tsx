@@ -1,6 +1,6 @@
 "use client";
 
-import { ElementsType, FormElement, FormElementInstance, SubmitFunction } from "../app/form-form-elements";
+import { ElementsType, FormElement, FormElementInstance, SubmitFunction } from "../../schemas/form";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { z } from "zod";

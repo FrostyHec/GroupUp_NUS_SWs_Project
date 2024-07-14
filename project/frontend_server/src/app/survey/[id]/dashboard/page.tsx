@@ -1,4 +1,4 @@
-import { GetFormStats, GetForms } from "@/actions/form";
+import { GetFormStats } from "@/actions/form";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ReactNode, Suspense } from "react";
@@ -8,7 +8,8 @@ import { HiCursorClick } from "react-icons/hi";
 import { TbArrowBounce } from "react-icons/tb";
 import { Separator } from "@/components/ui/separator";
 
-export default function Home() {
+export default function DashboardPage() {
+  
   return (
     <div className="container pt-4">
       <Suspense fallback={<StatsCards loading={true} />}>

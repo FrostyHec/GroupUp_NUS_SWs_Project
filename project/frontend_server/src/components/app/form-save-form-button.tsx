@@ -1,10 +1,10 @@
 import React, { useTransition } from "react";
 import { Button } from "../ui/button";
-import { ArrowDownToLine } from 'lucide-react';
+import { HiSaveAs } from "react-icons/hi";
 import useDesigner from "../hooks/useDesigner";
-import { UpdateFormContent } from "@/actions/form";
-import { toast } from "../ui/use-toast";
-import { Loader } from 'lucide-react';
+import { UpdateSurveyContent } from "@/actions/form";
+import { toast } from "sonner";
+import { FaSpinner } from "react-icons/fa";
 import {
   Tooltip,
   TooltipContent,
@@ -16,19 +16,16 @@ function SaveFormBtn({ id }: { id: number }) {
   const { elements } = useDesigner();
   const [loading, startTransition] = useTransition();
 
-  const updateFormContent = async () => {
+  const updateContent = async () => {
     try {
       const jsonElements = JSON.stringify(elements);
-      await UpdateFormContent(id, jsonElements);
-      toast({
-        title: "Success",
+      await UpdateSurveyContent(id, jsonElements);
+      toast("Success", {
         description: "Your form has been saved",
       });
     } catch (error) {
-      toast({
-        title: "Error",
+      toast("Error", {
         description: "Something went wrong",
-        variant: "destructive",
       });
     }
   };
@@ -41,11 +38,11 @@ function SaveFormBtn({ id }: { id: number }) {
             className="gap-2"
             disabled={loading}
             onClick={() => {
-              startTransition(updateFormContent);
+              startTransition(updateContent);
             }}
           >
-            <ArrowDownToLine className="h-4 w-4" />
-            {loading && <Loader className="animate-spin" />}
+            <HiSaveAs className="h-4 w-4" />
+            {loading && <FaSpinner className="animate-spin" />}
           </Button>
         </TooltipTrigger>
         <TooltipContent side="top" sideOffset={2}>

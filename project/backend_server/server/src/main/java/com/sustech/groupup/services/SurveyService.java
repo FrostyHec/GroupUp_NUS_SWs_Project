@@ -12,4 +12,5 @@ public interface SurveyService {
     void updateSurvey(SurveyEntity survey, List<Long> memberIds, List<Long> ownerIds);
     void updateStatusBySurveyId(long surveyId, int status);
     void deleteSurveyById(long surveyId);
+
 }

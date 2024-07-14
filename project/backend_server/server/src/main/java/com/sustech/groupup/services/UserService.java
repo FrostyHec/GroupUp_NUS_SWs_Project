@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.sustech.groupup.entity.api.LoginAuthDTO;
 import com.sustech.groupup.entity.api.UserPublicQueryDTO;
+import com.sustech.groupup.entity.db.UserEntity;
 
 public interface UserService {
 
@@ -32,4 +33,5 @@ public interface UserService {
      */
     List<Long> queryReceivedAnnouncement(long uid, int pageSize, int pageNo);
     List<UserPublicQueryDTO> queryUserLikeName(String username);
+    UserEntity getUserById(long id);
 }

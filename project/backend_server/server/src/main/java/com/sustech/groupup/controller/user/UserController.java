@@ -1,8 +1,17 @@
 package com.sustech.groupup.controller.user;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.sustech.groupup.entity.api.GroupWithMemberDTO;
+import com.sustech.groupup.entity.db.GroupResponseEntity;
+import com.sustech.groupup.entity.db.RequestEntity;
+import com.sustech.groupup.entity.db.UserEntity;
+import com.sustech.groupup.services.GroupResponseService;
+import com.sustech.groupup.services.GroupService;
+import com.sustech.groupup.services.RequestService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeployment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +39,8 @@ import lombok.extern.slf4j.Slf4j;
 public class UserController {
 
     private final UserService userService;
+    private final RequestService requestService;
+    private final GroupResponseService groupResponseService;
 
     @PostMapping("/public/login")
     public Response login(@NonNull @RequestBody LoginDTO login) {
@@ -87,5 +98,40 @@ public class UserController {
     ) {
         List<Long> res = userService.queryReceivedAnnouncement(id, page_size, page_no);
         return Response.getSuccess(Map.of("ids", res));
+    }
+
+    @GetMapping("/{id}/sendrequest")
+    public Response getRequestListByFromId(@PathVariable long id,
+                                             @RequestParam(defaultValue = "-1") int pageSize,
+                                             @RequestParam(defaultValue = "1") int pageNo) {
+        IPage<RequestEntity> queryResult= requestService.getRequestListByFromId(id, pageNo, pageSize);
+        Map<String, Object> data = new HashMap<>();
+        data.put("total_size", queryResult.getSize());
+        data.put("list", queryResult.getRecords());
+        return Response.getSuccess("success",data);
+    }
+
+    @GetMapping("/{id}/receivedrequest")
+    public Response getResponsesByUserId(@PathVariable long id,
+                                         @RequestParam(defaultValue = "-1") int pageSize,
+                                         @RequestParam(defaultValue = "1") int pageNo) {
+        IPage<GroupResponseEntity> queryResult= groupResponseService.getAllResponsesByUserId(pageSize, pageNo, id);
+        Map<String, Object> data = new HashMap<>();
+        data.put("total_size", queryResult.getSize());
+        data.put("list", queryResult.getRecords());
+        return Response.getSuccess("success",data);
+    }
+
+    @GetMapping("/queryuserout")
+    public Response getUsernameFromUserId(@RequestParam int userId) {
+        return Response.getSuccess("success",userService.getUserById(userId).getUsername());
+    }
+    @GetMapping("/getbyauth")
+    public Response getUserByAuth(long request_user_id) {
+        UserEntity userEntity = userService.getUserById(request_user_id);
+        Map<String, Object> data = new HashMap<>();
+        data.put("user", userEntity.getId());
+        data.put("username", userEntity.getUsername());
+        return Response.getSuccess("success",data);
     }
 }

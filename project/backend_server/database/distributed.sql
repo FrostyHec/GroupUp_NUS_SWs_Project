@@ -1,0 +1,10 @@
+SELECT create_distributed_table('user_table', 'id');
+SELECT create_distributed_table('survey', 'id');
+SELECT create_distributed_table('survey_owner', 'owner_id');
+SELECT create_distributed_table('survey_owner', 'member_id');
+SELECT create_distributed_table('query', 'id');
+SELECT create_distributed_table('group_table', 'id');
+SELECT create_distributed_table('group_member', 'group_id');
+SELECT create_distributed_table('announcement', 'id');
+SELECT create_distributed_table('request_grouping', 'id');
+SELECT create_distributed_table('response_group_request', 'user_id');

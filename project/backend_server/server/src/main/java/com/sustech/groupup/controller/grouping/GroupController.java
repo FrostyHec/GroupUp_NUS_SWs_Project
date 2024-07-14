@@ -46,6 +46,25 @@ public class GroupController {
     public Response requestGroup (@RequestBody RequestDTO requestDTO) {
         RequestEntity requestEntity=requestConverter.toEntity(requestDTO);
         requestService.createRequest(requestEntity);
+        if(requestEntity.isToGroup()){
+            List<Long> memberIds=groupService.getMembersByGroupId(requestEntity.getToId());
+            for (Long memberId : memberIds) {
+                GroupResponseEntity groupResponseEntity=new GroupResponseEntity();
+                groupResponseEntity.setRequestId(requestEntity.getId());
+                groupResponseEntity.setResponseType(0);
+                groupResponseEntity.setUpdateAt(requestEntity.getCreateAt());
+                groupResponseEntity.setUserId(memberId);
+                groupResponseService.createResponse(groupResponseEntity);
+            }
+        }
+        else {
+            GroupResponseEntity groupResponseEntity=new GroupResponseEntity();
+            groupResponseEntity.setRequestId(requestEntity.getId());
+            groupResponseEntity.setResponseType(0);
+            groupResponseEntity.setUpdateAt(requestEntity.getCreateAt());
+            groupResponseEntity.setUserId(requestEntity.getToId());
+            groupResponseService.createResponse(groupResponseEntity);
+        }
         return Response.getSuccess("success", Map.of("request_id:" ,requestEntity.getId()));
     }
 
@@ -63,7 +82,8 @@ public class GroupController {
     @PostMapping("/response")
     public Response response(@PathVariable long id,@RequestBody GroupResponseDTO groupResponseDTO) {
         GroupResponseEntity groupResponseEntity= groupResponseConverter.toEntity(groupResponseDTO);
-        groupResponseService.createResponse(groupResponseEntity);
+        groupResponseEntity.setId(groupResponseService.getResponseIdByRequestIdAndUserId(groupResponseDTO.getRequestId(),groupResponseDTO.getUserId()));
+        groupResponseService.updateResponse(groupResponseEntity);
         RequestEntity requestEntity=requestService.getRequestById(groupResponseEntity.getRequestId());
         requestEntity.setRemainRequiredAccept(requestEntity.getRemainRequiredAccept()-1);
         if(requestEntity.getRemainRequiredAccept()==0){

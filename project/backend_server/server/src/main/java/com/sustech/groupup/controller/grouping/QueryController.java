@@ -65,8 +65,4 @@ public class QueryController {
         return Response.getSuccess("success",Map.of("status",queryEntity.getStatus()));
     }
 
-//    @GetMapping("/user/{id}")
-//    public Response getQueryByUserId(@PathVariable long surveyId,@PathVariable long id) {
-//        return Response.getSuccess ("success",Map.of("query_id",queryService.getQueryIdByMemberIdAndSurveyId(id,surveyId)));
-//    }
 }

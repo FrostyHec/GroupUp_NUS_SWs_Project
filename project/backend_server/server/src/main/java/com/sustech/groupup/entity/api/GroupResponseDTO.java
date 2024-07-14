@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 public class GroupResponseDTO {
     private Long requestId;
-    private Long fromId;
+    private Long userId;
     private int status;
     private Timestamp updateAt;
 }

@@ -6,7 +6,10 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.sustech.groupup.entity.api.GroupWithMemberDTO;
+import com.sustech.groupup.entity.db.GroupResponseEntity;
 import com.sustech.groupup.entity.db.RequestEntity;
+import com.sustech.groupup.services.GroupResponseService;
+import com.sustech.groupup.services.GroupService;
 import com.sustech.groupup.services.RequestService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnNotWarDeployment;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +37,7 @@ public class UserController {
 
     private final UserService userService;
     private final RequestService requestService;
+    private final GroupResponseService groupResponseService;
 
     @PostMapping("/public/login")
     public Response login(@NonNull @RequestBody LoginDTO login) {
@@ -91,6 +95,17 @@ public class UserController {
                                              @RequestParam(defaultValue = "-1") int pageSize,
                                              @RequestParam(defaultValue = "1") int pageNo) {
         IPage<RequestEntity> queryResult= requestService.getRequestListByFromId(id, pageNo, pageSize);
+        Map<String, Object> data = new HashMap<>();
+        data.put("total_size", queryResult.getSize());
+        data.put("list", queryResult.getRecords());
+        return Response.getSuccess("success",data);
+    }
+
+    @GetMapping("/{id}/receivedrequest")
+    public Response getResponsesByUserId(@PathVariable long id,
+                                         @RequestParam(defaultValue = "-1") int pageSize,
+                                         @RequestParam(defaultValue = "1") int pageNo) {
+        IPage<GroupResponseEntity> queryResult= groupResponseService.getAllResponsesByUserId(pageSize, pageNo, id);
         Map<String, Object> data = new HashMap<>();
         data.put("total_size", queryResult.getSize());
         data.put("list", queryResult.getRecords());

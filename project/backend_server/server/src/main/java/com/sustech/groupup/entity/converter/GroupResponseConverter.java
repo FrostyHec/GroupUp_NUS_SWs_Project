@@ -12,7 +12,7 @@ public class GroupResponseConverter {
         GroupResponseEntity entity = new GroupResponseEntity();
         entity.setUpdateAt(dto.getUpdateAt());
         entity.setRequestId(dto.getRequestId());
-        entity.setUserId(dto.getFromId());
+        entity.setUserId(dto.getUserId());
         entity.setResponseType(dto.getStatus());
         return entity;
     }

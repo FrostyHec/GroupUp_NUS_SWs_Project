@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,30 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -46,18 +25,25 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  surveyAllgroupsMembersInfo,
   surveyGroupAddMember,
+  surveyGroupDeleteMember,
 } from "@/controller/survey-groups";
-import { SurveyUserSearch } from "@/components/app/survey-user-search";
+import { SurveyUserSearchDialog } from "@/components/app/survey-user-search-dialog";
+import { surveyAllGroups } from "@/actions/group";
+import { userInfo } from "@/actions/user";
+import { useCookies } from "next-client-cookies";
 
-export function GroupsTable({
-  surveyID,
-  groups,
-}: {
-  surveyID: number;
-  groups: any;
-}) {
+function UserInfoCardTitle({ userID }: { userID: number }) {
+  const { data, isLoading, isError } = userInfo({
+    userID: userID,
+  });
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+  return <CardTitle className="text-base">{data.data.username}</CardTitle>;
+}
+
+function GroupsTable({ surveyID, groups }: { surveyID: number; groups: any }) {
+  const cookies = useCookies();
   return (
     <Card x-chunk="dashboard-06-chunk-0">
       <CardHeader>
@@ -79,15 +65,15 @@ export function GroupsTable({
           </TableHeader>
           <TableBody>
             {groups.map((group: any) => (
-              <TableRow key={group.group_id}>
-                <TableCell className="font-medium">{group.group_id}</TableCell>
+              <TableRow key={group.id}>
+                <TableCell className="font-medium">{group.id}</TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-2">
-                    {group.members.map((member: any) => (
-                      <Card key={member.id}>
-                        <CardContent className="font-medium">
-                          {member.username}
-                        </CardContent>
+                    {group.group_member.map((memberID: number) => (
+                      <Card key={memberID}>
+                        <CardHeader>
+                          <UserInfoCardTitle userID={memberID} />
+                        </CardHeader>
                         <CardFooter>
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -95,28 +81,44 @@ export function GroupsTable({
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
-                              <DropdownMenuItem>Delete</DropdownMenuItem>
+                            <DropdownMenuContent align="start">
+                              <DropdownMenuItem>
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() =>
+                                    surveyGroupDeleteMember({
+                                      token: cookies.get("token") as string,
+                                      allGroups: groups,
+                                      surveyID,
+                                      groupID: group.id,
+                                      userID: memberID,
+                                    })
+                                  }
+                                >
+                                  Delete
+                                </Button>
+                              </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </CardFooter>
                       </Card>
                     ))}
-                    <SurveyUserSearch
-                      callback={(userID) => {
+                    <SurveyUserSearchDialog
+                      callback={({ userID }: { userID: number }) => {
                         surveyGroupAddMember({
-                          surveyID: surveyID,
-                          groupID: group.group_id,
-                          userID: userID.userID,
+                          token: cookies.get("token") as string,
+                          allGroups: groups,
+                          surveyID,
+                          groupID: group.id,
+                          userID,
                         });
                       }}
                     >
                       <Button aria-label="Add Member" variant="ghost">
                         <PlusCircle className="h-4 w-4" />
                       </Button>
-                    </SurveyUserSearch>
+                    </SurveyUserSearchDialog>
                   </div>
                 </TableCell>
                 <TableCell>
@@ -128,9 +130,7 @@ export function GroupsTable({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -149,7 +149,14 @@ export function GroupsTable({
 }
 
 export default function Groups({ params }: { params: { id: number } }) {
-  const allGroups = surveyAllgroupsMembersInfo({ surveyID: params.id });
+  const { data, isLoading, isError } = surveyAllGroups({
+    id: params.id,
+    pageSize: -1,
+    pageNo: -1,
+  });
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+  const allGroups = data.data.list;
   return (
     <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -170,13 +177,13 @@ export default function Groups({ params }: { params: { id: number } }) {
             </div>
           </div>
           <TabsContent value="all">
-            <GroupsTable groups={allGroups} surveyID={params.id} />
+            <GroupsTable surveyID={params.id} groups={allGroups} />
           </TabsContent>
           <TabsContent value="full">
-            <GroupsTable groups={allGroups} surveyID={params.id} />
+            <GroupsTable surveyID={params.id} groups={allGroups} />
           </TabsContent>
           <TabsContent value="incomplete">
-            <GroupsTable groups={allGroups} surveyID={params.id} />
+            <GroupsTable surveyID={params.id} groups={allGroups} />
           </TabsContent>
         </Tabs>
       </main>

@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.sustech.groupup.entity.api.GroupWithMemberDTO;
 import com.sustech.groupup.entity.db.GroupResponseEntity;
 import com.sustech.groupup.entity.db.RequestEntity;
+import com.sustech.groupup.entity.db.UserEntity;
 import com.sustech.groupup.services.GroupResponseService;
 import com.sustech.groupup.services.GroupService;
 import com.sustech.groupup.services.RequestService;
@@ -115,5 +116,13 @@ public class UserController {
     @GetMapping("/queryuserout")
     public Response getUsernameFromUserId(@RequestParam int userId) {
         return Response.getSuccess("success",userService.getUserById(userId).getUsername());
+    }
+    @GetMapping("/getbyauth")
+    public Response getUserByAuth(long request_user_id) {
+        UserEntity userEntity = userService.getUserById(request_user_id);
+        Map<String, Object> data = new HashMap<>();
+        data.put("user", userEntity.getId());
+        data.put("username", userEntity.getUsername());
+        return Response.getSuccess("success",data);
     }
 }

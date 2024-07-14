@@ -12,5 +12,5 @@ public interface QueryService {
     void updateStatusByQueryId(long id, int status);
     IPage<QueryEntity> getQueryList(Long surveyId, int pageSize, int pageNo, String queryOwner);
     void deletQueryBySurveyId(long id);
-//    Long getQueryIdByMemberIdAndSurveyId(long memberId, long surveyId);
+    Long getQueryIdByMemberIdAndSurveyId(long memberId, long surveyId);
 }

@@ -53,8 +53,9 @@ public class QueryServiceImpl implements QueryService {
         queryMapper.deleteBySurveyId(id);
     }
 
-//    @Override
-//    public Long getQueryIdByMemberIdAndSurveyId(long memberId, long surveyId) {
-//        return queryMapper.getQueryIdByMemberIdAndSurveyId(memberId, surveyId);
-//    }
+
+    @Override
+    public Long getQueryIdByMemberIdAndSurveyId(long memberId, long surveyId) {
+        return queryMapper.getQueryIdByMemberIdAndSurveyId(memberId, surveyId);
+    }
 }

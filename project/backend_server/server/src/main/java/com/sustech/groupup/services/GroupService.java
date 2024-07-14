@@ -15,4 +15,5 @@ public interface GroupService {
     void addGroupMember(Long groupId, Long memberId);
     void createGroup(GroupEntity group);
     IPage<GroupWithMemberDTO> getGroupList(int page, int limit, Long surveyId);
+    void deleteGroupMembersByGroupId(Long groupId);
 }

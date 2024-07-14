@@ -10,6 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupWithMemberDTO {
-    private Long group_id;
-    private List<Long> member_ids;
+    private Long Id;
+    private List<Long> groupMember;
 }

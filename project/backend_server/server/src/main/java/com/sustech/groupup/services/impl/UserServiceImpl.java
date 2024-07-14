@@ -85,4 +85,9 @@ public class UserServiceImpl implements UserService {
         //converting user to DTO
         return users.stream().map(e -> new UserPublicQueryDTO(e.getId(), e.getUsername())).toList();
     }
+
+    @Override
+    public UserEntity getUserById(long id) {
+        return userMapper.selectById(id);
+    }
 }

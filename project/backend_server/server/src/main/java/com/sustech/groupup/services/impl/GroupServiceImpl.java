@@ -70,5 +70,10 @@ public class GroupServiceImpl implements GroupService {
         return groupWithMemberDTOIPage;
     }
 
+    @Override
+    public void deleteGroupMembersByGroupId(Long groupId) {
+        groupMapper.deleteAllMembersByGroupId(groupId);
+    }
+
 
 }

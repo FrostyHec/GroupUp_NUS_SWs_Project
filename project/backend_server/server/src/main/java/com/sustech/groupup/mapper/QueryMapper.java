@@ -14,6 +14,6 @@ public interface QueryMapper extends BaseMapper<QueryEntity> {
     @Delete("delete from query where survey_id=#{surveyId}")
     void deleteBySurveyId(@Param("surveyId") Long surveyId);
 
-//    @Select("select id from query q where member_id=#{memberId} and survey_id=#{surveyId}")
-//    Long getQueryIdByMemberIdAndSurveyId(@Param("memberId") Long memberId, @Param("surveyId") Long surveyId);
+    @Select("select id from query where member_id=#{memberId} and survey_id=#{surveyId}")
+    Long getQueryIdByMemberIdAndSurveyId(Long memberId,Long surveyId);
 }

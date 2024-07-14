@@ -112,4 +112,8 @@ public class UserController {
         return Response.getSuccess("success",data);
     }
 
+    @GetMapping("/queryuserout")
+    public Response getUsernameFromUserId(@RequestParam int userId) {
+        return Response.getSuccess("success",userService.getUserById(userId).getUsername());
+    }
 }

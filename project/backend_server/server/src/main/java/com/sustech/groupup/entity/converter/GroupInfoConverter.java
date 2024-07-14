@@ -12,8 +12,8 @@ public class GroupInfoConverter {
     private final GroupMapper groupMapper;
     public GroupWithMemberDTO toDTO(GroupEntity groupEntity) {
         GroupWithMemberDTO dto = new GroupWithMemberDTO();
-        dto.setGroup_id(groupEntity.getId());
-        dto.setMember_ids(groupMapper.getMembersByGroupId(groupEntity.getId()));
+        dto.setId(groupEntity.getId());
+        dto.setGroupMember(groupMapper.getMembersByGroupId(groupEntity.getId()));
         return dto;
     }
 }

@@ -26,4 +26,6 @@ public interface GroupMapper extends BaseMapper<GroupEntity> {
 
     @Insert("insert into group_member (group_id, member_id) VALUES (#{groupId},#{memberId})")
     void insertMemberByGroupId(Long groupId, Long memberId);
+
+
 }

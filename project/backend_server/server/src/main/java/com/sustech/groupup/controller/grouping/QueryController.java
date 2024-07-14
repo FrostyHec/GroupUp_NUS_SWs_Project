@@ -26,9 +26,9 @@ public class QueryController {
     private final QueryService queryService;
 
     @GetMapping("/{number}")
-    public Response getQueryById (@PathVariable long number, @PathVariable String surveyId) throws JsonProcessingException {
+    public Response getQueryById (@PathVariable long number) {
         var resp = queryConverter.toDTO(queryService.getQueryById(number));
-        return Response.getSuccess("success",resp);
+        return Response.getSuccess("success",Map.of("query",resp));
     }
 
     @PostMapping()
@@ -36,7 +36,7 @@ public class QueryController {
         QueryEntity queryEntity = queryConverter.toEntity(queryDTO);
         queryEntity.setSurveyId(surveyId);
         queryService.createQuery(queryEntity);
-        return Response.getSuccess("success",queryEntity.getId());
+        return Response.getSuccess("success",Map.of("id",(queryEntity.getId())));
     }
 
     @PutMapping("/{number}")
@@ -44,7 +44,7 @@ public class QueryController {
         QueryEntity queryEntity = queryConverter.toEntity(queryDTO);
         queryEntity.setId(number);
         queryService.updateQuery(queryEntity);
-        return Response.getSuccess("success",queryDTO);
+        return Response.getSuccess("success",Map.of("query",queryDTO));
     }
 
     @DeleteMapping("/{number}")
@@ -53,7 +53,7 @@ public class QueryController {
         return Response.getSuccess("success");
     }
 
-    @PostMapping("/{number}/status")
+    @PutMapping("/{number}/status")
     public Response updateSurveyStatusById (@PathVariable long number, @RequestParam int status) {
         queryService.updateStatusByQueryId(number,status);
         return Response.getSuccess("success","");
@@ -62,8 +62,7 @@ public class QueryController {
     @GetMapping("/{number}/status")
     public Response getQueryStatusById(@PathVariable long number) {
         QueryEntity queryEntity = queryService.getQueryById(number);
-        return Response.getSuccess("success",queryEntity.getStatus());
+        return Response.getSuccess("success",Map.of("status",queryEntity.getStatus()));
     }
-
 
 }

@@ -26,6 +26,8 @@ import {
   PersonalInfoFieldInput,
 } from "@/schemas/survey";
 import { userId, userName } from "@/actions/user";
+import { userAllOwnSurveys } from "@/actions/user";
+import { userAllParticipateSurveys } from "@/actions/user";
 import { sampleSurvey } from "@/components/data/survey-data";
 import {
   Drawer,

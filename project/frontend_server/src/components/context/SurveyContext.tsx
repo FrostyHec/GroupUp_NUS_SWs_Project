@@ -8,13 +8,17 @@ import {
   useState,
 } from "react";
 import { userId } from "@/actions/user";
+import {
+  userAllOwnSurveys,
+  userAuthInfo,
+  userAllParticipateSurveys,
+} from "@/actions/user";
 import { sampleSurvey } from "../data/survey-data";
 
 type SurveyContextType = {
   ownSurveyId: number[];
   setOwnSurveyId: Dispatch<SetStateAction<number[]>>;
   addOwnSurveyId: (surveyId: number) => void;
-
 
   participateSurveyId: number[];
   setParticipateSurveyId: Dispatch<SetStateAction<number[]>>;
@@ -63,8 +67,10 @@ export function SurveyContextProvider({ children }: { children: ReactNode }) {
   };
 
   const addOwnSurveyId = (surveyId: number) => {
-    setOwnSurveyId([...ownSurveyId, surveyId]);
-  }
+    const ownSurveys = [...ownSurveyId];
+    ownSurveys.push(surveyId);
+    setOwnSurveyId(ownSurveys);
+  };
 
   return (
     <SurveyContext.Provider

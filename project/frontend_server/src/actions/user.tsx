@@ -211,7 +211,7 @@ export function userInfo({ userID }: { userID: number }) {
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/queryuserout`,
+    `${process.env.NEXT_PUBLIC_API_URL}/user/queryuserout`,
     fetcher
   );
   return {

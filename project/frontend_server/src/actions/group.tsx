@@ -85,20 +85,20 @@ export async function surveyAllGroupsUpdate({
 //POST
 //<backend>/survey/{id}/requestgroup
 export async function surveyGroupRequest({
+  token,
   surveyID,
   fromUserID,
   isToGroup,
   toID,
   message,
 }: {
+  token: string;
   surveyID: number;
   fromUserID: number;
   isToGroup: boolean;
   toID: number;
   message: string;
 }) {
-  const cookies = useCookies();
-  const token = cookies.get("token") as string;
   const time = new Date().getTime();
   return await axios.post(
     `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/requestgroup`,
@@ -117,18 +117,18 @@ export async function surveyGroupRequest({
 //DELETE
 //<backend>/survey/{id}/leavegroup
 export async function surveyGroupLeave({
+  token,
   surveyID,
   fromUserID,
   toGroupID,
   message,
 }: {
+  token: string;
   surveyID: number;
   fromUserID: number;
   toGroupID: number;
   message: string;
 }) {
-  const cookies = useCookies();
-  const token = cookies.get("token") as string;
   const time = new Date().getTime();
   return await axios.delete(
     `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/requestgroup`,

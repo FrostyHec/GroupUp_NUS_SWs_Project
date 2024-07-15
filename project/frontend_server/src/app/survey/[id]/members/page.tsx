@@ -149,8 +149,8 @@ export default function Members({ params }: { params: { id: number } }) {
   );
   if (isError) return <div>Error</div>;
   const allMembers = {
-    owners: data.data.info.owners,
-    members: data.data.info.members,
+    owners: data.data.owners,
+    members: data.data.members,
   };
   return (
     <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">

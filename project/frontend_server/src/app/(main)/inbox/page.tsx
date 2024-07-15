@@ -1,89 +1,134 @@
 "use client";
 import { ComponentProps } from "react";
 import { formatDistanceToNow } from "date-fns";
-
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Mail, mails } from "@/components/data/inbox-data";
 import { useMail } from "@/actions/message";
+import Avatar from "react-nice-avatar";
+import React from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  NotificationData,
+  ApplicationData,
+  FeedbackData,
+  MessageItem
+} from "@/schemas/message";
 
-interface MailListProps {
-  items: Mail[];
-}
-
-function InboxMessageList({ items = mails }: MailListProps) {
+export default function InboxMessageList() {
   const [mail, setMail] = useMail();
 
   return (
     <ScrollArea className="container h-screen lg:w-1/2 rounded-md p-4">
-      <div className="flex flex-col gap-2 p-4 pt-0">
-        {items.map((item) => (
-          <button
-            key={item.id}
-            className={cn(
-              "flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent",
-              mail.selected === item.id && "bg-muted"
-            )}
-            onClick={() =>
-              setMail({
-                ...mail,
-                selected: item.id,
-              })
-            }
-          >
-            <div className="flex w-full flex-col gap-1">
-              <div className="flex items-center">
-                <div className="flex items-center gap-2">
-                  <div className="font-semibold">{item.name}</div>
-                  {!item.read && (
-                    <span className="flex h-2 w-2 rounded-full bg-blue-600" />
-                  )}
-                </div>
-                <div
-                  className={cn(
-                    "ml-auto text-xs",
-                    mail.selected === item.id
-                      ? "text-foreground"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {formatDistanceToNow(new Date(item.date), {
-                    addSuffix: true,
-                  })}
-                </div>
-              </div>
-              <div className="text-xs font-medium">{item.subject}</div>
-            </div>
-            <div className="text-xs text-muted-foreground">{item.text}</div>
-            {item.labels.length ? (
-              <div className="flex items-center gap-2">
-                {item.labels.map((label) => (
-                  <Badge key={label} variant={getBadgeVariantFromLabel(label)}>
-                    {label}
-                  </Badge>
-                ))}
-              </div>
-            ) : null}
-          </button>
-        ))}
-      </div>
+        
     </ScrollArea>
   );
 }
 
-function getBadgeVariantFromLabel(
-  label: string
-): ComponentProps<typeof Badge>["variant"] {
-  if (["work"].includes(label.toLowerCase())) {
-    return "default";
-  }
+export const NotificationCard: React.FC<NotificationData> = ({
+  surveyName,
+  title,
+  content,
+}) => {
+  return (
+    <Card className="bg-white p-4 shadow-lg rounded-md border border-gray-200">
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{surveyName}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className="mt-2 text-gray-700">{content}</p>{" "}
+      </CardContent>
+      <CardFooter>
+        <Badge key="notification" variant="outline">
+          Notification
+        </Badge>
+      </CardFooter>
+    </Card>
+  );
+};
 
-  if (["personal"].includes(label.toLowerCase())) {
-    return "outline";
-  }
+export const ApplicationCard: React.FC<ApplicationData> = ({
+  userAvatar,
+  surveyName,
+  userName,
+  requestText,
+  onApprove,
+  onReject,
+}) => {
+  return (
+    <Card className="bg-white p-4 shadow-lg rounded-md border border-gray-200 flex items-start space-x-4">
+      <CardHeader>
+        <Avatar style={{ width: 20, height: 20 }} {...userAvatar} />
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold">{userName}</h3>
+          <p className="text-gray-700 mt-1">{surveyName}</p>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <p className="text-gray-600 mt-2">{requestText}</p>
+        <div className="mt-4 flex space-x-2">
+          <Button onClick={onApprove} className="bg-green-200">
+            Accept
+          </Button>
+          <Button onClick={onReject} className="bg-red-200">
+            Decline
+          </Button>
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Badge key="application" variant="default">
+          Application
+        </Badge>
+      </CardFooter>
+    </Card>
+  );
+};
 
-  return "secondary";
-}
-
-export default InboxMessageList;
+export const FeedbackCard: React.FC<FeedbackData> = ({
+  userAvatar,
+  surveyName,
+  approverName,
+  isApproved,
+}) => {
+  return (
+    <Card
+      className={`bg-white p-4 shadow-lg rounded-md border border-gray-200 flex items-start space-x-4 ${
+        isApproved ? "border-green-500" : "border-red-500"
+      }`}
+    >
+      <CardHeader>
+        <Avatar style={{ width: 20, height: 20 }} {...userAvatar} />
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold">{approverName}</h3>
+          <p className="text-gray-700 mt-1">{surveyName}</p>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="flex-1">
+          <p
+            className={`mt-2 ${isApproved ? "text-green-500" : "text-red-500"}`}
+          >
+            {isApproved
+              ? `I have accepted your request!`
+              : `Sorry, I can't accept your request.`}
+          </p>
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Badge key="feedback" variant="secondary">
+          Feedback
+        </Badge>
+      </CardFooter>
+    </Card>
+  );
+};

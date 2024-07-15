@@ -48,6 +48,7 @@ export type FormElement = {
     submitValue?: SubmitFunction;
     isInvalid?: boolean;
     defaultValue?: string;
+    disabled?: boolean;
   }>;
 
   // The component that will be rendered in the properties panel.

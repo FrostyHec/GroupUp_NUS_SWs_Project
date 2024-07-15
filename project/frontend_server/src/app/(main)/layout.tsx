@@ -28,24 +28,7 @@ export default function MainLayout({
       <nav className="flex justify-between items-center border-b border-border h-[60px] px-4 py-2">
         <SurveySwithcer />
         <MainNav />
-        <div className="flex items-center gap-4 md:gap-2 lg:gap-4">
-          <ThemeSwitcher />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button>
-                <NiceAvatar
-                  style={{ width: "3rem", height: "3rem" }}
-                  {...defaultConfig}
-                />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuItem>Password Settings</DropdownMenuItem>
-              <DropdownMenuItem>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <ThemeSwitcher />
       </nav>
       {children}
     </div>

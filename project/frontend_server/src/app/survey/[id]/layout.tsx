@@ -5,6 +5,16 @@ import SurveySwithcer from "@/components/app/nav-survey-swithcer";
 import { SurveyContextProvider } from "@/components/context/SurveyContext";
 import useSurveys from "@/components/hooks/useSurveys";
 import { use, useEffect } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import NiceAvatar from "react-nice-avatar";
+import { GetAvatarConfig } from "@/actions/form";
+import { defaultConfig } from "@/components/data/survey-data";
 
 export default function Layout({
   children,

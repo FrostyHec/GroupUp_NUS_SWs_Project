@@ -33,6 +33,7 @@ import {
   surveyAddMember,
   surveyDeleteMember,
 } from "@/controller/survey-members";
+import Loading from "./loading";
 
 function UsernameTableCell({ userID }: { userID: number }) {
   const { data, isLoading, isError } = userInfo({
@@ -143,7 +144,9 @@ export function MembersTable({
 export default function Members({ params }: { params: { id: number } }) {
   const cookies = useCookies();
   const { data, isLoading, isError } = surveyInfo({ surveyID: params.id });
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return (
+    <Loading />
+  );
   if (isError) return <div>Error</div>;
   const allMembers = {
     owners: data.data.info.owners,

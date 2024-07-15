@@ -90,11 +90,13 @@ function FormComponent({
   submitValue,
   isInvalid,
   defaultValue,
+  disabled,
 }: {
   elementInstance: FormElementInstance;
   submitValue?: SubmitFunction;
   isInvalid?: boolean;
   defaultValue?: string;
+  disabled?: boolean;
 }) {
   const element = elementInstance as CustomInstance;
 
@@ -121,6 +123,7 @@ function FormComponent({
           setError(!valid);
           submitValue(element.id, value);
         }}
+        disabled={disabled}
       >
         <SelectTrigger className={cn("w-full", error && "border-red-500")}>
           <SelectValue placeholder={placeHolder} />

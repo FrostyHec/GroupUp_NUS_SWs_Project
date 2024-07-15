@@ -32,13 +32,15 @@ import { SurveyUserSearchDialog } from "@/components/app/survey-user-search-dial
 import { surveyAllGroups } from "@/actions/group";
 import { userInfo } from "@/actions/user";
 import { useCookies } from "next-client-cookies";
+import Loading from "./loading";
+import ErrorPage from "./error";
 
 function UserInfoCardTitle({ userID }: { userID: number }) {
   const { data, isLoading, isError } = userInfo({
     userID: userID,
   });
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>;
+  if (isLoading) return <Loading />;
+  if (isError) return <ErrorPage />;
   return <CardTitle className="text-base">{data.data.username}</CardTitle>;
 }
 

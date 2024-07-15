@@ -84,11 +84,13 @@ function FormComponent({
   submitValue,
   isInvalid,
   defaultValue,
+  disabled,
 }: {
   elementInstance: FormElementInstance;
   submitValue?: SubmitFunction;
   isInvalid?: boolean;
   defaultValue?: string;
+  disabled?: boolean;
 }) {
   const element = elementInstance as CustomInstance;
 
@@ -135,6 +137,7 @@ function FormComponent({
               submitValue(element.id, value);
             }}
             initialFocus
+            disabled={disabled}
           />
         </PopoverContent>
       </Popover>

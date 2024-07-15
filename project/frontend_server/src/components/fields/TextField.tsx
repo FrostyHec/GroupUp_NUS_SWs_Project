@@ -84,11 +84,13 @@ function FormComponent({
   submitValue,
   isInvalid,
   defaultValue,
+  disabled,
 }: {
   elementInstance: FormElementInstance;
   submitValue?: SubmitFunction;
   isInvalid?: boolean;
   defaultValue?: string;
+  disabled?: boolean;
 }) {
   const element = elementInstance as CustomInstance;
 
@@ -118,6 +120,7 @@ function FormComponent({
           submitValue(element.id, e.target.value);
         }}
         value={value}
+        disabled={disabled}
       />
       {helperText && <p className={cn("text-muted-foreground text-[0.8rem]", error && "text-red-500")}>{helperText}</p>}
     </div>

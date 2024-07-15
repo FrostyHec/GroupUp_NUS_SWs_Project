@@ -9,6 +9,7 @@ import {
 } from "react";
 import { userId } from "@/actions/user";
 import { sampleSurvey } from "../data/survey-data";
+
 type SurveyContextType = {
   ownSurveyId: number[];
   setOwnSurveyId: Dispatch<SetStateAction<number[]>>;

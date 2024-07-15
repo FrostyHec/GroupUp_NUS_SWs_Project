@@ -1,32 +1,23 @@
 import { z } from "zod";
 import { AvatarFullConfig } from "react-nice-avatar";
 import { FormElementInstance } from "./form";
+import { Avatar } from "@radix-ui/react-avatar";
 
-//Store in survey/form
 export type PersonalInfoField = {
   id: number;
   label: string;
   placeholder: string;
 };
 
-//Store in query/formsubmission
+//Store in survey/form: questions
+export type PersonalInfo = {
+  fields: PersonalInfoField [];
+}
+
 export type PersonalInfoFieldInput = {
   id: number;
   input: string;
 };
-
-//Store in survey/form
-export type PersonalInfoFieldRestriction = {
-  id: number;
-  restriction: "NoRestriction" | "MustSame" | "MustDifferent";
-  allowModify: boolean;
-}
-
-//Store in survey/form: questions
-export type PersonalInfo = {
-  avatar: AvatarFullConfig | null;
-  fields: PersonalInfoField [];
-}
 
 //Store in query/formsubmission
 export type PersonalInfoInput = {
@@ -40,7 +31,6 @@ export type PersonalInfoInput = {
 //Store in survey/form: group_restrictions
 export type GroupSettings = {
   groupSize: number;
-  customized_restrictions: PersonalInfoFieldRestriction[];
 };
 
 export type Survey = {
@@ -49,11 +39,10 @@ export type Survey = {
   description: string;
   create_at: string;
   update_at: string;
-  published: boolean;
   personal_info: PersonalInfo | null;
   owners: number[];
   members: number[];
-  content: string; // Question for the survey
+  content: string; // TODO: 可能可以改成 FormElementInstance[]
   status: "closed" | "archived" | "open";
   group_restrictions: GroupSettings | null;
 };
@@ -65,25 +54,20 @@ export type FormSubmission = {
   survey_id: number;
   member_id: number;
   status: "edit" | "done";
-  content: string; // Answer for the form
+  content: string; // TODO: 可能可以改成 FormElementInstance[]
   personal_info: PersonalInfoInput;
 };
 
-const personalInfoDefineSchema = z.object({
-  label: z.string(),
-  placeholder: z.string().max(15).optional(),
-});
-
-const personalInfoRestrictionSchema = z.object({
-  restriction: z.string(),
-  allowModify: z.boolean(),
+export const personalInfoInputSchema = z.object({
+  id: z.number(),
+  input: z.string().max(20),
 });
 
 export const surveySchema = z.object({
   name: z.string().min(4),
-  description: z.string().optional()
+  description: z.string().optional(),
+  group_size: z.number().min(1).max(10),
 });
 
 export type surveySchemaType = z.infer<typeof surveySchema>;
-export type personalInfoSchemaType = z.infer<typeof personalInfoDefineSchema>;
-export type personalInfoRestrictionSchemaType = z.infer<typeof personalInfoRestrictionSchema>;
+export type personalInfoInputSchemaType = z.infer<typeof personalInfoInputSchema>;

@@ -8,8 +8,15 @@ import { toast } from "sonner";
 import { ImSpinner2 } from "react-icons/im";
 import { SubmitForm } from "@/actions/form";
 import { useParams } from "next/navigation";
+import { Edit2Icon } from "lucide-react";
 
-function FormSubmitComponent({ content, surveyId }: { content: FormElementInstance[], surveyId: number }) {
+function FormSubmitComponent({
+  content,
+  surveyId,
+}: {
+  content: FormElementInstance[];
+  surveyId: number;
+}) {
   const formValues = useRef<{ [key: string]: string }>({});
   const formErrors = useRef<{ [key: string]: boolean }>({});
   const [renderKey, setRenderKey] = useState(new Date().getTime());
@@ -44,8 +51,8 @@ function FormSubmitComponent({ content, surveyId }: { content: FormElementInstan
     const validForm = validateForm();
     if (!validForm) {
       setRenderKey(new Date().getTime());
-      toast("Error",{
-        description: "please check the form for errors"
+      toast("Error", {
+        description: "please check the form for errors",
       });
       return;
     }
@@ -54,9 +61,12 @@ function FormSubmitComponent({ content, surveyId }: { content: FormElementInstan
       const jsonContent = JSON.stringify(formValues.current);
       await SubmitForm(surveyId, jsonContent);
       setSubmitted(true);
+      toast("Success", {
+        description: "Form submitted successfully",
+      });
     } catch (error) {
-      toast("Error",{
-        description: "Something went wrong"
+      toast("Error", {
+        description: "Something went wrong",
       });
     }
   };
@@ -64,9 +74,32 @@ function FormSubmitComponent({ content, surveyId }: { content: FormElementInstan
   if (submitted) {
     return (
       <div className="flex justify-center w-full h-full items-center p-8">
-        <div className="max-w-[620px] flex flex-col gap-4 flex-grow bg-background w-full p-8 overflow-y-auto border shadow-xl shadow-blue-700 rounded">
-          <h1 className="text-2xl font-bold">Form submitted</h1>
-          <p className="text-muted-foreground">Thank you for submitting the form, you can close this page now.</p>
+        <div className="max-w-[620px] flex flex-col gap-4 flex-grow bg-background w-full p-8 overflow-y-auto border shadow-xl shadow-blue-700 rounded-2xl">
+          {content.map((element) => {
+            const FormElement = FormElements[element.type].formComponent;
+            return (
+              <FormElement
+                key={element.id}
+                elementInstance={element}
+                submitValue={submitValue}
+                isInvalid={false}
+                defaultValue={formValues.current[element.id]}
+                disabled={true}
+              />
+            );
+          })}
+          <Button
+            className="mt-8"
+            onClick={() => {
+              setSubmitted(false);
+            }}
+            disabled={pending}
+          >
+            <>
+              <Edit2Icon className="mr-2 size-3" />
+              Edit
+            </>
+          </Button>
         </div>
       </div>
     );
@@ -76,7 +109,7 @@ function FormSubmitComponent({ content, surveyId }: { content: FormElementInstan
     <div className="flex justify-center w-full h-full items-center p-8">
       <div
         key={renderKey}
-        className="max-w-[620px] flex flex-col gap-4 flex-grow bg-background w-full p-8 overflow-y-auto border shadow-xl shadow-blue-700 rounded"
+        className="max-w-[620px] flex flex-col gap-4 flex-grow bg-background w-full p-8 overflow-y-auto border shadow-xl shadow-blue-700 rounded-2xl"
       >
         {content.map((element) => {
           const FormElement = FormElements[element.type].formComponent;
@@ -87,6 +120,7 @@ function FormSubmitComponent({ content, surveyId }: { content: FormElementInstan
               submitValue={submitValue}
               isInvalid={formErrors.current[element.id]}
               defaultValue={formValues.current[element.id]}
+              disabled={pending}
             />
           );
         })}

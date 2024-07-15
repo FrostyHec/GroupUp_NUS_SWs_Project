@@ -81,11 +81,13 @@ function FormComponent({
   submitValue,
   isInvalid,
   defaultValue,
+  disabled,
 }: {
   elementInstance: FormElementInstance;
   submitValue?: SubmitFunction;
   isInvalid?: boolean;
   defaultValue?: string;
+  disabled?: boolean;
 }) {
   const element = elementInstance as CustomInstance;
 
@@ -115,6 +117,7 @@ function FormComponent({
           setError(!valid);
           submitValue(element.id, stringValue);
         }}
+        disabled={disabled}
       />
       <div className="grid gap-1.5 leading-none">
         <Label htmlFor={id} className={cn(error && "text-red-500")}>

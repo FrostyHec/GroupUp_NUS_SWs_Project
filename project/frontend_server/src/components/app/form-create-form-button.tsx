@@ -36,7 +36,8 @@ function CreateFormBtn() {
   const form = useForm<surveySchemaType>({
     resolver: zodResolver(surveySchema),
   });
-  const { setCurrentSurveyId, setRoleBySurveyId, addOwnSurveyId } = useSurveys();
+  const { setCurrentSurveyId, setRoleBySurveyId, addOwnSurveyId } =
+    useSurveys();
 
   async function onSubmit(values: surveySchemaType) {
     try {
@@ -107,6 +108,25 @@ function CreateFormBtn() {
                       <FormLabel>Description</FormLabel>
                       <FormControl>
                         <Textarea rows={5} {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="group_size"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Group Size </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(Number(e.target.value))
+                          }
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

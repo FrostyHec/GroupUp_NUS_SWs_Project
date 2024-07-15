@@ -3,13 +3,17 @@ import { sampleSurvey } from "@/components/data/survey-data";
 import { sampleFormSubmission } from "@/components/data/query-data";
 import {
   FormSubmission,
+  PersonalInfo,
+  PersonalInfoField,
   PersonalInfoFieldInput,
   PersonalInfoInput,
   Survey,
+  surveySchema,
+  surveySchemaType,
 } from "@/schemas/survey";
-import { surveySchema, surveySchemaType } from "@/schemas/survey";
 import { userId } from "@/actions/user";
 import { useState } from "react";
+import { toast } from "sonner";
 // import prisma from "@/lib/prisma"; // Orginally the data is stored using prisma
 // import { currentUser } from "@clerk/nextjs"; // Orginally the user data is managed by clerk
 
@@ -33,22 +37,25 @@ export async function GetFormStats() {
 export async function CreateSurvey(data: surveySchemaType) {
   const validation = surveySchema.safeParse(data);
   if (!validation.success) {
-    throw new Error("form not valid");
+    toast("Survey information invalid",{
+      description: "Please check out and try again",
+    })
   }
-  const { name, description } = data;
+  const { name, description, group_size } = data;
   const survey: Survey = {
     id: sampleSurvey.length + 1,
     name: name ? name : "Untitled",
     description: description ? description : "No description",
     create_at: String(new Date()),
     update_at: String(new Date()),
-    published: false,
     personal_info: null,
     owners: [userId],
     members: [],
-    content: "",
+    content: JSON.stringify([]), // TODO: 可能可以改成 FormElementInstance[]
     status: "closed",
-    group_restrictions: null,
+    group_restrictions: {
+      groupSize: group_size,
+    },
   };
   sampleSurvey.push(survey);
   console.log("Created survey: ", survey);
@@ -109,15 +116,40 @@ export async function CreateFormSubmission(
     id: sampleFormSubmission.length + 1,
     create_at: String(new Date()),
     update_at: String(new Date()),
-    personal_info: personal_info,,
+    personal_info: personal_info,
     survey_id: id,
     member_id: userId,
     status: "edit", // Updated the status property to be of type "edit" | "done"
-    content: "",
+    content: JSON.stringify([]), // TODO: 可能可以改成 FormElementInstance[]
   };
   sampleFormSubmission.push(submission);
   return submission;
 }
+
+export async function UpdatePersonalInfo(id:number, personal_info: PersonalInfoInput) {
+  console.log("Update personal info by id: ", id);
+  let formSubmission = sampleFormSubmission.find(
+    (f) => f.survey_id === id && f.member_id === userId
+  );
+  if (!formSubmission) {
+    throw new FormSubmissionNotFoundErr();
+  }
+  formSubmission.personal_info = personal_info;
+  formSubmission.update_at = String(new Date());
+  return formSubmission;
+}
+
+export async function UpdatePersonalInfoDefine(id: number, personal_info: PersonalInfo) {
+  console.log("Update personal info define by id: ", id);
+  let formContent = sampleSurvey.find((f) => f.id === id);
+  if (!formContent) {
+    throw new FormNotFoundErr();
+  }
+  formContent.personal_info = personal_info;
+  formContent.update_at = String(new Date());
+  return formContent;
+}
+
 
 export async function SubmitForm(id: number, content: string) {
   console.log("Submit form by id: ", id);
@@ -132,4 +164,35 @@ export async function SubmitForm(id: number, content: string) {
   formSubmission.update_at = String(new Date());
   formSubmission.status = "done";
   return formSubmission;
+}
+
+export async function GetAvatarConfig(id: number) {
+  const submission = sampleFormSubmission.find(
+    (f) => f.survey_id === id && f.member_id === userId
+  );
+  if (!submission) {
+    console.log("No submission found for survey id: ", id);
+    return null;
+  }
+  const avatarConfig = submission.personal_info.avatar;
+  return avatarConfig;
+}
+
+export async function GetSurveyStatus(id: number) {
+  console.log("Get survey status by id: ", id);
+  let formContent = sampleSurvey.find((f) => f.id === id);
+  if (!formContent) {
+    throw new FormNotFoundErr();
+  }
+  return formContent.status;
+}
+
+export async function UpdateSurveyStatus(id: number, status: "open" | "closed" | "archived") {
+  console.log("Update survey status by id: ", id);
+  let formContent = sampleSurvey.find((f) => f.id === id);
+  if (!formContent) {
+    throw new FormNotFoundErr();
+  }
+  formContent.status = status;
+  return formContent;
 }

@@ -21,7 +21,7 @@ import { formatDistance } from "date-fns";
 import Link from "next/link";
 import { BiRightArrowAlt } from "react-icons/bi";
 import { Survey } from "@/schemas/survey";
-import { userAllOwnSurveys } from "@/_actions/user";
+import { userAllOwnSurveys } from "@/actions/user";
 import { userAllParticipateSurveys } from "@/actions/user";
 import { userId } from "@/actions/user";
 import { sampleSurvey } from "@/components/data/survey-data";
@@ -119,13 +119,13 @@ function OwnFormCards() {
   return (
     <>
       {forms.map((form) => (
-        <OwnFormCard key={form.id} form={form} />
+        <FormCard key={form.id} form={form} />
       ))}
     </>
   );
 }
 
-function OwnFormCard({ form }: { form: Survey }) {
+function FormCard({ form }: { form: Survey }) {
   return (
     <Card>
       <CardHeader>
@@ -167,91 +167,8 @@ function MemFormCards() {
   return (
     <>
       {forms.map((form) => (
-        <MemFormCard key={form.id} form={form} />
+        <FormCard key={form.id} form={form} />
       ))}
     </>
-  );
-}
-
-function MemFormCard({ form }: { form: Survey }) {
-  const form = useForm<surveySchemaType>({
-    resolver: zodResolver(surveySchema),
-  });
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 justify-between">
-          <span className="truncate font-bold">{form.name}</span>
-          {form.status === "open" && <Badge>Published</Badge>}
-          {form.status === "closed" && (
-            <Badge variant={"destructive"}>Draft</Badge>
-          )}
-          {form.status === "archived" && (
-            <Badge variant={"outline"}>Archived</Badge>
-          )}
-        </CardTitle>
-        <CardDescription className="flex items-center justify-between text-muted-foreground text-sm">
-          {formatDistance(form.create_at, new Date(), {
-            addSuffix: true,
-          })}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="h-[20px] truncate text-sm text-muted-foreground">
-        {form.description || "No description"}
-      </CardContent>
-      <CardFooter>
-        <Drawer>
-          <DrawerTrigger asChild>
-            <Button asChild className="w-full mt-2 text-md gap-4">
-              View Survey <BiRightArrowAlt />
-            </Button>
-          </DrawerTrigger>
-          <DrawerContent>
-            <div className="container mx-auto w-5/6">
-              <DrawerHeader>
-                <DrawerTitle>Set up your personal info</DrawerTitle>
-                <DrawerDescription>
-                  Your personal info is crucial for other users to know you!
-                </DrawerDescription>
-              </DrawerHeader>
-              <div className="flex flex-col items-center my-7 space-y-4 h-1/2">
-                <Avatar
-                  style={{ width: "10rem", height: "10rem" }}
-                  {...avatar}
-                />
-                <Button onClick={handleAvatarChange} className="text-xs">
-                  Randomize an avatar
-                </Button>
-              </div>
-              <div className="items-center my-7 space-y-4 h-2/3">
-                {profileData.fields.map((field, index) => (
-                  <FieldForm
-                    key={index}
-                    label={field.label}
-                    value={fieldValues[index]}
-                    placeholder={field.placeHolder}
-                    editMode={true}
-                    onChange={(newValue) => handleInputChange(index, newValue)}
-                  />
-                ))}
-              </div>
-              <DrawerFooter>
-                <Button
-                  onClick={form.handleSubmit(onSubmit)}
-                  disabled={form.formState.isSubmitting}
-                  className="w-full mt-4"
-                >
-                  {!form.formState.isSubmitting && <span>Save</span>}
-                  {form.formState.isSubmitting && (
-                    <ImSpinner2 className="animate-spin" />
-                  )}
-                </Button>
-              </DrawerFooter>
-            </div>
-          </DrawerContent>
-        </Drawer>
-      </CardFooter>
-    </Card>
   );
 }

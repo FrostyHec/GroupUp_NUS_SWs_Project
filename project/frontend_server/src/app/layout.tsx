@@ -4,7 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { CookiesProvider } from "next-client-cookies/server";
 import { SurveyContextProvider } from "@/components/context/SurveyContext";
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -25,11 +25,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SurveyContextProvider>
-            <CookiesProvider>{children}<Toaster /></CookiesProvider>
-          </SurveyContextProvider>
+          <CookiesProvider>
+            <SurveyContextProvider>
+              {children}
+              <Toaster />
+            </SurveyContextProvider>
+          </CookiesProvider>
         </ThemeProvider>
-        
       </body>
     </html>
   );

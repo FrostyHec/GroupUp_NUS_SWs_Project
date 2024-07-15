@@ -7,13 +7,16 @@ import {
   useEffect,
   useState,
 } from "react";
-import { userId } from "@/actions/user";
+import {
+  userAllOwnSurveys,
+  userAuthInfo,
+  userAllParticipateSurveys,
+} from "@/actions/user";
 import { sampleSurvey } from "../data/survey-data";
 type SurveyContextType = {
   ownSurveyId: number[];
   setOwnSurveyId: Dispatch<SetStateAction<number[]>>;
   addOwnSurveyId: (surveyId: number) => void;
-
 
   participateSurveyId: number[];
   setParticipateSurveyId: Dispatch<SetStateAction<number[]>>;
@@ -31,14 +34,52 @@ type SurveyContextType = {
 export const SurveyContext = createContext<SurveyContextType | null>(null);
 
 export function SurveyContextProvider({ children }: { children: ReactNode }) {
-  const ownSurveys = sampleSurvey
-    .filter((survey) => survey.owners.includes(userId))
-    .map((survey) => survey.id);
-  const participateSurveys = sampleSurvey
-    .filter((survey) => survey.members.includes(userId))
-    .map((survey) => survey.id);
+  const { data, isLoading, isError } = userAuthInfo();
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+  return (
+    <SurveyContextProvider1
+      children={children}
+      userID={data.data.user_id}
+    ></SurveyContextProvider1>
+  );
+}
+
+export function SurveyContextProvider1({
+  children,
+  userID,
+}: {
+  children: ReactNode;
+  userID: number;
+}) {
+  const userId = userID;
+  const {
+    data: data1,
+    isLoading: isLoading1,
+    isError: isError1,
+  } = userAllOwnSurveys({
+    userID: userId,
+    pageSize: -1,
+    pageNo: -1,
+  });
+  if (isLoading1) return <div>Loading...</div>;
+  if (isError1) return <div>Error</div>;
+  const ownSurveys = data1.data.survey_ids;
+  const {
+    data: data2,
+    isLoading: isLoading2,
+    isError: isError2,
+  } = userAllParticipateSurveys({
+    userID: userId,
+    pageSize: -1,
+    pageNo: -1,
+  });
+  if (isLoading2) return <div>Loading...</div>;
+  if (isError2) return <div>Error</div>;
+  const participateSurveys = data2.data.survey_ids;
   const [ownSurveyId, setOwnSurveyId] = useState<number[]>(ownSurveys);
-  const [participateSurveyId, setParticipateSurveyId] = useState<number[]>(participateSurveys);
+  const [participateSurveyId, setParticipateSurveyId] =
+    useState<number[]>(participateSurveys);
 
   const [currentSurveyId, setCurrentSurveyId] = useState<number>(0);
   const [role, setRole] = useState<
@@ -62,8 +103,10 @@ export function SurveyContextProvider({ children }: { children: ReactNode }) {
   };
 
   const addOwnSurveyId = (surveyId: number) => {
-    setOwnSurveyId([...ownSurveyId, surveyId]);
-  }
+    const ownSurveys = [...ownSurveyId];
+    ownSurveys.push(surveyId);
+    setOwnSurveyId(ownSurveys);
+  };
 
   return (
     <SurveyContext.Provider

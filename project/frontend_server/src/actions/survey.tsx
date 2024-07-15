@@ -47,11 +47,9 @@ export async function surveyUpdateInfo({
   surveyInfo: any;
 }) {
   return await axios
-    .put(
-      `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}`,
-      { info: surveyInfo },
-      { headers: { Authorization: "Bearer " + token } }
-    )
+    .put(`${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}`, surveyInfo, {
+      headers: { Authorization: "Bearer " + token },
+    })
     .then((res) => res.data);
 }
 

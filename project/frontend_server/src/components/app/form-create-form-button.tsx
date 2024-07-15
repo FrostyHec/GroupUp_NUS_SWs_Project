@@ -16,7 +16,7 @@ import {
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { toast } from "../ui/use-toast";
+import { toast } from "sonner";
 import { CreateSurvey } from "@/actions/form";
 import { BsFileEarmarkPlus } from "react-icons/bs";
 import { useRouter } from "next/navigation";
@@ -30,33 +30,35 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import useSurveys from "../hooks/useSurveys";
+import { useCookies } from "next-client-cookies";
+import { add } from "date-fns";
 
 function CreateFormBtn() {
+  const cookies = useCookies();
   const router = useRouter();
   const form = useForm<surveySchemaType>({
     resolver: zodResolver(surveySchema),
   });
-  const { setCurrentSurveyId, setRoleBySurveyId, addOwnSurveyId } = useSurveys();
+  const { setCurrentSurveyId, setRoleBySurveyId, addOwnSurveyId } =
+    useSurveys();
 
   async function onSubmit(values: surveySchemaType) {
-    try {
-      const formId = await CreateSurvey(values);
-      addOwnSurveyId(formId);
-      setCurrentSurveyId(formId);
-      setRoleBySurveyId(formId);
-      console.log(values);
-      toast({
-        title: "Success",
-        description: "Form created successfully",
-      });
-      router.push(`/survey/${formId}/dashboard`);
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Something went wrong, please try again later",
-        variant: "destructive",
-      });
-    }
+    CreateSurvey(cookies.get("token") as string, values).then((res) => {
+      try {
+        addOwnSurveyId(res.data.data.survey_id);
+        setCurrentSurveyId(res.data.data.survey_id);
+        setRoleBySurveyId(res.data.data.survey_id);
+        console.log(values);
+        toast("Success", {
+          description: "Form created successfully",
+        });
+        router.push(`/survey/${res.data.data.survey_id}/dashboard`);
+      } catch (error) {
+        toast("Error", {
+          description: "Something went wrong, please try again later"
+        });
+      }
+    });
   }
 
   return (

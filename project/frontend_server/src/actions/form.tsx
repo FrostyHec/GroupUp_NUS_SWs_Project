@@ -10,6 +10,7 @@ import {
 import { surveySchema, surveySchemaType } from "@/schemas/survey";
 import { userId } from "@/actions/user";
 import { useState } from "react";
+import axios from "axios";
 // import prisma from "@/lib/prisma"; // Orginally the data is stored using prisma
 // import { currentUser } from "@clerk/nextjs"; // Orginally the user data is managed by clerk
 
@@ -30,7 +31,7 @@ export async function GetFormStats() {
   };
 }
 
-export async function CreateSurvey(data: surveySchemaType) {
+export async function CreateSurvey(token: string, data: surveySchemaType) {
   const validation = surveySchema.safeParse(data);
   if (!validation.success) {
     throw new Error("form not valid");
@@ -40,8 +41,8 @@ export async function CreateSurvey(data: surveySchemaType) {
     id: sampleSurvey.length + 1,
     name: name ? name : "Untitled",
     description: description ? description : "No description",
-    create_at: String(new Date()),
-    update_at: String(new Date()),
+    create_at: new Date().toISOString(),
+    update_at: new Date().toISOString(),
     published: false,
     personal_info: null,
     owners: [userId],
@@ -51,8 +52,21 @@ export async function CreateSurvey(data: surveySchemaType) {
     group_restrictions: null,
   };
   sampleSurvey.push(survey);
-  console.log("Created survey: ", survey);
-  return survey.id;
+  //console.log("Created survey: ", survey);
+  const body = {
+    name: survey.name,
+    description: survey.description,
+    create_at: survey.create_at,
+    update_at: survey.update_at,
+    personal_info: survey.personal_info,
+    owners: survey.owners,
+    members: survey.members,
+    questions: survey.content,
+    group_restriction: survey.group_restrictions,
+  };
+  return await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/survey`, body, {
+    headers: { Authorization: "Bearer " + token },
+  });
 }
 
 export async function GetSurveys() {
@@ -109,7 +123,7 @@ export async function CreateFormSubmission(
     id: sampleFormSubmission.length + 1,
     create_at: String(new Date()),
     update_at: String(new Date()),
-    personal_info: personal_info,,
+    personal_info: personal_info,
     survey_id: id,
     member_id: userId,
     status: "edit", // Updated the status property to be of type "edit" | "done"

@@ -12,7 +12,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import com.sustech.groupup.exception.ExternalException;
 import com.sustech.groupup.utils.JwtUtil;
 import com.sustech.groupup.utils.Response;
-import com.sustech.groupup.utils.ResponseCodeType;
 @Slf4j
 @Component
 @RequiredArgsConstructor

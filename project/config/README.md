@@ -16,6 +16,10 @@ docker login
 docker push frosky/server:latest
 
 ```
+注意：
+更改yaml的数据库连接
+2. 更改主yaml的配置
+3. 
 
 2. apply it to k8s
 
@@ -35,3 +39,9 @@ kubectl exec -it citus-coordinator-c5bfdbb5f-l94jv -n citus -- /bin/bash
 kubectl exec -it citus-coordinator-c5bfdbb5f-djjcb -n citus -- /bin/bash
 
 mvn package -DskipTests
+
+# 安装ingress
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/aws/deploy.yaml
+
+

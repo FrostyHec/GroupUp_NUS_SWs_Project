@@ -43,7 +43,7 @@ public class SurveyController {
     @GetMapping("/{number}")
     public Response getSurveyById (@PathVariable long number) throws JsonProcessingException {
         var resp = surveyConverter.toDTO(surveyService.getSurveyById(number));
-        return Response.getSuccess("success",Map.of("info",resp));
+        return Response.getSuccess("success",resp);
     }
 
     @PostMapping()

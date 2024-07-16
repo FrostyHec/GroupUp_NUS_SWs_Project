@@ -86,7 +86,7 @@ export function MembersTable({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                      <DropdownMenuItem disabled>Delete</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -107,21 +107,17 @@ export function MembersTable({
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() =>
-                            surveyDeleteMember({
-                              token: cookies.get("token") as string,
-                              surveyID,
-                              surveyInfo,
-                              userID: memberID,
-                            })
-                          }
-                        >
-                          Delete
-                        </Button>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          surveyDeleteMember({
+                            token: cookies.get("token") as string,
+                            surveyID,
+                            surveyInfo,
+                            userID: memberID,
+                          })
+                        }
+                      >
+                        Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -149,6 +145,14 @@ function Members({ params }: { params: { id: number } }) {
     owners: data.data.owners,
     members: data.data.members,
   };
+  const owners = {
+    owners: data.data.owners,
+    members: [],
+  };
+  const members = {
+    owners: [],
+    members: data.data.members,
+  };
   return (
     <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -156,8 +160,8 @@ function Members({ params }: { params: { id: number } }) {
           <div className="flex items-center">
             <TabsList>
               <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="grouped">Grouped</TabsTrigger>
-              <TabsTrigger value="ungrouped">Ungrouped</TabsTrigger>
+              <TabsTrigger value="owners">Owners</TabsTrigger>
+              <TabsTrigger value="members">Members</TabsTrigger>
             </TabsList>
             <div className="ml-auto flex items-center gap-2">
               <SurveyUserSearchDialog
@@ -182,22 +186,22 @@ function Members({ params }: { params: { id: number } }) {
           <TabsContent value="all">
             <MembersTable
               surveyID={params.id}
-              surveyInfo={data.data.info}
+              surveyInfo={data.data}
               members={allMembers}
             />
           </TabsContent>
-          <TabsContent value="grouped">
+          <TabsContent value="owners">
             <MembersTable
               surveyID={params.id}
-              surveyInfo={data.data.info}
-              members={allMembers}
+              surveyInfo={data.data}
+              members={owners}
             />
           </TabsContent>
-          <TabsContent value="ungrouped">
+          <TabsContent value="members">
             <MembersTable
               surveyID={params.id}
-              surveyInfo={data.data.info}
-              members={allMembers}
+              surveyInfo={data.data}
+              members={members}
             />
           </TabsContent>
         </Tabs>

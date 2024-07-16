@@ -177,7 +177,6 @@ function MatchCard({
   if (isGroup) {
     if (groupLoading) return <div>Loading...</div>;
     if (groupError) return <div>Error</div>;
-    console.log(groupData.data);
     return (
       <Card className="w-64">
         <CardHeader>

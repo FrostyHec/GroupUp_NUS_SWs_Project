@@ -22,7 +22,10 @@ import {
   PersonalInfoInput,
 } from "@/schemas/survey";
 import { userId, userName } from "@/actions/user";
-import { UpdatePersonalInfo, UpdatePersonalInfoDefine } from "@/controller/form";
+import {
+  UpdatePersonalInfo,
+  UpdatePersonalInfoDefine,
+} from "@/controller/form";
 import { ImSpinner2 } from "react-icons/im";
 
 import { createContext, useReducer } from "react";
@@ -33,6 +36,8 @@ import { IoIosAdd, IoIosClose } from "react-icons/io";
 import { Label } from "../ui/label";
 import FieldList from "./info-personal-info-define-card";
 import AddField from "./info-personal-info-add-card";
+import { useCookies } from "next-client-cookies";
+import useUser from "../hooks/useUser";
 
 export const FieldsContext = createContext<PersonalInfoField[]>([]);
 export const FieldsDispatchContext = createContext<React.Dispatch<any>>(
@@ -40,28 +45,39 @@ export const FieldsDispatchContext = createContext<React.Dispatch<any>>(
 );
 
 const ProfileChangeCard: React.FC<{ surveyId: number }> = ({ surveyId }) => {
-  // TODO: Retrieve personal infos
   const config = {
-    "sex": "man",
-    "faceColor": "#AC6651",
-    "earSize": "big",
-    "eyeStyle": "smile",
-    "noseStyle": "long",
-    "mouthStyle": "peace",
-    "shirtStyle": "polo",
-    "glassesStyle": "none",
-    "hairColor": "#000",
-    "hairStyle": "thick",
-    "hatStyle": "none",
-    "hatColor": "#F48150",
-    "eyeBrowStyle": "up",
-    "shirtColor": "#77311D",
-    "bgColor": "linear-gradient(45deg, #3e1ccd 0%, #ff6871 100%)"
-  }
+    sex: "man",
+    faceColor: "#AC6651",
+    earSize: "big",
+    eyeStyle: "smile",
+    noseStyle: "long",
+    mouthStyle: "peace",
+    shirtStyle: "polo",
+    glassesStyle: "none",
+    hairColor: "#000",
+    hairStyle: "thick",
+    hatStyle: "none",
+    hatColor: "#F48150",
+    eyeBrowStyle: "up",
+    shirtColor: "#77311D",
+    bgColor: "linear-gradient(45deg, #3e1ccd 0%, #ff6871 100%)",
+  };
   const myConfig = genConfig(config);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [initialFields, setInitialFields] = useState<PersonalInfoField[]>([]);
+  const [fields, dispatch] = useReducer(fieldsReducer, initialFields);
+  const [fieldValues, setFieldValues] = useState<string[]>([]);
+
+  // These hooks are set for dragging components, please do not modify them.
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ x: 100, y: 100 });
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  const cookies = useCookies();
+  const token = cookies.get("token");
+  const [query, setQuery] = useState<JSON>();
+  const { userID, setUserID } = useUser();
 
   useEffect(() => {
     const getData = async () => {
@@ -77,9 +93,6 @@ const ProfileChangeCard: React.FC<{ surveyId: number }> = ({ surveyId }) => {
     };
     getData();
   }, []);
-
-  const [fields, dispatch] = useReducer(fieldsReducer, initialFields);
-  const [fieldValues, setFieldValues] = useState<string[]>([]);
 
   const handleInputChange = (index: number, newValue: string) => {
     const newValues = [...fieldValues];
@@ -111,9 +124,6 @@ const ProfileChangeCard: React.FC<{ surveyId: number }> = ({ surveyId }) => {
   };
 
   const boxRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState({ x: 100, y: 100 });
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (boxRef.current) {

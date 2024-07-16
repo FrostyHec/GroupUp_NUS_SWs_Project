@@ -11,7 +11,6 @@ import React, {
 } from "react";
 import { ImSpinner2 } from "react-icons/im";
 import { toast } from "sonner";
-import useSWR from "swr";
 
 type UserContextType = {
   userID: number;
@@ -31,11 +30,11 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      try {
+      try { 
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/user/getbyauth`,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: { Authorization: `Bearer ${token}` }
           }
         );
         const result = await response.json();
@@ -44,7 +43,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         setUserName(result.data.user_name);
       } catch (error) {
         toast("Failed to fetch user information", {
-          description: "Please try again",
+          description: String(error),
         });
       } finally {
         setIsLoading(false);
@@ -55,13 +54,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center w-full h-full">
-        <ImSpinner2 className="animate-spin h-12 w-12" />
+      <div className="flex items-center justify-center w-full h-screen">
+        <ImSpinner2 className="animate-spin h-12 w-12 items-center justify-center" /> Loading User
+        Information.
       </div>
     );
   }
-
-  return (
+return (
     <UserContext.Provider value={{ userID, setUserID, userName, setUserName }}>
       {children}
     </UserContext.Provider>

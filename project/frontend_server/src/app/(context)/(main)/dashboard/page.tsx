@@ -38,16 +38,20 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
-import { CreateFormSubmission,  GetAllSurveysByIDLists } from "@/controller/form";
+import {
+  CreateFormSubmission,
+  GetAllSurveysByIDLists,
+} from "@/controller/form";
 import { useRouter } from "next/navigation";
 import Avatar, { AvatarFullConfig, genConfig } from "react-nice-avatar";
 import { ImSpinner2 } from "react-icons/im";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
-import { queryGetByUserId } from "@/actions/query";
+import { queryCreate, queryGetByUserId } from "@/actions/query";
 import { useCookies } from "next-client-cookies";
 import useUser from "@/components/hooks/useUser";
-
+import useSurveys from "@/components/hooks/useSurveys";
+import { log } from "console";
 
 export default function Dashboard() {
   return (
@@ -114,14 +118,9 @@ function FormCardSkeleton() {
 }
 
 function OwnFormCards() {
-  const { userID } = useUser();
-  const {data, isLoading, isError} = userAllOwnSurveys({
-    userID: userID,
-    pageSize: -1,
-    pageNo: -1
-  }); 
-  const formsId = data.data.survey_ids;
-  const forms = GetAllSurveysByIDLists(formsId);
+  const { ownSurveyId } = useSurveys();
+  const forms = GetAllSurveysByIDLists({ survey_ids: ownSurveyId });
+  console.log("Own: ", forms);
   return (
     <>
       {forms.map((form) => (
@@ -132,14 +131,9 @@ function OwnFormCards() {
 }
 
 function MemFormCards() {
-  const { userID } = useUser();
-  const {data, isLoading, isError} = userAllParticipateSurveys({
-    userID: userID,
-    pageSize: -1,
-    pageNo: -1
-  }); 
-  const formsId = data.data.survey_ids;
-  const forms = GetAllSurveysByIDLists(formsId);
+  const { participateSurveyId } = useSurveys();
+  const forms = GetAllSurveysByIDLists({ survey_ids: participateSurveyId });
+  console.log("Mem: ", forms);
   return (
     <>
       {forms.map((form) => (
@@ -196,12 +190,12 @@ function MemFormCard({ form }: { form: Survey }) {
   const cookies = useCookies();
   const token = cookies.get("token");
   const { userID, userName } = useUser();
+  if (!token) {
+    router.push("/login");
+    return;
+  }
 
   const handleButtonClick = () => {
-    if(!token) {
-      router.push("/login");
-      return;
-    }
     const { data, isLoading, isError } = queryGetByUserId({
       token: token,
       surveyID: form.id,
@@ -224,7 +218,11 @@ function MemFormCard({ form }: { form: Survey }) {
         self_info: selfInfo,
         fields: fieldValues,
       };
-      await CreateFormSubmission(form.id, personalInfoInput);
+      await queryCreate({
+        token: token,
+        surveyID: form.id,
+        personalInfo: personalInfoInput,
+      });
       console.log(personalInfoInput);
       toast("Success", {
         description: "Your personal information has been saved",
@@ -307,25 +305,26 @@ function MemFormCard({ form }: { form: Survey }) {
                 </Button>
               </div>
               <div className="items-center my-7 space-y-4 h-2/3">
-                {personalInfoDefine !== undefined && personalInfoDefine.map((field, index) => (
-                  <div className="flex flex-row items-center m-2">
-                    <Label className="w-1/4 mr-2">{field.label}</Label>
-                    <Input
-                      type="text"
-                      key={index}
-                      value={fieldValues[index]?.input}
-                      placeholder={field.placeholder}
-                      onChange={(newValue) =>
-                        handleInputChange(
-                          index,
-                          field.id,
-                          newValue.target.value
-                        )
-                      }
-                      className="w-3/4 p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-                ))}
+                {personalInfoDefine !== undefined &&
+                  personalInfoDefine.map((field, index) => (
+                    <div className="flex flex-row items-center m-2">
+                      <Label className="w-1/4 mr-2">{field.label}</Label>
+                      <Input
+                        type="text"
+                        key={index}
+                        value={fieldValues[index]?.input}
+                        placeholder={field.placeholder}
+                        onChange={(newValue) =>
+                          handleInputChange(
+                            index,
+                            field.id,
+                            newValue.target.value
+                          )
+                        }
+                        className="w-3/4 p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                      />
+                    </div>
+                  ))}
               </div>
               <div className="items-center my-7 space-y-4 h-2/3">
                 <Textarea
@@ -335,9 +334,7 @@ function MemFormCard({ form }: { form: Survey }) {
                   onChange={(e) => setSelfInfo(e.target.value)}
                   className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
                   disabled={isSubmitting}
-                >
-
-                </Textarea>
+                ></Textarea>
               </div>
             </div>
             <DrawerFooter>

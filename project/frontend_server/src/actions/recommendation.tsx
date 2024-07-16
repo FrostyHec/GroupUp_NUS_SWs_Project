@@ -70,3 +70,20 @@ export function surveyRecommendUngrouped({
     isError: error,
   };
 }
+
+//进行预组队
+//POST
+//<backend>/survey/{id}/pregrouping
+export async function preGrouping({
+  token,
+  surveyID,
+}: {
+  token: string;
+  surveyID: number;
+}) {
+  return axios
+    .post(`${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/pregrouping`, {
+      headers: { Authorization: "Bearer " + token },
+    })
+    .then((res) => res.data);
+}

@@ -1,5 +1,12 @@
 "use client";
-import { MoreHorizontal, PlusCircle } from "lucide-react";
+import {
+  MoreHorizontal,
+  PlusCircle,
+  User,
+  UserPlus,
+  UserX,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,6 +30,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   surveyGroupAddMember,
@@ -32,16 +44,147 @@ import { SurveyUserSearchDialog } from "@/components/app/survey-user-search-dial
 import { surveyAllGroups } from "@/actions/group";
 import { userInfo } from "@/actions/user";
 import { useCookies } from "next-client-cookies";
-import Loading from "./loading";
-import ErrorPage from "./error";
+import { userAuthInfo } from "@/actions/user";
+import { surveyInfo } from "@/actions/survey";
+import ProfileCard from "@/components/app/info-personal-info-cards";
+import UserAvatar from "@/components/app/user-avatar";
 
-function UserInfoCardTitle({ userID }: { userID: number }) {
+function UsernameText({ userID }: { userID: number }) {
   const { data, isLoading, isError } = userInfo({
     userID: userID,
   });
-  if (isLoading) return <Loading />;
-  if (isError) return <ErrorPage error={isError}/>;
-  return <CardTitle className="text-base">{data.data.username}</CardTitle>;
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+  return (
+    <p className="text-sm font-medium leading-none">{data.data.username}</p>
+  );
+}
+
+function GroupsTableForMember({
+  surveyID,
+  groups,
+}: {
+  surveyID: number;
+  groups: any;
+}) {
+  const cookies = useCookies();
+  return (
+    <Card x-chunk="dashboard-06-chunk-0">
+      <CardHeader>
+        <CardTitle>Groups</CardTitle>
+        <CardDescription>Manage Groups.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Members</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {groups.map((group: any) => (
+              <TableRow key={group.id}>
+                <TableCell className="font-medium">{group.id}</TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-2">
+                    {group.group_member.map((memberID: number) => (
+                      <div
+                        key={memberID}
+                        className="flex items-center space-x-4 rounded-md border p-4"
+                      >
+                        <HoverCard>
+                          <HoverCardTrigger>
+                            <UserAvatar id={memberID} />
+                          </HoverCardTrigger>
+                          <HoverCardContent className="w-fit">
+                            <ProfileCard
+                              personalId={memberID}
+                              surveyId={surveyID}
+                              mode="view"
+                            />
+                          </HoverCardContent>
+                        </HoverCard>
+                        <div className="flex-1 space-y-1">
+                          <UsernameText userID={memberID} />
+                          <p className="text-sm text-muted-foreground">
+                            Member
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+      <CardFooter>
+        <div className="text-xs text-muted-foreground">
+          {groups.length} groups
+        </div>
+      </CardFooter>
+    </Card>
+  );
+}
+
+function GroupsForMember({
+  params,
+  groupSize,
+}: {
+  params: { id: number };
+  groupSize: number;
+}) {
+  const { data, isLoading, isError } = surveyAllGroups({
+    id: params.id,
+    pageSize: -1,
+    pageNo: -1,
+  });
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+  const allGroups = data.data.list;
+  const fullGroups = allGroups.filter(
+    (group: any) => group.group_member.length === groupSize
+  );
+  const incompleteGroups = allGroups.filter(
+    (group: any) => group.group_member.length < groupSize
+  );
+  return (
+    <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+      <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+        <Tabs defaultValue="all">
+          <div className="flex items-center">
+            <TabsList>
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="full">Full</TabsTrigger>
+              <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
+            </TabsList>
+            <div className="ml-auto flex items-center gap-2">
+              <Button size="sm" className="h-8 gap-1">
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  Add Groups
+                </span>
+              </Button>
+            </div>
+          </div>
+          <TabsContent value="all">
+            <GroupsTableForMember surveyID={params.id} groups={allGroups} />
+          </TabsContent>
+          <TabsContent value="full">
+            <GroupsTableForMember surveyID={params.id} groups={fullGroups} />
+          </TabsContent>
+          <TabsContent value="incomplete">
+            <GroupsTableForMember
+              surveyID={params.id}
+              groups={incompleteGroups}
+            />
+          </TabsContent>
+        </Tabs>
+      </main>
+    </div>
+  );
 }
 
 function GroupsTable({ surveyID, groups }: { surveyID: number; groups: any }) {
@@ -50,9 +193,7 @@ function GroupsTable({ surveyID, groups }: { surveyID: number; groups: any }) {
     <Card x-chunk="dashboard-06-chunk-0">
       <CardHeader>
         <CardTitle>Groups</CardTitle>
-        <CardDescription>
-          Manage your products and view their sales performance.
-        </CardDescription>
+        <CardDescription>Manage Groups.</CardDescription>
       </CardHeader>
       <CardContent>
         <Table>
@@ -72,69 +213,69 @@ function GroupsTable({ surveyID, groups }: { surveyID: number; groups: any }) {
                 <TableCell>
                   <div className="flex flex-wrap gap-2">
                     {group.group_member.map((memberID: number) => (
-                      <Card key={memberID}>
-                        <CardHeader>
-                          <UserInfoCardTitle userID={memberID} />
-                        </CardHeader>
-                        <CardFooter>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button aria-haspopup="true" variant="ghost">
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="start">
-                              <DropdownMenuItem>
-                                <Button
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() =>
-                                    surveyGroupDeleteMember({
-                                      token: cookies.get("token") as string,
-                                      allGroups: groups,
-                                      surveyID,
-                                      groupID: group.id,
-                                      userID: memberID,
-                                    })
-                                  }
-                                >
-                                  Delete
-                                </Button>
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </CardFooter>
-                      </Card>
+                      <div
+                        key={memberID}
+                        className="flex items-center space-x-4 rounded-md border p-4"
+                      >
+                        <HoverCard>
+                          <HoverCardTrigger>
+                            <UserAvatar id={memberID} />
+                          </HoverCardTrigger>
+                          <HoverCardContent className="w-fit">
+                            <ProfileCard
+                              personalId={memberID}
+                              surveyId={surveyID}
+                              mode="view"
+                            />
+                          </HoverCardContent>
+                        </HoverCard>
+                        <div className="flex-1 space-y-1">
+                          <UsernameText userID={memberID} />
+                          <p className="text-sm text-muted-foreground">
+                            Member
+                          </p>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button size="icon" variant="ghost">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            align="end"
+                            onClick={() =>
+                              surveyGroupDeleteMember({
+                                token: cookies.get("token") as string,
+                                allGroups: groups,
+                                surveyID,
+                                groupID: group.id,
+                                userID: memberID,
+                              })
+                            }
+                          >
+                            <DropdownMenuItem>Delete</DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     ))}
-                    <SurveyUserSearchDialog
-                      callback={({ userID }: { userID: number }) => {
-                        surveyGroupAddMember({
-                          token: cookies.get("token") as string,
-                          allGroups: groups,
-                          surveyID,
-                          groupID: group.id,
-                          userID,
-                        });
-                      }}
-                    >
-                      <Button aria-label="Add Member" variant="ghost">
-                        <PlusCircle className="h-4 w-4" />
-                      </Button>
-                    </SurveyUserSearchDialog>
                   </div>
                 </TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <SurveyUserSearchDialog
+                    callback={({ userID }: { userID: number }) => {
+                      surveyGroupAddMember({
+                        token: cookies.get("token") as string,
+                        allGroups: groups,
+                        surveyID,
+                        groupID: group.id,
+                        userID,
+                      });
+                    }}
+                  >
+                    <Button aria-label="Add Member" variant="ghost">
+                      <UserPlus />
+                    </Button>
+                  </SurveyUserSearchDialog>
                 </TableCell>
               </TableRow>
             ))}
@@ -150,7 +291,13 @@ function GroupsTable({ surveyID, groups }: { surveyID: number; groups: any }) {
   );
 }
 
-export default function Groups({ params }: { params: { id: number } }) {
+function Groups({
+  params,
+  groupSize,
+}: {
+  params: { id: number };
+  groupSize: number;
+}) {
   const { data, isLoading, isError } = surveyAllGroups({
     id: params.id,
     pageSize: -1,
@@ -159,6 +306,12 @@ export default function Groups({ params }: { params: { id: number } }) {
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error</div>;
   const allGroups = data.data.list;
+  const fullGroups = allGroups.filter(
+    (group: any) => group.group_member.length === groupSize
+  );
+  const incompleteGroups = allGroups.filter(
+    (group: any) => group.group_member.length < groupSize
+  );
   return (
     <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -182,13 +335,53 @@ export default function Groups({ params }: { params: { id: number } }) {
             <GroupsTable surveyID={params.id} groups={allGroups} />
           </TabsContent>
           <TabsContent value="full">
-            <GroupsTable surveyID={params.id} groups={allGroups} />
+            <GroupsTable surveyID={params.id} groups={fullGroups} />
           </TabsContent>
           <TabsContent value="incomplete">
-            <GroupsTable surveyID={params.id} groups={allGroups} />
+            <GroupsTable surveyID={params.id} groups={incompleteGroups} />
           </TabsContent>
         </Tabs>
       </main>
     </div>
   );
+}
+
+function GroupsAuth({
+  params,
+  authData,
+}: {
+  params: { id: number };
+  authData: any;
+}) {
+  const { data, isLoading, isError } = surveyInfo({ surveyID: params.id });
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+  if (data.data.owners.includes(authData.data.user_id)) {
+    return (
+      <Groups
+        params={params}
+        groupSize={data.data.group_restriction.group_size}
+      />
+    );
+  } else if (data.data.members.includes(authData.data.user_id)) {
+    return (
+      <GroupsForMember
+        params={params}
+        groupSize={data.data.group_restriction.group_size}
+      />
+    );
+  } else {
+    return <div>Unauthorized</div>;
+  }
+}
+
+export default function GroupsAuthProvider({
+  params,
+}: {
+  params: { id: number };
+}) {
+  const { data, isLoading, isError } = userAuthInfo();
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+  return <GroupsAuth params={params} authData={data} />;
 }

@@ -27,13 +27,12 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SurveyUserSearchDialog } from "@/components/app/survey-user-search-dialog";
 import { useCookies } from "next-client-cookies";
-import { userInfo } from "@/actions/user";
+import { userAuthInfo, userInfo } from "@/actions/user";
 import { surveyInfo } from "@/actions/survey";
 import {
   surveyAddMember,
   surveyDeleteMember,
 } from "@/controller/survey-members";
-import Loading from "./loading";
 
 function UsernameTableCell({ userID }: { userID: number }) {
   const { data, isLoading, isError } = userInfo({
@@ -141,12 +140,10 @@ export function MembersTable({
   );
 }
 
-export default function Members({ params }: { params: { id: number } }) {
+function Members({ params }: { params: { id: number } }) {
   const cookies = useCookies();
   const { data, isLoading, isError } = surveyInfo({ surveyID: params.id });
-  if (isLoading) return (
-    <Loading />
-  );
+  if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error</div>;
   const allMembers = {
     owners: data.data.owners,
@@ -207,4 +204,34 @@ export default function Members({ params }: { params: { id: number } }) {
       </main>
     </div>
   );
+}
+
+//checks if user is an owner of the survey
+function MembersAuth({
+  params,
+  authData,
+}: {
+  params: { id: number };
+  authData: any;
+}) {
+  const { data, isLoading, isError } = surveyInfo({ surveyID: params.id });
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+  if (data.data.owners.includes(authData.data.user_id)) {
+    return <Members params={params} />;
+  } else {
+    return <div>Unauthorized</div>;
+  }
+}
+
+//fetches user auth info
+export default function MembersAuthProvider({
+  params,
+}: {
+  params: { id: number };
+}) {
+  const { data, isLoading, isError } = userAuthInfo();
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+  return <MembersAuth params={params} authData={data} />;
 }

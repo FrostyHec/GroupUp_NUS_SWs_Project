@@ -19,6 +19,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -31,12 +36,15 @@ import {
 import { userAuthInfo } from "@/actions/user";
 import { sendRequest } from "@/controller/survey-match";
 import { useCookies } from "next-client-cookies";
+import { surveyInfo } from "@/actions/survey";
+import UserAvatar from "@/components/app/user-avatar";
+import ProfileCard from "@/components/app/info-personal-info-cards";
 
 function Recommend({ recommend }: { recommend: number }) {
   if (recommend > 80) {
     return (
       <p
-        className={`opacity-100 bg-blue-500 text-white text-sm font-semibold inline-flex items-center p-1.5 rounded`}
+        className={`opacity-100 w-fit bg-blue-500 text-white text-sm font-semibold inline-flex items-center p-1.5 rounded`}
       >
         {recommend}
       </p>
@@ -44,7 +52,7 @@ function Recommend({ recommend }: { recommend: number }) {
   } else if (recommend > 60) {
     return (
       <p
-        className={`opacity-80 bg-blue-500 text-white text-sm font-semibold inline-flex items-center p-1.5 rounded`}
+        className={`opacity-80 w-fit bg-blue-500 text-white text-sm font-semibold inline-flex items-center p-1.5 rounded`}
       >
         {recommend}
       </p>
@@ -52,7 +60,7 @@ function Recommend({ recommend }: { recommend: number }) {
   } else if (recommend > 40) {
     return (
       <p
-        className={`opacity-60 bg-blue-500 text-white text-sm font-semibold inline-flex items-center p-1.5 rounded`}
+        className={`opacity-60 w-fit bg-blue-500 text-white text-sm font-semibold inline-flex items-center p-1.5 rounded`}
       >
         {recommend}
       </p>
@@ -60,7 +68,7 @@ function Recommend({ recommend }: { recommend: number }) {
   } else {
     return (
       <p
-        className={`opacity-40 bg-blue-500 text-white text-sm font-semibold inline-flex items-center p-1.5 rounded`}
+        className={`opacity-40 w-fit bg-blue-500 text-white text-sm font-semibold inline-flex items-center p-1.5 rounded`}
       >
         {recommend}
       </p>
@@ -110,11 +118,28 @@ function GroupMember({ userID }: { userID: number }) {
   return <p>{data.data.username}</p>;
 }
 
-function GroupMembers({ groupInfo }: { groupInfo: any }) {
+function GroupMembers({
+  groupInfo,
+  surveyID,
+}: {
+  groupInfo: any;
+  surveyID: number;
+}) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap -space-x-3 overflow-hidden">
       {groupInfo.member_id.map((memberID: number) => (
-        <GroupMember userID={memberID} />
+        <HoverCard>
+          <HoverCardTrigger>
+            <UserAvatar id={memberID} />
+          </HoverCardTrigger>
+          <HoverCardContent className="w-fit">
+            <ProfileCard
+              personalId={memberID}
+              surveyId={surveyID}
+              mode="view"
+            />
+          </HoverCardContent>
+        </HoverCard>
       ))}
     </div>
   );
@@ -156,14 +181,12 @@ function MatchCard({
     return (
       <Card className="w-64">
         <CardHeader>
-          <CardTitle>Card Title</CardTitle>
-          <CardDescription>Card Description</CardDescription>
+          <Recommend recommend={recommend} />
         </CardHeader>
         <CardContent>
-          <GroupMembers groupInfo={groupData.data} />
+          <GroupMembers groupInfo={groupData.data} surveyID={surveyID} />
         </CardContent>
         <CardFooter>
-          <Recommend recommend={recommend} />
           <RequestMessageDialog
             callback={({ message }) =>
               sendRequest({
@@ -187,16 +210,19 @@ function MatchCard({
     return (
       <Card className="w-64">
         <CardHeader>
-          <CardTitle>Card Title</CardTitle>
-          <CardDescription>Card Description</CardDescription>
+          <Recommend recommend={recommend} />
         </CardHeader>
         <CardContent>
-          <div>
-            <p>{userData.data.username}</p>
-          </div>
+          <HoverCard>
+            <HoverCardTrigger>
+              <UserAvatar id={id} />
+            </HoverCardTrigger>
+            <HoverCardContent className="w-fit">
+              <ProfileCard personalId={id} surveyId={surveyID} mode="view" />
+            </HoverCardContent>
+          </HoverCard>
         </CardContent>
         <CardFooter>
-          <Recommend recommend={recommend} />
           <RequestMessageDialog
             callback={({ message }) =>
               sendRequest({
@@ -217,7 +243,7 @@ function MatchCard({
   }
 }
 
-function MatchTable({
+function Match({
   surveyID,
   fromUserID,
 }: {
@@ -273,9 +299,32 @@ function MatchTable({
   );
 }
 
-export default function Match({ params }: { params: { id: number } }) {
+//checks if user is an member of the survey
+function MatchAuth({
+  params,
+  authData,
+}: {
+  params: { id: number };
+  authData: any;
+}) {
+  const { data, isLoading, isError } = surveyInfo({ surveyID: params.id });
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+  if (data.data.members.includes(authData.data.user_id)) {
+    return <Match surveyID={params.id} fromUserID={authData.data.user_id} />;
+  } else {
+    return <div>Unauthorized</div>;
+  }
+}
+
+//gets user auth info
+export default function MatchAuthProvider({
+  params,
+}: {
+  params: { id: number };
+}) {
   const { data, isLoading, isError } = userAuthInfo();
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error</div>;
-  return <MatchTable surveyID={params.id} fromUserID={data.data.user_id} />;
+  return <MatchAuth params={params} authData={data} />;
 }

@@ -193,6 +193,38 @@ export function userSentRequest({
   };
 }
 
+//查询用户[收到]的所有组队请求
+//GET
+//<backend>/user/{id}/receivedrequest
+export function userReceivedRequest({
+  userID,
+  pageSize,
+  pageNo,
+}: {
+  userID: number;
+  pageSize: number;
+  pageNo: number;
+}) {
+  const cookies = useCookies();
+  const token = cookies.get("token") as string;
+  const fetcher = (url: string) =>
+    axios
+      .get(url, {
+        headers: { Authorization: "Bearer " + token },
+        params: { page_size: pageSize, page_no: pageNo },
+      })
+      .then((res) => res.data);
+  const { data, error, isLoading } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/receivedrequest`,
+    fetcher
+  );
+  return {
+    data,
+    isLoading,
+    isError: error,
+  };
+}
+
 //查询用户公开信息
 //GET
 //<backend>/queryuserout

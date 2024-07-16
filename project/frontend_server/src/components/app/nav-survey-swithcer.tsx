@@ -46,15 +46,25 @@ interface WorkspaceSwitcherProps extends PopoverTriggerProps {}
 export default function SurveySwitcher() {
   const router = useRouter();
   const params = useParams();
-  const { ownSurveyId, participateSurveyId, currentSurveyId, setCurrentSurveyId, setRole } = useSurveys();
+  const {
+    ownSurveys,
+    participateSurveys,
+    currentSurveyId,
+    setCurrentSurveyId,
+    setRole,
+  } = useSurveys();
   const allOwnSurveys = sampleSurvey
-    .filter((survey) => ownSurveyId.includes(survey.id))
+    .filter((survey) =>
+      ownSurveys.map((survey) => survey.id).includes(survey.id)
+    )
     .map((survey) => ({
       label: survey.name,
       value: String(survey.id),
     }));
   const allParticipateSurveys = sampleSurvey
-    .filter((survey) => participateSurveyId.includes(survey.id))
+    .filter((survey) =>
+      participateSurveys.map((survey) => survey.id).includes(survey.id)
+    )
     .map((survey) => ({
       label: survey.name,
       value: String(survey.id),
@@ -116,7 +126,9 @@ export default function SurveySwitcher() {
                   <Check
                     className={cn(
                       "ml-auto h-4 w-4",
-                      currentSurveyId === Number(survey.value) ? "opacity-100" : "opacity-0"
+                      currentSurveyId === Number(survey.value)
+                        ? "opacity-100"
+                        : "opacity-0"
                     )}
                   />
                 </CommandItem>
@@ -141,7 +153,9 @@ export default function SurveySwitcher() {
                   <Check
                     className={cn(
                       "ml-auto h-4 w-4",
-                      currentSurveyId === Number(survey.value) ? "opacity-100" : "opacity-0"
+                      currentSurveyId === Number(survey.value)
+                        ? "opacity-100"
+                        : "opacity-0"
                     )}
                   />
                 </CommandItem>

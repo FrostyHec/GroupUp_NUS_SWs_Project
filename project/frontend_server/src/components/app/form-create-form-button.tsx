@@ -40,24 +40,27 @@ function CreateFormBtn() {
   const form = useForm<surveySchemaType>({
     resolver: zodResolver(surveySchema),
   });
-  const { setCurrentSurveyId, setRoleBySurveyId, addOwnSurveyId } =
-    useSurveys();
+  const { setCurrentSurveyId, setRole, addOwnSurveys } = useSurveys();
 
   const cookies = useCookies();
   const token = cookies.get("token") as string;
-  const {userID} = useUser()
+  const { userID } = useUser();
 
   async function onSubmit(values: surveySchemaType) {
-    surveyCreate({token : token, userId: userID, data: values}).then((res) => {
+    const data = {
+      ...values,
+      owners: [userID],
+    };
+    surveyCreate({ token: token, userId: userID, data: data }).then((res) => {
       try {
-        addOwnSurveyId(res.data.data.survey_id);
-        setCurrentSurveyId(res.data.data.survey_id);
-        setRoleBySurveyId(res.data.data.survey_id);
+        addOwnSurveys(res);
+        setCurrentSurveyId(res.id);
+        setRole("owner");
         console.log(values);
         toast("Success", {
           description: "Form created successfully",
         });
-        router.push(`/survey/${res.data.data.survey_id}/dashboard`);
+        router.push(`/survey/${res.id}/dashboard`);
       } catch (error) {
         toast("Error", {
           description: "Something went wrong, please try again later",

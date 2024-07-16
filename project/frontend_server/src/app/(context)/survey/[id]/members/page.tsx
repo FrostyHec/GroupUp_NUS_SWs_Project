@@ -63,6 +63,7 @@ export function MembersTable({
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>ID</TableHead>
               <TableHead>Username</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>
@@ -73,6 +74,7 @@ export function MembersTable({
           <TableBody>
             {members.owners.map((memberID: number) => (
               <TableRow key={memberID}>
+                <TableCell>{memberID}</TableCell>
                 <UsernameTableCell userID={memberID} />
                 <TableCell>
                   <Badge variant="outline">Owner</Badge>
@@ -94,6 +96,7 @@ export function MembersTable({
             ))}
             {members.members.map((memberID: number) => (
               <TableRow key={memberID}>
+                <TableCell>{memberID}</TableCell>
                 <UsernameTableCell userID={memberID} />
                 <TableCell>
                   <Badge variant="outline">Member</Badge>
@@ -169,7 +172,7 @@ function Members({ params }: { params: { id: number } }) {
                   surveyAddMember({
                     token: cookies.get("token") as string,
                     surveyID: params.id,
-                    surveyInfo: data.data.info,
+                    surveyInfo: data.data,
                     userID: userID,
                   });
                 }}

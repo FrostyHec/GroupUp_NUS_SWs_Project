@@ -23,11 +23,10 @@ export function surveyRecommendGroup({
     axios
       .get(url, {
         headers: { Authorization: "Bearer " + token },
-        params: { page_size: pageSize, page_no: pageNo, user_id: userID },
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/recommend/group`,
+    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/recommend/group?page_size=${pageSize}&page_no=${pageNo}&user_id=${userID}`,
     fetcher
   );
   return {
@@ -57,11 +56,10 @@ export function surveyRecommendUngrouped({
     axios
       .get(url, {
         headers: { Authorization: "Bearer " + token },
-        params: { page_size: pageSize, page_no: pageNo, user_id: userID },
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/recommend/ungrouped`,
+    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/recommend/ungrouped?page_size=${pageSize}&page_no=${pageNo}&user_id=${userID}`,
     fetcher
   );
   return {

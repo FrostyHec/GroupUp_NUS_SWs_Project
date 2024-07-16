@@ -30,17 +30,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      try { 
+      try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/user/getbyauth`,
           {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
         const result = await response.json();
-        console.log(result);
+        console.log("Getting user info", result);
         setUserID(result.data.user_id);
-        setUserName(result.data.user_name);
+        setUserName(result.data.username);
+        toast("User information fetched", {
+          description: "User information has been successfully fetched",
+        });
       } catch (error) {
         toast("Failed to fetch user information", {
           description: String(error),
@@ -55,12 +58,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center w-full h-screen">
-        <ImSpinner2 className="animate-spin h-12 w-12 items-center justify-center" /> Loading User
-        Information.
+        <ImSpinner2 className="animate-spin h-12 w-12 items-center justify-center" />{" "}
+        Loading User Information.
       </div>
     );
   }
-return (
+  return (
     <UserContext.Provider value={{ userID, setUserID, userName, setUserName }}>
       {children}
     </UserContext.Provider>

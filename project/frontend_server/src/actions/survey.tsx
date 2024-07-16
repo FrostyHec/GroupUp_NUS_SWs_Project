@@ -13,7 +13,9 @@ export function surveyInfo({ surveyID }: { surveyID: number }) {
   const token = cookies.get("token") as string;
   const fetcher = (url: string) =>
     axios
-      .get(url, { headers: { Authorization: "Bearer " + token } })
+      .get(url, {
+        headers: { Authorization: "Bearer " + token },
+      })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
     `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}`,
@@ -56,9 +58,17 @@ export async function surveyCreate({
       groupSize: group_size,
     },
   };
-  return await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/survey`, body, {
-    headers: { Authorization: "Bearer " + token },
-  });
+  const result = await axios
+    .post(`${process.env.NEXT_PUBLIC_API_URL}/survey`, body, {
+      headers: { Authorization: "Bearer " + token },
+    })
+    .then((res) => res.data);
+  let newSurvey: Survey = {
+    ...body,
+    id: result.data.survey_id,
+    status: "closed",
+  };
+  return newSurvey;
 }
 
 //<backend>/survey/{id}
@@ -119,7 +129,7 @@ export async function surveyUpdateStatus({
 
 //<backend>/survey/{id}/status
 // GET
-export function surveyStatus({surveyID}: {surveyID: number}) {
+export function surveyStatus({ surveyID }: { surveyID: number }) {
   const cookies = useCookies();
   const token = cookies.get("token") as string;
   const fetcher = (url: string) =>

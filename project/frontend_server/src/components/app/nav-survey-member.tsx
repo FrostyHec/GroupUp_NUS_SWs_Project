@@ -6,13 +6,17 @@ import { sampleSurvey } from "../data/survey-data";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { surveyStatus } from "@/actions/survey";
 
 export function SurveyMemberNav() {
   const router = usePathname();
   const { currentSurveyId } = useSurveys();
-  const status = sampleSurvey.filter(
-    (survey) => survey.id === currentSurveyId
-  )[0].status;
+  const { data, isLoading, isError } = surveyStatus({
+    surveyID: currentSurveyId,
+  });
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error...</div>;
+  const status = data.data.status;
   return (
     <>
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">

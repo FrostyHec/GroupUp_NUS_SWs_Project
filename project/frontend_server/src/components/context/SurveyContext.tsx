@@ -21,12 +21,12 @@ import { toast } from "sonner";
 import { ImSpinner2 } from "react-icons/im";
 
 type SurveyContextType = {
-  ownSurveyId: number[];
-  setOwnSurveyId: Dispatch<SetStateAction<number[]>>;
-  addOwnSurveyId: (surveyId: number) => void;
+  ownSurveys: any[];
+  setOwnSurveys: Dispatch<SetStateAction<any[]>>;
+  addOwnSurveys: (survey: any) => void;
 
-  participateSurveyId: number[];
-  setParticipateSurveyId: Dispatch<SetStateAction<number[]>>;
+  participateSurveys: any[];
+  setParticipateSurveys: Dispatch<SetStateAction<any[]>>;
 
   currentSurveyId: number;
   setCurrentSurveyId: Dispatch<SetStateAction<number>>;
@@ -47,8 +47,8 @@ export function SurveyContextProvider({ children }: { children: ReactNode }) {
 
   // Define the hooks
   const [isLoading, setIsLoading] = useState(true);
-  const [ownSurveyId, setOwnSurveyId] = useState<number[]>([]);
-  const [participateSurveyId, setParticipateSurveyId] = useState<number[]>([]);
+  const [ownSurveys, setOwnSurveys] = useState<any[]>([]);
+  const [participateSurveys, setParticipateSurveys] = useState<any[]>([]);
   const [currentSurveyId, setCurrentSurveyId] = useState<number>(0);
   const [role, setRole] = useState<
     "owner" | "member" | "unauthorized" | "main"
@@ -76,8 +76,8 @@ export function SurveyContextProvider({ children }: { children: ReactNode }) {
         const result_own = await response_own.data;
         console.log("Participate:", result_participate);
         console.log("Own: ", result_own);
-        setOwnSurveyId(result_own.data.survey_ids);
-        setParticipateSurveyId(result_participate.data.survey_ids);
+        setOwnSurveys(result_own.data.surveys);
+        setParticipateSurveys(result_participate.data.surveys);
       } catch (error) {
         toast("Failed to fetch survey information", {
           description: String(error),
@@ -92,20 +92,27 @@ export function SurveyContextProvider({ children }: { children: ReactNode }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center w-full h-screen">
-        <ImSpinner2 className="animate-spin h-12 w-12 items-center justify-center" /> Loading Survey
-        Information.
+        <ImSpinner2 className="animate-spin h-12 w-12 items-center justify-center" />{" "}
+        Loading Survey Information.
       </div>
     );
   }
-
   const setRoleBySurveyId = (surveyId: number) => {
     if (surveyId === 0) {
       console.log("main");
       setRole("main");
-    } else if (ownSurveyId.indexOf(surveyId) !== -1) {
+    } else if (
+      ownSurveys
+        .find((survey) => survey.id === surveyId)
+        ?.owners.includes(userID)
+    ) {
       console.log("owner");
       setRole("owner");
-    } else if (participateSurveyId.indexOf(surveyId) !== -1) {
+    } else if (
+      participateSurveys
+        .find((survey) => survey.id === surveyId)
+        ?.members.includes(userID)
+    ) {
       console.log("member");
       setRole("member");
     } else {
@@ -114,25 +121,25 @@ export function SurveyContextProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const addOwnSurveyId = (surveyId: number) => {
-    const ownSurveys = [...ownSurveyId];
-    ownSurveys.push(surveyId);
-    setOwnSurveyId(ownSurveys);
+  const addOwnSurveys = (survey: any) => {
+    const ownSurvey = [...ownSurveys];
+    ownSurvey.push(survey);
+    setOwnSurveys(ownSurvey);
   };
 
   return (
     <SurveyContext.Provider
       value={{
-        ownSurveyId,
-        setOwnSurveyId,
-        participateSurveyId,
-        setParticipateSurveyId,
+        ownSurveys,
+        setOwnSurveys,
+        participateSurveys,
+        setParticipateSurveys,
         currentSurveyId,
         setCurrentSurveyId,
         role,
         setRole,
         setRoleBySurveyId,
-        addOwnSurveyId,
+        addOwnSurveys,
       }}
     >
       {children}

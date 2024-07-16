@@ -13,6 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { UsernameSearch } from "@/controller/components-survey-user-search-dialog";
+import { useSWRConfig } from "swr";
 
 export function SurveyUserSearchDialog({
   callback,
@@ -21,6 +22,8 @@ export function SurveyUserSearchDialog({
   callback: ({ userID }: { userID: any }) => void;
   children: React.ReactNode;
 }) {
+  const { mutate } = useSWRConfig();
+
   const [username, setUsername] = useState("");
   const [selectedUserID, setSelectedUserID] = useState(0);
 

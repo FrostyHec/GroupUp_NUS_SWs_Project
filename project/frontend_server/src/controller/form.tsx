@@ -12,7 +12,7 @@ import {
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { queryGetByUserId } from "@/actions/query";
+import { queryGetByUserId, queryUpdateByUserId } from "@/actions/query";
 import { surveyInfo } from "@/actions/survey";
 class FormNotFoundErr extends Error {}
 class FormSubmissionNotFoundErr extends Error {}
@@ -31,32 +31,19 @@ export async function GetFormStats() {
   };
 }
 
-// 这个方法需要重置一下
-export function GetAllSurveysByIDLists({survey_ids} : {survey_ids: number[]}) {
-  let surveys: any[] = [];
-  survey_ids.forEach((id) => {
-    const { data, isLoading, isError } = surveyInfo({ surveyID: id });
-    if (data) {
-      surveys.push(data.data.info);
-    }
-  });
-  return surveys;
-}
-
 // 调用Update Query
 export async function UpdatePersonalInfo(
+  token: string,
   id: number,
   personal_info: PersonalInfoInput
 ) {
   console.log("Update personal info by id: ", id);
-  let formSubmission = sampleFormSubmission.find(
-    (f) => f.survey_id === id && f.member_id === 1
-  );
+  queryUpdateByUserId({ token, surveyID: id, personalInfo: personal_info });
   if (!formSubmission) {
     throw new FormSubmissionNotFoundErr();
   }
   formSubmission.personal_info = personal_info;
-  formSubmission.update_at = String(new Date());
+  formSubmission.update_at = new Date().toISOString();
   return formSubmission;
 }
 

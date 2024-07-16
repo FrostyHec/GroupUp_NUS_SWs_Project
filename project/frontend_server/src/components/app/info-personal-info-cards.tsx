@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import FieldForm from "./info-field";
-import { ProfileData, GetPersonalInfo } from "@/actions/query";
+import { queryGetById, queryUpdateByUserId } from "@/actions/query";
 import Avatar, { genConfig } from "react-nice-avatar";
 import { AvatarFullConfig } from "./info-avatar-types";
 import { Button } from "../ui/button";
@@ -10,9 +10,30 @@ import { Card, CardContent } from "../ui/card";
 import { LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Textarea } from "../ui/textarea";
-import { PersonalInfoInput } from "@/schemas/survey";
+import {
+  FormSubmission,
+  PersonalInfo,
+  PersonalInfoInput,
+} from "@/schemas/survey";
 import { UpdatePersonalInfo } from "@/controller/form";
 import { ImSpinner2 } from "react-icons/im";
+import { useCookies } from "next-client-cookies";
+import useUser from "../hooks/useUser";
+import { surveyInfo } from "@/actions/survey";
+
+type Field = {
+  id: number;
+  label: string;
+  placeholder: string;
+  input: string;
+};
+
+type ProfileData = {
+  avatar: AvatarFullConfig | null;
+  name: string;
+  self_info: string;
+  fields: Field[];
+};
 
 const defaultProfileData: ProfileData = {
   avatar: genConfig(),
@@ -24,7 +45,7 @@ const defaultProfileData: ProfileData = {
 interface ProfileCardProps {
   personalId: number;
   surveyId: number;
-  mode: "edit" | "view";
+  mode: "edit" | "view"; // Personal ID 是本人可以Edit 如果不是本人不能Edit 只能查看信息
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({
@@ -32,40 +53,87 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   surveyId,
   mode,
 }) => {
+  // 预载信息
+  const cookies = useCookies();
+  const token = cookies.get("token") as string;
+
   // TODO: Retrieve personal info
   const [profileData, setProfileData] =
-    useState<ProfileData>(defaultProfileData);
+    useState<ProfileData>(defaultProfileData); // 用于渲染
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [query, setQuery] = useState("");
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const data = await GetPersonalInfo(personalId, surveyId);
-        if (!data) {
-          toast("Personal info not found", {
-            description: "Please try again later",
-          });
-          return;
-        }
-        setProfileData(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getData();
-  }, []);
-
-  const [fieldValues, setFieldValues] = useState<string[]>(
-    profileData.fields.map((field) => field.input)
+  const [personalInfoDefine, setPersonalInfoDefine] =
+    useState<PersonalInfo | null>(null);
+  const [formSubmission, setFormSubmission] = useState<FormSubmission | null>(
+    null
   );
+
+  const {
+    data: data_survey,
+    isLoading: isLoading_survey,
+    isError: isError_survey,
+  } = surveyInfo({ surveyID: surveyId }); // From @/actions/survey
+
+  const {
+    data: data_query,
+    isLoading: isLoading_query,
+    isError: isError_query,
+  } = queryGetById({ token: token, surveyID: surveyId, userID: personalId }); // From @/actions/query
+
+  if (isLoading_survey || isLoading_query) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-full">
+        <LoaderCircle className="animate-spin h-12 w-12" /> User Profile Loading
+      </div>
+    );
+  }
+
+  if (isError_survey || isError_query) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-full">
+        Error loading
+      </div>
+    );
+  }
+
+  setPersonalInfoDefine(data_survey.personal_info);
+  setFormSubmission(data_query);
+  let initialProfileData: ProfileData = {
+    avatar: formSubmission
+      ? formSubmission.personal_info.avatar
+      : defaultProfileData.avatar,
+    name: formSubmission
+      ? formSubmission.personal_info.name
+      : defaultProfileData.name,
+    self_info: formSubmission
+      ? formSubmission.personal_info.self_info
+      : defaultProfileData.self_info,
+    fields: personalInfoDefine
+      ? personalInfoDefine.fields.map((field) => {
+          const fieldInput = formSubmission
+            ? formSubmission.personal_info.fields.find(
+                (input) => input.id === field.id
+              )
+            : null;
+          return {
+            id: field.id,
+            label: field.label,
+            placeholder: field.placeholder,
+            input: fieldInput ? fieldInput.input : "",
+          };
+        })
+      : [],
+  };
+  setProfileData(initialProfileData);
+
   const [avatar, setAvatar] = useState<AvatarFullConfig>(
     profileData.avatar ? profileData.avatar : genConfig()
   );
   const [selfInfo, setSelfInfo] = useState(profileData.self_info);
+  const [fieldValues, setFieldValues] = useState<string[]>(
+    profileData.fields.map((field) => field.input)
+  );
 
   useEffect(() => {
     if (!loading) {
@@ -89,16 +157,25 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       setIsSubmitting(true);
       let personalInfoInput: PersonalInfoInput = {
         avatar: avatar,
-        member_id: userId,
-        name: userName, // TODO: users/useAuthInfo
+        member_id: personalId,
+        name: profileData.name, // TODO: users/useAuthInfo
         self_info: selfInfo,
         fields: fieldValues.map((input, index) => ({
           id: profileData.fields[index].id,
           input: input,
         })),
       };
-      await UpdatePersonalInfo(surveyId, personalInfoInput);
-      console.log(personalInfoInput);
+      let updatedFormSubmission = {
+        ...formSubmission,
+        personal_info: personalInfoInput,
+        update_at: new Date().toISOString(),
+      };
+      await queryUpdateByUserId({
+        token: cookies.get("token") as string,
+        surveyID: surveyId,
+        query: updatedFormSubmission,
+      });
+      console.log(updatedFormSubmission);
       toast("Success", {
         description: "Your personal information has been saved",
       });

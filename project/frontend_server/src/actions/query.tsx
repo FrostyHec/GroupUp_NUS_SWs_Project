@@ -9,19 +9,6 @@ import {
 import axios from "axios";
 import useSWR from "swr";
 
-export type Field = {
-  id: number;
-  label: string;
-  placeholder: string;
-  input: string;
-};
-
-export type ProfileData = {
-  avatar: AvatarFullConfig;
-  name: string;
-  self_info: string;
-  fields: Field[];
-};
 // Form Submission Related Methods
 // <backend>/survey/{id}/query
 // POST
@@ -51,23 +38,25 @@ export async function queryCreate({
     .then((res) => res.data);
 }
 
-// <backend>/survey/{id}/query
+// <backend>/survey/{id}/query/{userId}
 // PUT
-export async function queryUpdateById({
+export async function queryUpdateByUserId({
   token,
   surveyID,
-  queryID,
   query,
 }: {
   token: string;
   surveyID: number;
-  queryID: number;
   query: any;
 }) {
   return await axios
-    .put(`${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/query/${queryID}`, query, {
-      headers: { Authorization: "Bearer " + token },
-    })
+    .put(
+      `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/query/${query.member_id}`,
+      query,
+      {
+        headers: { Authorization: "Bearer " + token },
+      }
+    )
     .then((res) => res.data);
 }
 
@@ -77,11 +66,11 @@ export async function queryUpdateById({
 export function queryGetById({
   token,
   surveyID,
-  queryID,
+  userID,
 }: {
   token: string;
   surveyID: number;
-  queryID: number;
+  userID: number;
 }) {
   const fetcher = (url: string) =>
     axios
@@ -90,7 +79,7 @@ export function queryGetById({
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/query/${queryID}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/query/${userID}`,
     fetcher
   );
   return {
@@ -102,7 +91,7 @@ export function queryGetById({
 
 // <backend>/survey/{id}/query/user/{id}
 // GET
-// Return: query_id
+// Return: Query
 export function queryGetByUserId({
   token,
   surveyID,
@@ -174,7 +163,7 @@ export function queryGetStatus({
   token: string;
   surveyID: number;
   queryID: number;
-}){
+}) {
   const fetcher = (url: string) =>
     axios
       .get(url, {
@@ -190,53 +179,6 @@ export function queryGetStatus({
     isLoading,
     isError: error,
   };
-}
-
-// Get Personal Information Related Methods
-export async function GetPersonalInfo(
-  personId: number,
-  surveyId: number
-): Promise<ProfileData | null> {
-  // TODO: Get the current survey
-  const currentSurvey = sampleSurvey.filter((survey) => survey.id === surveyId);
-  if (!currentSurvey) {
-    throw new Error("Survey not found");
-  }
-  let personalInfo = currentSurvey[0].personal_info; // PersonalInfo | null
-
-  // TODO: Get the current user's form submission
-  const currentUserFormSubmission = sampleFormSubmission.filter(
-    (submission) =>
-      submission.member_id === personId && submission.survey_id === surveyId
-  );
-  if (!currentUserFormSubmission) {
-    throw new Error("Submission not found");
-  }
-  let personalInfoInput = currentUserFormSubmission[0].personal_info; // PersonalInfoInput
-
-  if (personalInfo === null || personalInfoInput === null) {
-    return null;
-  }
-
-  const fields: Field[] = personalInfo.fields.map((field) => {
-    const fieldInput = personalInfoInput.fields.find(
-      (input) => input.id === field.id
-    );
-    return {
-      id: field.id,
-      label: field.label,
-      placeholder: field.placeholder,
-      input: fieldInput ? fieldInput.input : "",
-    };
-  });
-
-  const profileData: ProfileData = {
-    avatar: personalInfoInput.avatar ? personalInfoInput.avatar : genConfig(),
-    name: personalInfoInput.name,
-    self_info: personalInfoInput.self_info,
-    fields: fields,
-  };
-  return profileData;
 }
 
 export async function GetPersonalInfoDefine(

@@ -11,13 +11,12 @@ async function BuilderPage({
     id: number;
   };
 }) {
-  const form = surveyInfo({ surveyID: params.id});
-  if (!form) {
-    throw new Error("form not found");
-  }
+  const { data, isLoading, isError } = surveyInfo({ surveyID: params.id });
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error...</div>;
   return (
     <DesignerContextProvider>
-      <FormBuilder form={form.data} />
+      <FormBuilder form={data.data} />
     </DesignerContextProvider>
   );
 }

@@ -51,11 +51,10 @@ export function userUsernameSearch({ findUsername }: { findUsername: string }) {
     axios
       .get(url, {
         headers: { Authorization: "Bearer " + token },
-        params: { find_username: findUsername },
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/public/query`,
+    `${process.env.NEXT_PUBLIC_API_URL}/user/public/query?find_username=${findUsername}`,
     fetcher
   );
   return {
@@ -83,11 +82,10 @@ export function userAllOwnSurveys({
     axios
       .get(url, {
         headers: { Authorization: "Bearer " + token },
-        params: { page_size: pageSize, page_no: pageNo },
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/survey/own`,
+    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/survey/own?page_size=${pageSize}&page_no=${pageNo}`,
     fetcher
   );
   return {
@@ -115,11 +113,10 @@ export function userAllParticipateSurveys({
     axios
       .get(url, {
         headers: { Authorization: "Bearer " + token },
-        params: { page_size: pageSize, page_no: pageNo },
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/survey/participate`,
+    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/survey/participate?page_size=${pageSize}&page_no=${pageNo}`,
     fetcher
   );
   return {
@@ -147,11 +144,10 @@ export function userReceivedAnouncements({
     axios
       .get(url, {
         headers: { Authorization: "Bearer " + token },
-        params: { page_size: pageSize, page_no: pageNo },
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/announcement/received`,
+    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/announcement/received?page_size=${pageSize}&page_no=${pageNo}`,
     fetcher
   );
   return {
@@ -179,11 +175,10 @@ export function userSentRequest({
     axios
       .get(url, {
         headers: { Authorization: "Bearer " + token },
-        params: { page_size: pageSize, page_no: pageNo },
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/sendrequest`,
+    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/sendrequest?page_size=${pageSize}&page_no=${pageNo}`,
     fetcher
   );
   return {
@@ -211,11 +206,10 @@ export function userReceivedRequest({
     axios
       .get(url, {
         headers: { Authorization: "Bearer " + token },
-        params: { page_size: pageSize, page_no: pageNo },
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/receivedrequest`,
+    `${process.env.NEXT_PUBLIC_API_URL}/user/${userID}/receivedrequest?page_size=${pageSize}&page_no=${pageNo}`,
     fetcher
   );
   return {
@@ -235,11 +229,10 @@ export function userInfo({ userID }: { userID: number }) {
     axios
       .get(url, {
         headers: { Authorization: "Bearer " + token },
-        params: { user_id: userID },
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/user/queryuserout`,
+    `${process.env.NEXT_PUBLIC_API_URL}/user/queryuserout?user_id=${userID}`,
     fetcher
   );
   return {

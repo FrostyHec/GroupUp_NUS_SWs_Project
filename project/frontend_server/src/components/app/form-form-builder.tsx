@@ -43,7 +43,8 @@ export default function FormBuilder({ form }: { form: Survey }) {
 
   useEffect(() => {
     if (isReady) return;
-    const elements: FormElementInstance[] = JSON.parse(form.content);
+    console.log("form builder form", form);
+    const elements: FormElementInstance[] = JSON.parse(form.questions);
     setElements(elements);
     setSelectedElement(null);
     const readyTimeout = setTimeout(() => setIsReady(true), 500);
@@ -62,7 +63,7 @@ export default function FormBuilder({ form }: { form: Survey }) {
     return (
       <div className="flex flex-col items-center justify-center w-full">
         <div className="flex w-full flex-grow items-center justify-center relative overflow-y-auto bg-accent bg-[url(/paper.svg)] dark:bg-[url(/paper-dark.svg)]">
-          <FormSubmitComponent content={elements} surveyId={currentSurveyId}/>
+          <FormSubmitComponent content={elements} surveyId={currentSurveyId} />
         </div>
       </div>
     );

@@ -11,8 +11,8 @@ export type PersonalInfoField = {
 
 //Store in survey/form: questions
 export type PersonalInfo = {
-  fields: PersonalInfoField [];
-}
+  fields: PersonalInfoField[];
+};
 
 export type PersonalInfoFieldInput = {
   id: number;
@@ -39,15 +39,16 @@ export type Survey = {
   description: string;
   create_at: string;
   update_at: string;
-  personal_info: PersonalInfo | null;
+  personal_info: PersonalInfo | null; // 存这个信息
   owners: number[];
   members: number[];
   questions: string; // TODO: 可能可以改成 FormElementInstance[]
   status: "closed" | "archived" | "open";
-  group_restrictions: GroupSettings | null;
+  group_restriction: GroupSettings | null;
 };
 
 export type FormSubmission = {
+  // 整个Submission 要存下来
   id: number;
   create_at: string;
   update_at: string;
@@ -55,7 +56,7 @@ export type FormSubmission = {
   member_id: number;
   status: "edit" | "done";
   questions_answer: string; // TODO: 可能可以改成 FormElementInstance[]
-  personal_info: PersonalInfoInput;
+  personal_info: PersonalInfoInput; // 更改这个信息
 };
 
 export const personalInfoInputSchema = z.object({
@@ -70,4 +71,6 @@ export const surveySchema = z.object({
 });
 
 export type surveySchemaType = z.infer<typeof surveySchema>;
-export type personalInfoInputSchemaType = z.infer<typeof personalInfoInputSchema>;
+export type personalInfoInputSchemaType = z.infer<
+  typeof personalInfoInputSchema
+>;

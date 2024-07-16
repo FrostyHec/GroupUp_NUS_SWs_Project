@@ -17,7 +17,9 @@ export function surveyGroupInfo({
   const token = cookies.get("token") as string;
   const fetcher = (url: string) =>
     axios
-      .get(url, { headers: { Authorization: "Bearer " + token } })
+      .get(url, {
+        headers: { Authorization: "Bearer " + token },
+      })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
     `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/group/${groupID}`,
@@ -48,11 +50,10 @@ export function surveyAllGroups({
     axios
       .get(url, {
         headers: { Authorization: "Bearer " + token },
-        params: { page_size: pageSize, page_no: pageNo },
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/survey/${id}/allgroup`,
+    `${process.env.NEXT_PUBLIC_API_URL}/survey/${id}/allgroup?page_size=${pageSize}&page_no=${pageNo}`,
     fetcher
   );
   return {

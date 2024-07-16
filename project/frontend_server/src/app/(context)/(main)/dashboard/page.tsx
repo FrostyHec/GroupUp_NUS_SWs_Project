@@ -38,10 +38,6 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
-import {
-  CreateFormSubmission,
-  GetAllSurveysByIDLists,
-} from "@/controller/form";
 import { useRouter } from "next/navigation";
 import Avatar, { AvatarFullConfig, genConfig } from "react-nice-avatar";
 import { ImSpinner2 } from "react-icons/im";
@@ -118,12 +114,11 @@ function FormCardSkeleton() {
 }
 
 function OwnFormCards() {
-  const { ownSurveyId } = useSurveys();
-  const forms = GetAllSurveysByIDLists({ survey_ids: ownSurveyId });
-  console.log("Own: ", forms);
+  const { ownSurveys } = useSurveys();
+  console.log("Own: ", ownSurveys);
   return (
     <>
-      {forms.map((form) => (
+      {ownSurveys.map((form) => (
         <OwnFormCard key={form.id} form={form} />
       ))}
     </>
@@ -131,12 +126,11 @@ function OwnFormCards() {
 }
 
 function MemFormCards() {
-  const { participateSurveyId } = useSurveys();
-  const forms = GetAllSurveysByIDLists({ survey_ids: participateSurveyId });
-  console.log("Mem: ", forms);
+  const { participateSurveys } = useSurveys();
+  console.log("Mem: ", participateSurveys);
   return (
     <>
-      {forms.map((form) => (
+      {participateSurveys.map((form) => (
         <MemFormCard key={form.id} form={form} />
       ))}
     </>
@@ -194,13 +188,13 @@ function MemFormCard({ form }: { form: Survey }) {
     router.push("/login");
     return;
   }
+  const { data, isLoading, isError } = queryGetByUserId({
+    token: token,
+    surveyID: form.id,
+    userID: userID,
+  });
 
   const handleButtonClick = () => {
-    const { data, isLoading, isError } = queryGetByUserId({
-      token: token,
-      surveyID: form.id,
-      userID: userID,
-    });
     if (data.data.code === 200) {
       router.push(`/survey/${form.id}/dashboard`);
     } else {

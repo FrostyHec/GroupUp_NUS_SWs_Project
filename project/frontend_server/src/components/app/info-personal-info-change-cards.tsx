@@ -21,11 +21,7 @@ import {
   PersonalInfoField,
   PersonalInfoInput,
 } from "@/schemas/survey";
-import { userId, userName } from "@/actions/user";
-import {
-  UpdatePersonalInfo,
-  UpdatePersonalInfoDefine,
-} from "@/controller/form";
+import { UpdatePersonalInfoDefine } from "@/controller/form";
 import { ImSpinner2 } from "react-icons/im";
 
 import { createContext, useReducer } from "react";

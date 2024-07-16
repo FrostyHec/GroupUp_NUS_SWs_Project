@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { userLogIn } from "@/actions/user";
 import { useCookies } from "next-client-cookies";
+import { toast } from "sonner";
 
 export default function LogIn() {
   const router = useRouter();
@@ -26,9 +27,21 @@ export default function LogIn() {
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
     userLogIn({ username: username, password: password }).then((res) => {
-      cookies.set("token", res.data.data.token);
-      if (res.data.code == "200") {
+      console.log("Logging in user", res);
+      if (res.data.code === 200) {
+        toast("Login Success", {
+          description: "You have successfully logged in",
+        });
+        cookies.set("token", res.data.data.token);
         router.push("/dashboard");
+      } else if (res.data.code === 401) {
+        toast("Login Failed", {
+          description: "Invalid username or password",
+        });
+      } else if (res.data.code === 404) {
+        toast("Login Failed", {
+          description: "User not found",
+        });
       }
     });
   };

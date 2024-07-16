@@ -37,6 +37,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     useState<ProfileData>(defaultProfileData);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     const getData = async () => {

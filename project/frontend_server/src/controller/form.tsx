@@ -31,6 +31,7 @@ export async function GetFormStats() {
   };
 }
 
+// 这个方法需要重置一下
 export function GetAllSurveysByIDLists({survey_ids} : {survey_ids: number[]}) {
   let surveys: any[] = [];
   survey_ids.forEach((id) => {
@@ -42,29 +43,7 @@ export function GetAllSurveysByIDLists({survey_ids} : {survey_ids: number[]}) {
   return surveys;
 }
 
-export async function CreateFormSubmission(
-  id: number,
-  personal_info: PersonalInfoInput
-) {
-  console.log("Create form submission by id: ", id);
-  let formContent = sampleSurvey.find((f) => f.id === id);
-  if (!formContent) {
-    throw new FormNotFoundErr();
-  }
-  let submission: FormSubmission = {
-    id: sampleFormSubmission.length + 1,
-    create_at: new Date().toISOString(),
-    update_at: new Date().toISOString(),
-    personal_info: personal_info,
-    survey_id: id,
-    member_id: 1,
-    status: "edit", // Updated the status property to be of type "edit" | "done"
-    questions_answer: JSON.stringify([]), // TODO: 可能可以改成 FormElementInstance[]
-  };
-  sampleFormSubmission.push(submission);
-  return submission;
-}
-
+// 调用Update Query
 export async function UpdatePersonalInfo(
   id: number,
   personal_info: PersonalInfoInput
@@ -81,6 +60,7 @@ export async function UpdatePersonalInfo(
   return formSubmission;
 }
 
+// 调用Update Survey
 export async function UpdatePersonalInfoDefine(
   id: number,
   personal_info: PersonalInfo
@@ -95,6 +75,7 @@ export async function UpdatePersonalInfoDefine(
   return formContent;
 }
 
+// 调用Update Query
 export async function SubmitForm(id: number, content: string) {
   console.log("Submit form by id: ", id);
   console.log("Content: ", content);
@@ -110,6 +91,7 @@ export async function SubmitForm(id: number, content: string) {
   return formSubmission;
 }
 
+// 调用Get Query
 export async function GetAvatarConfig(id: number) {
   const submission = sampleFormSubmission.find(
     (f) => f.survey_id === id && f.member_id === 1
@@ -120,26 +102,4 @@ export async function GetAvatarConfig(id: number) {
   }
   const avatarConfig = submission.personal_info.avatar;
   return avatarConfig;
-}
-
-export async function GetSurveyStatus(id: number) {
-  console.log("Get survey status by id: ", id);
-  let formContent = sampleSurvey.find((f) => f.id === id);
-  if (!formContent) {
-    throw new FormNotFoundErr();
-  }
-  return formContent.status;
-}
-
-export async function UpdateSurveyStatus(
-  id: number,
-  status: "open" | "closed" | "archived"
-) {
-  console.log("Update survey status by id: ", id);
-  let formContent = sampleSurvey.find((f) => f.id === id);
-  if (!formContent) {
-    throw new FormNotFoundErr();
-  }
-  formContent.status = status;
-  return formContent;
 }

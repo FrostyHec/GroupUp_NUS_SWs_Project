@@ -124,4 +124,14 @@ public class SurveyController {
         }
         return Response.getSuccess("success","");
     }
+
+    @GetMapping("/{id}/basicinfo")
+    public Response getSurveyBasicInfo(@PathVariable long id) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("members_count",surveyService.getSurveyMembersCount(id));
+        data.put("groups_count",surveyService.getSurveyGroupsCount(id));
+        data.put("answered_member_count",surveyService.getSurveyAnswersCount(id));
+        data.put("grouped_member_count",surveyService.getSurveyGroupedMembersCount(id));
+        return Response.getSuccess("success",data);
+    }
 }

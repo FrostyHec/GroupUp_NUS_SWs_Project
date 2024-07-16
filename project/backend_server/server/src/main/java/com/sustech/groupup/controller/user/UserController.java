@@ -1,12 +1,15 @@
 package com.sustech.groupup.controller.user;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.sustech.groupup.entity.api.GroupWithMemberDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sustech.groupup.entity.api.*;
 import com.sustech.groupup.entity.db.GroupResponseEntity;
+import com.sustech.groupup.entity.db.QueryEntity;
 import com.sustech.groupup.entity.db.RequestEntity;
 import com.sustech.groupup.entity.db.UserEntity;
 import com.sustech.groupup.services.GroupResponseService;
@@ -22,9 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sustech.groupup.config.Constant;
-import com.sustech.groupup.entity.api.LoginDTO;
-import com.sustech.groupup.entity.api.RegisterDTO;
-import com.sustech.groupup.entity.api.UserPublicQueryDTO;
 import com.sustech.groupup.services.UserService;
 import com.sustech.groupup.utils.Response;
 
@@ -62,24 +62,24 @@ public class UserController {
     public Response queryOwnSurvey(@PathVariable long id,
                                    int page_size,
                                    int page_no
-    ) {
+    ) throws JsonProcessingException {
         if (page_size < -1 || page_size == 0 || page_no <= 0) {
             return Response.getInternalError("bad-params");
         }
-        List<Long> res = userService.queryOwnSurvey(id, page_size, page_no);
-        return Response.getSuccess(Map.of("survey_ids", res));
+        List<SurveyDTO> res = userService.queryOwnSurvey(id, page_size, page_no);
+        return Response.getSuccess(Map.of("surveys", res));
     }
 
     @GetMapping("/{id}/survey/participate")
     public Response queryParticipateSurvey(@PathVariable long id,
                                            int page_size,
                                            int page_no
-    ) {
+    ) throws JsonProcessingException {
         if (page_size < -1 || page_size == 0 || page_no <= 0) {
             return Response.getInternalError("bad-params");
         }
-        List<Long> res = userService.queryParticipateSurvey(id, page_size, page_no);
-        return Response.getSuccess(Map.of("survey_ids", res));
+        List<SurveyDTO> res = userService.queryParticipateSurvey(id, page_size, page_no);
+        return Response.getSuccess(Map.of("surveys", res));
     }
 
     @GetMapping("/{id}/announcement/received")

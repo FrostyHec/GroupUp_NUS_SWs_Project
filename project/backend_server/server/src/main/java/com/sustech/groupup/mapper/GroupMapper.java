@@ -27,5 +27,9 @@ public interface GroupMapper extends BaseMapper<GroupEntity> {
     @Insert("insert into group_member (group_id, member_id) VALUES (#{groupId},#{memberId})")
     void insertMemberByGroupId(Long groupId, Long memberId);
 
+    @Select("select count(*) from group_table where survey_id=#{surveyId}")
+    int getGroupCountBySurveyId(Long surveyId);
 
+    @Select("select count(*) from group_member where group_id=#{groupId}")
+    int getMembersCountByGroupId(Long groupId);
 }

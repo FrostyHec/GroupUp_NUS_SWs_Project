@@ -26,7 +26,7 @@ public interface SurveyMapper extends BaseMapper<SurveyEntity> {
 
     @Select("""
             <script>
-                    select * from survey_owner where owner_id = #{id}
+                    select survey_id from survey_owner where owner_id = #{id}
                     <if test="pageSize != -1">
                         limit #{pageSize} offset (#{pageNo}-1)*#{pageSize}
                     </if>
@@ -36,7 +36,7 @@ public interface SurveyMapper extends BaseMapper<SurveyEntity> {
 
     @Select("""
             <script>
-                    select * from survey_member where member_id = #{id}
+                    select survey_id from survey_member where member_id = #{id}
                     <if test="pageSize != -1">
                         limit #{pageSize} offset (#{pageNo}-1)*#{pageSize}
                     </if>
@@ -69,4 +69,7 @@ public interface SurveyMapper extends BaseMapper<SurveyEntity> {
     default boolean isAccessable(long surveyId, long requestUserId) {
         return isOwner(surveyId, requestUserId) || isMember(surveyId, requestUserId);
     }
+
+    @Select("select count(*) from survey_member where survey_id=#{surveyId}")
+    int countSurveyMemberBySurveyId(@Param("surveyId") Long SurveyId);
 }

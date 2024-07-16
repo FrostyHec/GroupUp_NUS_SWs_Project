@@ -16,4 +16,7 @@ public interface QueryMapper extends BaseMapper<QueryEntity> {
 
     @Select("select id from query where member_id=#{memberId} and survey_id=#{surveyId}")
     Long getQueryIdByMemberIdAndSurveyId(Long memberId,Long surveyId);
+
+    @Select("select count(*) from query where survey_id=#{surveyId}")
+    int getQueryCountBySurveyId(Long surveyId);
 }

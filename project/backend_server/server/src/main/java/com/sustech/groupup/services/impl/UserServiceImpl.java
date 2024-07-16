@@ -1,8 +1,18 @@
 package com.sustech.groupup.services.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sustech.groupup.controller.grouping.SurveyController;
+import com.sustech.groupup.entity.api.QueryDTO;
+import com.sustech.groupup.entity.api.SurveyDTO;
+import com.sustech.groupup.entity.converter.QueryConverter;
+import com.sustech.groupup.entity.converter.SurveyConverter;
+import com.sustech.groupup.entity.db.QueryEntity;
+import com.sustech.groupup.entity.db.SurveyEntity;
+import com.sustech.groupup.mapper.QueryMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +41,10 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final SurveyMapper surveyMapper;
     private final AnnouncementMapper announcementMapper;
+    private final QueryMapper queryMapper;
+    private final QueryConverter queryConverter;
+    private final SurveyController surveyController;
+    private final SurveyConverter surveyConverter;
 
     @Override
     public LoginAuthDTO login(String username, String password) {
@@ -63,13 +77,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Long> queryOwnSurvey(long id, int pageSize, int pageNo) {
-        return surveyMapper.queryOwnSurvey(id, pageSize, pageNo);
+    public List<SurveyDTO> queryOwnSurvey(long id, int pageSize, int pageNo) throws JsonProcessingException {
+        List<Long> surveyIds= surveyMapper.queryOwnSurvey(id, pageSize, pageNo);
+        List<SurveyDTO> surveyDTOS = new ArrayList<>();
+        for (Long surveyId : surveyIds) {
+            SurveyEntity surveyEntity= surveyMapper.selectById(surveyId);
+            surveyDTOS.add(surveyConverter.toDTO(surveyEntity));
+        }
+        return surveyDTOS;
     }
 
     @Override
-    public List<Long> queryParticipateSurvey(long id, int pageSize, int pageNo) {
-        return surveyMapper.queryParticipateSurvey(id, pageSize, pageNo);
+    public List<SurveyDTO> queryParticipateSurvey(long id, int pageSize, int pageNo) throws JsonProcessingException {
+        List<Long> surveyIds= surveyMapper.queryParticipateSurvey(id, pageSize, pageNo);
+        List<SurveyDTO> surveyDTOS = new ArrayList<>();
+        for (Long surveyId : surveyIds) {
+            SurveyEntity surveyEntity= surveyMapper.selectById(surveyId);
+            surveyDTOS.add(surveyConverter.toDTO(surveyEntity));
+        }
+        return surveyDTOS;
     }
 
     @Override

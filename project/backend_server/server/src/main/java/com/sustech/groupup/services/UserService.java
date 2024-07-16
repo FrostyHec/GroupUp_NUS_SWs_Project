@@ -2,8 +2,12 @@ package com.sustech.groupup.services;
 
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sustech.groupup.entity.api.LoginAuthDTO;
+import com.sustech.groupup.entity.api.QueryDTO;
+import com.sustech.groupup.entity.api.SurveyDTO;
 import com.sustech.groupup.entity.api.UserPublicQueryDTO;
+import com.sustech.groupup.entity.db.QueryEntity;
 import com.sustech.groupup.entity.db.UserEntity;
 
 public interface UserService {
@@ -21,12 +25,12 @@ public interface UserService {
     /**
      * return survey id list or throw failed exception
      */
-    List<Long> queryOwnSurvey(long id, int pageSize, int pageNo);
+    List<SurveyDTO> queryOwnSurvey(long id, int pageSize, int pageNo) throws JsonProcessingException;
 
     /**
      * return survey id list or throw failed exception
      */
-    List<Long> queryParticipateSurvey(long id, int pageSize, int pageNo);
+    List<SurveyDTO> queryParticipateSurvey(long id, int pageSize, int pageNo) throws JsonProcessingException;
 
     /**
      * return survey id list or throw failed exception

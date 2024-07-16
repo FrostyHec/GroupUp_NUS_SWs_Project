@@ -1,7 +1,12 @@
 package com.sustech.groupup.services.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.sustech.groupup.entity.db.GroupEntity;
 import com.sustech.groupup.entity.db.SurveyEntity;
+import com.sustech.groupup.mapper.GroupMapper;
+import com.sustech.groupup.mapper.QueryMapper;
 import com.sustech.groupup.mapper.SurveyMapper;
+import com.sustech.groupup.mapper.UserMapper;
 import com.sustech.groupup.services.SurveyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +18,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SurveyServiceImpl implements SurveyService {
     private final SurveyMapper surveyMapper;
+    private final GroupMapper groupMapper;
+    private final QueryMapper queryMapper;
 
     @Override
     public SurveyEntity getSurveyById(long id) {
@@ -65,6 +72,32 @@ public class SurveyServiceImpl implements SurveyService {
         surveyMapper.deleteById(surveyId);
         surveyMapper.deleteSurveyOwnerById(surveyId);
         surveyMapper.deleteSurveyMemberById(surveyId);
+    }
+
+    @Override
+    public int getSurveyMembersCount(long surveyId) {
+        return surveyMapper.countSurveyMemberBySurveyId(surveyId);
+    }
+
+    @Override
+    public int getSurveyGroupsCount(long surveyId) {
+        return groupMapper.getGroupCountBySurveyId(surveyId);
+    }
+
+    @Override
+    public int getSurveyAnswersCount(long surveyId) {
+        return queryMapper.getQueryCountBySurveyId(surveyId);
+    }
+
+    @Override
+    public int getSurveyGroupedMembersCount(long surveyId) {
+        QueryWrapper<GroupEntity> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("survey_id", surveyId);
+        int result=0;
+        for (GroupEntity groupEntity : groupMapper.selectList(queryWrapper)) {
+            result=result+groupMapper.getMembersCountByGroupId(groupEntity.getId());
+        }
+        return result;
     }
 
 }

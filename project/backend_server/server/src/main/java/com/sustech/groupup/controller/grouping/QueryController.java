@@ -26,8 +26,9 @@ public class QueryController {
     private final QueryService queryService;
 
     @GetMapping("/{number}")
-    public Response getQueryById (@PathVariable long number) {
-        var resp = queryConverter.toDTO(queryService.getQueryById(number));
+    public Response getQueryByUserId (@PathVariable long number,@PathVariable int surveyId) {
+        long queryId=queryService.getQueryIdByMemberIdAndSurveyId(number,surveyId);
+        var resp = queryConverter.toDTO(queryService.getQueryById(queryId));
         return Response.getSuccess("success",Map.of("query",resp));
     }
 
@@ -40,34 +41,38 @@ public class QueryController {
     }
 
     @PutMapping("/{number}")
-    public Response updateQueryById (@PathVariable long number, @RequestBody QueryDTO queryDTO) {
+    public Response updateQueryByUserId (@PathVariable long number, @PathVariable long surveyId,@RequestBody QueryDTO queryDTO) {
         QueryEntity queryEntity = queryConverter.toEntity(queryDTO);
-        queryEntity.setId(number);
+        long queryId = queryService.getQueryIdByMemberIdAndSurveyId(number,surveyId);
+        queryEntity.setId(queryId);
         queryService.updateQuery(queryEntity);
         return Response.getSuccess("success",Map.of("query",queryDTO));
     }
 
     @DeleteMapping("/{number}")
-    public Response deleteQueryById (@PathVariable long number) {
-        queryService.deleteQueryById(number);
+    public Response deleteQueryByUserId (@PathVariable long number,@PathVariable long surveyId) {
+        long queryId=queryService.getQueryIdByMemberIdAndSurveyId(number,surveyId);
+        queryService.deleteQueryById(queryId);
         return Response.getSuccess("success");
     }
 
     @PutMapping("/{number}/status")
-    public Response updateSurveyStatusById (@PathVariable long number, @RequestParam int status) {
-        queryService.updateStatusByQueryId(number,status);
+    public Response updateSurveyStatusById (@PathVariable long number,@PathVariable long surveyId, @RequestParam int status) {
+        long queryId=queryService.getQueryIdByMemberIdAndSurveyId(number,surveyId);
+        queryService.updateStatusByQueryId(queryId,status);
         return Response.getSuccess("success","");
     }
 
     @GetMapping("/{number}/status")
-    public Response getQueryStatusById(@PathVariable long number) {
-        QueryEntity queryEntity = queryService.getQueryById(number);
+    public Response getQueryStatusById(@PathVariable long number,@PathVariable long surveyId) {
+        long queryId=queryService.getQueryIdByMemberIdAndSurveyId(number,surveyId);
+        QueryEntity queryEntity = queryService.getQueryById(queryId);
         return Response.getSuccess("success",Map.of("status",queryEntity.getStatus()));
     }
 
-    @GetMapping("/user/{id}")
-    public Response getQueryIdByMemberId(@PathVariable long surveyId,@PathVariable long id) {
-        Long queryId=queryService.getQueryIdByMemberIdAndSurveyId(id,surveyId);
-        return Response.getSuccess("success",Map.of("queryId",queryId));
-    }
+//    @GetMapping("/user/{id}")
+//    public Response getQueryIdByMemberId(@PathVariable long surveyId,@PathVariable long id) {
+//        Long queryId=queryService.getQueryIdByMemberIdAndSurveyId(id,surveyId);
+//        return Response.getSuccess("success",Map.of("queryId",queryId));
+//    }
 }

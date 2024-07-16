@@ -17,7 +17,7 @@ import { useCookies } from "next-client-cookies";
 export default function LogIn() {
   const router = useRouter();
   const cookies = useCookies();
-  if (cookies.get("token")) {
+  if (cookies.get("token") && cookies.get("token") !== "undefined") {
     router.push("/dashboard");
   }
   const handleSubmit = (event: any) => {

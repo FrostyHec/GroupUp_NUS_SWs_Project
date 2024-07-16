@@ -2,7 +2,7 @@
 
 import React, { useContext, useEffect, useRef, useState } from "react";
 import FieldForm from "./info-field";
-import { GetPersonalInfoDefine } from "@/actions/personal-info";
+import { GetPersonalInfoDefine } from "@/actions/query";
 import NiceAvatar, { genConfig } from "react-nice-avatar";
 import { Button } from "../ui/button";
 import {
@@ -22,7 +22,7 @@ import {
   PersonalInfoInput,
 } from "@/schemas/survey";
 import { userId, userName } from "@/actions/user";
-import { UpdatePersonalInfo, UpdatePersonalInfoDefine } from "@/actions/form";
+import { UpdatePersonalInfo, UpdatePersonalInfoDefine } from "@/controller/form";
 import { ImSpinner2 } from "react-icons/im";
 
 import { createContext, useReducer } from "react";
@@ -203,7 +203,7 @@ const ProfileChangeCard: React.FC<{ surveyId: number }> = ({ surveyId }) => {
             zIndex: 1000,
           }}
         >
-          <Card className="max-w-sm rounded-2xl overflow-hidden shadow-lg dark:shadow-slate-400 p-5">
+          <Card className="rounded-2xl overflow-hidden shadow-lg dark:shadow-slate-400 p-5 w-[700ps]">
             <CardHeader>
               <CardTitle>Define the fields!</CardTitle>
               <CardDescription className="text-muted-foreground">

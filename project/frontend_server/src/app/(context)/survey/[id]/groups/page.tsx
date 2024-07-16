@@ -40,7 +40,7 @@ function UserInfoCardTitle({ userID }: { userID: number }) {
     userID: userID,
   });
   if (isLoading) return <Loading />;
-  if (isError) return <ErrorPage />;
+  if (isError) return <ErrorPage error={isError}/>;
   return <CardTitle className="text-base">{data.data.username}</CardTitle>;
 }
 

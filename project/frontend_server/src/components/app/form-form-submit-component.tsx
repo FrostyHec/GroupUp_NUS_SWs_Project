@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import { HiCursorClick } from "react-icons/hi";
 import { toast } from "sonner";
 import { ImSpinner2 } from "react-icons/im";
-import { SubmitForm } from "@/actions/form";
+import { SubmitForm } from "@/controller/form";
 import { useParams } from "next/navigation";
 import { Edit2Icon } from "lucide-react";
 

@@ -17,7 +17,6 @@ import {
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { toast } from "sonner";
-import { CreateSurvey } from "@/actions/form";
 import { BsFileEarmarkPlus } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 import {
@@ -32,9 +31,11 @@ import {
 import useSurveys from "../hooks/useSurveys";
 import { useCookies } from "next-client-cookies";
 import { add } from "date-fns";
+import { surveyCreate } from "@/actions/survey";
+import { userAuthInfo } from "@/actions/user";
+import useUser from "../hooks/useUser";
 
 function CreateFormBtn() {
-  const cookies = useCookies();
   const router = useRouter();
   const form = useForm<surveySchemaType>({
     resolver: zodResolver(surveySchema),
@@ -42,8 +43,12 @@ function CreateFormBtn() {
   const { setCurrentSurveyId, setRoleBySurveyId, addOwnSurveyId } =
     useSurveys();
 
+  const cookies = useCookies();
+  const token = cookies.get("token") as string;
+  const {userID} = useUser()
+
   async function onSubmit(values: surveySchemaType) {
-    CreateSurvey(cookies.get("token") as string, values).then((res) => {
+    surveyCreate({token : token, userId: userID, data: values}).then((res) => {
       try {
         addOwnSurveyId(res.data.data.survey_id);
         setCurrentSurveyId(res.data.data.survey_id);
@@ -55,7 +60,7 @@ function CreateFormBtn() {
         router.push(`/survey/${res.data.data.survey_id}/dashboard`);
       } catch (error) {
         toast("Error", {
-          description: "Something went wrong, please try again later"
+          description: "Something went wrong, please try again later",
         });
       }
     });

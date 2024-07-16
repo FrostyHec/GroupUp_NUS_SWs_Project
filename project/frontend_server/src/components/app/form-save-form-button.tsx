@@ -2,7 +2,6 @@ import React, { useTransition } from "react";
 import { Button } from "../ui/button";
 import { HiSaveAs } from "react-icons/hi";
 import useDesigner from "../hooks/useDesigner";
-import { UpdateSurveyContent } from "@/actions/form";
 import { toast } from "sonner";
 import { FaSpinner } from "react-icons/fa";
 import {
@@ -11,15 +10,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
+import { surveyInfo, surveyUpdateInfo } from "@/actions/survey";
+import { useCookies } from "next-client-cookies";
 
 function SaveFormBtn({ id }: { id: number }) {
+  const cookies = useCookies();
+  const token = cookies.get("token") as string;
+
   const { elements } = useDesigner();
   const [loading, startTransition] = useTransition();
 
   const updateContent = async () => {
     try {
       const jsonElements = JSON.stringify(elements);
-      await UpdateSurveyContent(id, jsonElements);
+      let survey = surveyInfo({ surveyID: id });
+      survey.data.content = jsonElements;
+      await surveyUpdateInfo({token: token, surveyID: id, surveyInfo: survey.data});
       toast("Success", {
         description: "Your form has been saved",
       });

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import FieldForm from "./info-field";
-import { ProfileData, GetPersonalInfo } from "@/actions/personal-info";
+import { ProfileData, GetPersonalInfo } from "@/actions/query";
 import Avatar, { genConfig } from "react-nice-avatar";
 import { AvatarFullConfig } from "./info-avatar-types";
 import { Button } from "../ui/button";
@@ -11,8 +11,7 @@ import { LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Textarea } from "../ui/textarea";
 import { PersonalInfoInput } from "@/schemas/survey";
-import { userId, userName } from "@/actions/user";
-import { UpdatePersonalInfo } from "@/actions/form";
+import { UpdatePersonalInfo } from "@/controller/form";
 import { ImSpinner2 } from "react-icons/im";
 
 const defaultProfileData: ProfileData = {

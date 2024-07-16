@@ -1,23 +1,6 @@
 import { Survey } from "../../schemas/survey";
 import { AvatarFullConfig } from "react-nice-avatar";
 
-export const defaultConfig : AvatarFullConfig = {
-  "sex": "man",
-  "faceColor": "#AC6651",
-  "earSize": "big",
-  "eyeStyle": "circle",
-  "noseStyle": "round",
-  "mouthStyle": "peace",
-  "shirtStyle": "polo",
-  "glassesStyle": "none",
-  "hairColor": "#FC909F",
-  "hairStyle": "thick",
-  "hatStyle": "none",
-  "hatColor": "#000",
-  "eyeBrowStyle": "up",
-  "shirtColor": "#9287FF",
-  "bgColor": "#506AF4"
-};
 
 export let sampleSurvey: Survey[] = [
   {
@@ -26,9 +9,7 @@ export let sampleSurvey: Survey[] = [
     description: "This is survey 1",
     create_at: "2021-09-01T00:00:00.000Z",
     update_at: "2021-09-01T00:00:00.000Z",
-    published: true,
     personal_info: {
-      avatar: defaultConfig,
       fields: [
         {
           id: 1,
@@ -53,24 +34,7 @@ export let sampleSurvey: Survey[] = [
       '[{"id":"8340","type":"TitleField","extraAttributes":{"title":"Form 1"}},{"id":"8852","type":"SubTitleField","extraAttributes":{"title":"Subtitle"}},{"id":"5321","type":"TextField","extraAttributes":{"label":"填空题","helperText":"哈哈哈","placeHolder":"填空题PlaceHolder","required":false}}]',
     status: "closed",
     group_restrictions: {
-      groupSize: 3,
-      customized_restrictions: [
-        {
-          id: 1,
-          restriction: "NoRestriction",
-          allowModify: true,
-        },
-        {
-          id: 2,
-          restriction: "MustSame",
-          allowModify: true,
-        },
-        {
-          id: 3,
-          restriction: "MustDifferent",
-          allowModify: true,
-        },
-      ],
+      groupSize: 3
     },
   },
   {
@@ -79,9 +43,7 @@ export let sampleSurvey: Survey[] = [
     description: "This is survey 2",
     create_at: "2021-09-02T00:00:00.000Z",
     update_at: "2021-09-02T00:00:00.000Z",
-    published: true,
     personal_info: {
-      avatar: defaultConfig,
       fields: [
         {
           id: 1,
@@ -107,23 +69,6 @@ export let sampleSurvey: Survey[] = [
     status: "closed",
     group_restrictions: {
       groupSize: 2,
-      customized_restrictions: [
-        {
-          id: 1,
-          restriction: "NoRestriction",
-          allowModify: true,
-        },
-        {
-          id: 2,
-          restriction: "MustSame",
-          allowModify: true,
-        },
-        {
-          id: 3,
-          restriction: "MustDifferent",
-          allowModify: true,
-        },
-      ],
     },
   },
   {
@@ -132,9 +77,7 @@ export let sampleSurvey: Survey[] = [
     description: "This is survey 3",
     create_at: "2021-09-03T00:00:00.000Z",
     update_at: "2021-09-03T00:00:00.000Z",
-    published: true,
     personal_info: {
-      avatar: defaultConfig,
       fields: [
         {
           id: 1,
@@ -160,23 +103,6 @@ export let sampleSurvey: Survey[] = [
     status: "open",
     group_restrictions: {
       groupSize: 2,
-      customized_restrictions: [
-        {
-          id: 1,
-          restriction: "NoRestriction",
-          allowModify: true,
-        },
-        {
-          id: 2,
-          restriction: "MustSame",
-          allowModify: true,
-        },
-        {
-          id: 3,
-          restriction: "MustDifferent",
-          allowModify: true,
-        },
-      ],
     },
   },
 ];

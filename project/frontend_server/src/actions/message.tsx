@@ -5,7 +5,7 @@ import { Mail, mails } from "@/components/data/inbox-data";
 import { MessageItem } from "@/schemas/message";
 
 type Config = {
-  selected: DataItem["id"] | null;
+  selected: MessageItem["id"] | null;
 };
 
 export function useMail() {
@@ -36,7 +36,7 @@ export function sendMessage(
   });
 }
 
-export let messagesList : DataItem [] = [];
+export let messagesList : MessageItem [] = [];
 
 export function receiveMessages(id: number) {
   const eventSource = new EventSource(`/api/v1/sse/register/${id}`); // User ID

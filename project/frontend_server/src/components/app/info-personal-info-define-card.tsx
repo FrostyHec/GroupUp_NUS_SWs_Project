@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { PersonalInfoField, PersonalInfoInput } from "@/schemas/survey";
 import { Input } from "../ui/input";
-import { BiAddToQueue } from "react-icons/bi";
+import { BiAddToQueue, BiEdit } from "react-icons/bi";
 import { IoIosAdd, IoIosClose } from "react-icons/io";
 import { Label } from "../ui/label";
 import {
@@ -14,17 +14,18 @@ import {
 import { toast } from "sonner";
 import { set } from "date-fns";
 import { Switch } from "../ui/switch";
+import { Toggle } from "../ui/toggle";
+import { DeleteIcon } from "lucide-react";
+import { LuDelete } from "react-icons/lu";
 
 export default function FieldList() {
   const tasks = useContext(FieldsContext);
   return (
-    <ul>
+    <>
       {tasks.map((task) => (
-        <li key={task.id}>
-          <Field field={task} />
-        </li>
+        <Field key={task.id} field={task} />
       ))}
-    </ul>
+    </>
   );
 }
 
@@ -55,7 +56,7 @@ function Field({ field }: { field: PersonalInfoField }) {
               },
             });
           }}
-          className="w-1/4 mr-2"
+          className="mr-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
         />
         <Input
           value={field.placeholder}
@@ -68,18 +69,18 @@ function Field({ field }: { field: PersonalInfoField }) {
               },
             });
           }}
-          className="w-3/4 p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+          className="p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
         />
       </div>
     );
   } else {
     taskContent = (
       <div className="flex flex-row items-center m-2">
-        <Label className="w-1/4 mr-2">{field.label}</Label>
+        <Label className="w-1/2 mr-2">{field.label}</Label>
         <Input
           placeholder={field.placeholder}
           disabled
-          className="w-3/4 p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+          className="p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
         />
       </div>
     );
@@ -88,18 +89,23 @@ function Field({ field }: { field: PersonalInfoField }) {
   return (
     <div className="flex flex-row items-center">
       {taskContent}
-      <Switch checked={isEditing} onCheckedChange={handleSwitch} />
-      <Button
-        onClick={() => {
-          dispatch({
-            type: "deleted",
-            id: field.id,
-          });
-        }}
-        className="w-5 h-5 ml-2"
-      >
-        x
-      </Button>
+      <div className="flex flex-row items-center m-2">
+        <Toggle pressed={isEditing} onPressedChange={handleSwitch} className="w-1/2 mr-2">
+          <BiEdit />
+        </Toggle>
+        <Button
+          onClick={() => {
+            dispatch({
+              type: "deleted",
+              id: field.id,
+            });
+          }}
+          variant="destructive"
+          size="icon"
+        >
+          <LuDelete size={15} />
+        </Button>
+      </div>
     </div>
   );
 }

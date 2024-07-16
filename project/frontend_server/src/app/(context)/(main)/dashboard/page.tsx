@@ -25,7 +25,6 @@ import {
   PersonalInfoInput,
   PersonalInfoFieldInput,
 } from "@/schemas/survey";
-import { userId, userName } from "@/actions/user";
 import { userAllOwnSurveys } from "@/actions/user";
 import { userAllParticipateSurveys } from "@/actions/user";
 import { sampleSurvey } from "@/components/data/survey-data";
@@ -39,12 +38,15 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
-import { CreateFormSubmission, FormSubmissionExists } from "@/actions/form";
+import { CreateFormSubmission,  GetAllSurveysByIDLists } from "@/controller/form";
 import { useRouter } from "next/navigation";
 import Avatar, { AvatarFullConfig, genConfig } from "react-nice-avatar";
 import { ImSpinner2 } from "react-icons/im";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
+import { queryGetByUserId } from "@/actions/query";
+import { useCookies } from "next-client-cookies";
+import useUser from "@/components/hooks/useUser";
 
 
 export default function Dashboard() {
@@ -112,8 +114,14 @@ function FormCardSkeleton() {
 }
 
 function OwnFormCards() {
-  // const forms = userAllOwnSurveys(-1, -1); // TODO: 此处要更改为真实的数据
-  const forms = sampleSurvey.filter((survey) => survey.owners.includes(userId));
+  const { userID } = useUser();
+  const {data, isLoading, isError} = userAllOwnSurveys({
+    userID: userID,
+    pageSize: -1,
+    pageNo: -1
+  }); 
+  const formsId = data.data.survey_ids;
+  const forms = GetAllSurveysByIDLists(formsId);
   return (
     <>
       {forms.map((form) => (
@@ -124,10 +132,14 @@ function OwnFormCards() {
 }
 
 function MemFormCards() {
-  // const forms = userAllParticipateSurveys(); // TODO：此处要更改为真实的数据
-  const forms = sampleSurvey.filter((survey) =>
-    survey.members.includes(userId)
-  );
+  const { userID } = useUser();
+  const {data, isLoading, isError} = userAllParticipateSurveys({
+    userID: userID,
+    pageSize: -1,
+    pageNo: -1
+  }); 
+  const formsId = data.data.survey_ids;
+  const forms = GetAllSurveysByIDLists(formsId);
   return (
     <>
       {forms.map((form) => (
@@ -181,10 +193,21 @@ function MemFormCard({ form }: { form: Survey }) {
   const [selfInfo, setSelfInfo] = useState("");
 
   const router = useRouter();
+  const cookies = useCookies();
+  const token = cookies.get("token");
+  const { userID, userName } = useUser();
 
-  const handleButtonClick = async () => {
-    const formContent = await FormSubmissionExists(form.id);
-    if (formContent) {
+  const handleButtonClick = () => {
+    if(!token) {
+      router.push("/login");
+      return;
+    }
+    const { data, isLoading, isError } = queryGetByUserId({
+      token: token,
+      surveyID: form.id,
+      userID: userID,
+    });
+    if (data.data.code === 200) {
       router.push(`/survey/${form.id}/dashboard`);
     } else {
       setIsDrawerOpen(true);
@@ -196,7 +219,7 @@ function MemFormCard({ form }: { form: Survey }) {
       setIsSubmitting(true);
       let personalInfoInput: PersonalInfoInput = {
         avatar: avatar,
-        member_id: userId,
+        member_id: userID,
         name: userName, // TODO: users/useAuthInfo
         self_info: selfInfo,
         fields: fieldValues,

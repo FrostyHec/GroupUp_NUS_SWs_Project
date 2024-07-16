@@ -1,5 +1,3 @@
-import { PublishForm } from "@/actions/form";
-import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { MdOutlinePublish } from "react-icons/md";
@@ -16,14 +14,26 @@ import {
 } from "../ui/alert-dialog";
 import { Button } from "../ui/button";
 import { toast } from "../ui/use-toast";
+import { surveyUpdateStatus } from "@/actions/survey";
+import { useCookies } from "next-client-cookies";
+import { useRouter } from "next/navigation";
 
 function PublishFormBtn({ id }: { id: number }) {
   const [loading, startTransition] = useTransition();
   const router = useRouter();
+  const cookies = useCookies();
+  const token = cookies.get("token") as string;
 
   async function publishForm() {
     try {
-      await PublishForm(id);
+      const { data } = await surveyUpdateStatus({
+        token: token,
+        surveyID: id,
+        status: "open",
+      });
+      if (!data) {
+        throw new Error("Failed to update form status");
+      }
       toast({
         title: "Success",
         description: "Your form is now available to the public",

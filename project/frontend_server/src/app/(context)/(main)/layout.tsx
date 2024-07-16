@@ -3,24 +3,8 @@ import { MainNav } from "@/components/app/main-header";
 import useSurveys from "@/components/hooks/useSurveys";
 import ThemeSwitcher from "@/components/app/nav-theme-switcher";
 import SurveySwithcer from "@/components/app/nav-survey-swithcer";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import NiceAvatar from "react-nice-avatar";
-
-import { defaultConfig } from "@/components/data/survey-data";
-
-export default function MainLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   const { setCurrentSurveyId, setRoleBySurveyId } = useSurveys();
-
   setCurrentSurveyId(Number(0));
   setRoleBySurveyId(Number(0));
   return (

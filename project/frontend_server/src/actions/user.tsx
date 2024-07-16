@@ -3,10 +3,6 @@ import useSWR from "swr";
 import axios from "axios";
 import { useCookies } from "next-client-cookies";
 
-export const userId = 1;
-export const userName = "John Doe";
-
-
 //用户注册
 //POST
 //<backend>/user/public/register

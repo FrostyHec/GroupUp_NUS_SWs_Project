@@ -7,7 +7,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { userId } from "@/actions/user";
 import {
   userAllOwnSurveys,
   userAuthInfo,
@@ -37,10 +36,10 @@ export const SurveyContext = createContext<SurveyContextType | null>(null);
 
 export function SurveyContextProvider({ children }: { children: ReactNode }) {
   const ownSurveys = sampleSurvey
-    .filter((survey) => survey.owners.includes(userId))
+    .filter((survey) => survey.owners.includes(1))
     .map((survey) => survey.id);
   const participateSurveys = sampleSurvey
-    .filter((survey) => survey.members.includes(userId))
+    .filter((survey) => survey.members.includes(1))
     .map((survey) => survey.id);
   const [ownSurveyId, setOwnSurveyId] = useState<number[]>(ownSurveys);
   const [participateSurveyId, setParticipateSurveyId] = useState<number[]>(participateSurveys);

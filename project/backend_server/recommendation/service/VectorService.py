@@ -1,5 +1,4 @@
 import asyncio
-import json
 from asyncio import Queue
 from typing import Optional, List, Tuple, Dict
 
@@ -55,9 +54,9 @@ class VectorService:
         vector: Vector = Singleton.recommender.get_vector(survey, query)
         return vector
     @classmethod
-    def __get_survey_and_query(cls,survey_id,user_id)->Tuple[json,json]:
-        survey: json = DatabaseMapper.get_survey(survey_id)
-        query: json = DatabaseMapper.get_query(survey_id, user_id)
+    def __get_survey_and_query(cls,survey_id,user_id):
+        survey = DatabaseMapper.get_survey(survey_id)
+        query = DatabaseMapper.get_query(survey_id, user_id)
         if DatabaseMapper.json_is_empty(survey):
             raise ExternalException(Response.get_not_found("survey-no-found"))
         elif DatabaseMapper.json_is_empty(query):

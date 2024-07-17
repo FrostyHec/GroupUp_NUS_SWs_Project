@@ -52,7 +52,7 @@ public class UserControllerRegisterTest {
         var res = mapper.selectByMap(Map.of("username", "longzhi"));
         assert res.size() == 1;
 
-        var user = res.getFirst();
+        var user = res.get(0);
         assert user.getUsername().equals(username);
     }
 
@@ -72,7 +72,7 @@ public class UserControllerRegisterTest {
         var res = mapper.selectByMap(Map.of("username", "longzhi"));
         assert res.size() == 1;
 
-        var user = res.getFirst();
+        var user = res.get(0);
         assert user.getUsername().equals(username);
     }
 

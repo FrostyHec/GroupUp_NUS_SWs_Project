@@ -49,9 +49,9 @@ class VectorConsumer:
         Log.info(f"Received message on vector consumer: {body}\n,data:{data}")
 
         type = int(data['type'])
-        if type == VectorMessageType.DELETE.name:
+        if type == VectorMessageType.DELETE.value:
             VectorConsumer.delete_vector(data)
-        elif type == VectorMessageType.UPDATE.name:
+        elif type == VectorMessageType.UPDATE.value:
             VectorConsumer.update_vector(data)
         else:
             Log.warn(f"Unknown message type: {type}")
@@ -60,7 +60,9 @@ class VectorConsumer:
     def update_vector(cls, data):
         update_time = data['update_time']
         query_id = data['query_id']
-
+        if update_time is None:
+            Log.warn(f"error!update time is NULL!:{data}")
+            return
         # 从数据库中检查是否为最新
         questions, update_at, questions_answer, survey_id, member_id = DatabaseMapper.get_query_and_survey(
             query_id)

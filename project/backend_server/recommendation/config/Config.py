@@ -16,7 +16,7 @@ DatabaseConfig = module.DatabaseConfig
 class Config:
     port = 5000
     global_thread_pool_size:int = 1000
-    storage_service = 'http://localhost:7011/api/v1/object'
+    storage_service = 'http://localhost:7002/api/v1/object'
     start_cache = True
 
     base_api = '/api/v1'
@@ -29,3 +29,6 @@ class Config:
     mq_port = DatabaseConfig.RABBITMQ_PORT
     mq_user = DatabaseConfig.RABBITMQ_USER
     mq_password = DatabaseConfig.RABBITMQ_PASSWORD
+
+    recommender_model = "default"
+    API_key = DatabaseConfig.API_KEY

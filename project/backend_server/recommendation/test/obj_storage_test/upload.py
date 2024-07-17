@@ -5,11 +5,12 @@ import requests
 import filecmp
 
 from common.Utils import Utils
+from config.Config import Config
 from service.StorageService import StorageService
 
 
 def test():
-    url = 'http://localhost:7011/api/v1/object'
+    url = Config.storage_service
     testfile_path = 'testfile.txt'
     download_path = 'downloaded_example.txt'
     file_name = "longzhi"
@@ -39,7 +40,7 @@ def test():
 
 
 def test_download_empty():
-    url = 'http://localhost:7011/api/v1/object'
+    url = Config.storage_service
     testfile_path = 'testfile.txt'
     file_name = "longzhi"
     response = requests.get(url, params={'key': file_name})

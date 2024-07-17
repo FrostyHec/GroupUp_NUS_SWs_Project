@@ -21,8 +21,7 @@ public class VectorService {
     private final ObjectMapper objectMapper;
 
     public void updateVector(long queryId, Timestamp update_time) throws JsonProcessingException {
-        VectorMessageAddDTO
-                message = new VectorMessageAddDTO(queryId, update_time);
+        VectorMessageAddDTO message = new VectorMessageAddDTO(queryId, update_time);
         String jsonMessage = objectMapper.writeValueAsString(message);
         rabbitTemplate.convertAndSend(Constant.VECTOR_QUEUE, jsonMessage);
     }

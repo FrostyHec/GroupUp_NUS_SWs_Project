@@ -1,13 +1,16 @@
+import queue
+from collections import deque
 from typing import List, Dict, Optional
-
-from DTO.GroupVectors import GroupVectors
-from algorithm.Vector import Vector
 
 from openai import OpenAI
 import json
 import numpy as np
 from text2vec import SentenceModel, cos_sim, semantic_search
 from sklearn.cluster import KMeans
+
+from config.Config import Config
+from dto.GroupVectors import GroupVectors
+from dto.Vector import Vector
 
 '''
 This will be the format of the survey:
@@ -33,14 +36,16 @@ models = {
 }
 
 class Recommender:
-    def __init__(self, API_key: str, model: str = "default"):
+    def __init__(self):
+        API_key = Config.API_key
+        model =Config.recommender_model
         self.client = OpenAI(api_key=API_key, base_url="https://api.deepseek.com")
         if(model == "default" or model not in models.keys()):
             self.model = SentenceModel()
         else:
             self.model = SentenceModel(models[model])
 
-    def get_vector(self, survey: JSON, answer: JSON) -> Vector:
+    def get_vector(self, survey, answer) -> Vector:
         """
         :param survey: 标准问卷的json格式
         :param answer:
@@ -63,13 +68,13 @@ class Recommender:
         result = Vector(shape, vector)
         return result
             
-    def get_willing(self, survey: JSON, willing: str, answer: JSON) -> Vector:
+    def get_willing(self, survey, willing: str, answer) -> Vector:
          # Filter out the question type.
         conserved_type = ["TextField", "NumberField", "TextAreaField", "DateField", "SelectField", "CheckboxField"]
         filtered_survey = list(filter(lambda x: x['type'] not in conserved_type, survey))
         
         # Make Prompts to deepseek chat to transform the willing into a survey answer.
-        user_content = '问卷内容：' + str(filtered_survey) + '\n\n' + '文本内容：' + text
+        user_content = '问卷内容：' + str(filtered_survey) + '\n\n' + '文本内容：' + willing
         response = self.client.chat.completions.create(
             model="deepseek-chat",
             messages=[
@@ -126,8 +131,8 @@ class Recommender:
             group_embedding = group_transpose[index]
             similarities = cos_sim(query_embedding, group_embedding)
             result = np.add(result, similarities)
-        result = result / len(queries_embedding)
-        result_dict = dict(zip(group_ids, result)) * 100
+        result = result / len(queries_embedding)* 100
+        result_dict = dict(zip(group_ids, result))
         return result_dict
 
     def get_group_preference_order(self, user: Vector,
@@ -196,7 +201,7 @@ class Recommender:
             group_vector = np.array(group_vector)
             group_vector = np.mean(group_vector, axis=0)
             group_vector = Vector(group_vector.shape, group_vector)
-            group_vectors[group_id] = group_vector
+            group_with_vacancies[group_id] = group_vector
             group_members_left[group_id] = restriction - len(group.info)
             group_index[group_id] = index
             
@@ -204,7 +209,8 @@ class Recommender:
         user_preferences = {}
         group_preferences = {}
         for user_id, user_vector in current_ungrouped.items():
-            user_preference = self.get_group_preference_order(user_vector, None, group_with_vacancies, restriction)
+            user_preference = self.get_person_preference_order(user_vector, None,
+                                                          group_with_vacancies, restriction)
             user_preference = dict(sorted(user_preference.items(), key=lambda x: x[1], reverse=True))
             user_preference = {key: value for key, value in user_preference.items() if group_members_left[key] > 0}
             user_preferences[user_id] = user_preference
@@ -216,7 +222,7 @@ class Recommender:
         
         # Start the grouping process: First use the gale-shapley algorithm to match the user to the group. 
         # If the group is full, then the user will be sorted using KNN algorithm to form new groups.
-        unmatched_users = queue(user_preferences.keys())
+        unmatched_users = deque(user_preferences.keys())
         group_application = {key: [] for key in group_members_left.keys()}
 
         while unmatched_users:
@@ -224,7 +230,7 @@ class Recommender:
                 break
             if(all(value == 0 for value in group_members_left.values())):
                 break
-            user_id = unmatched_users.pop(0)
+            user_id = unmatched_users.pop()
             if(user_preferences[user_id] == {}):
                 unmatched_users.append(user_id)
                 continue
@@ -259,20 +265,21 @@ class Recommender:
         user_index = {}
         for index, user_id in enumerate(unmatched_users):
             user_vector = current_ungrouped[user_id]
-            user_vector = user_vector.vector
-            user_preference = self.get_group_preference_order(user_vector, None, current_ungrouped, restriction)
+            user_preference = self.get_person_preference_order(user_vector, None,
+                                                               current_ungrouped, restriction)
             user_preference[user_id] = 0
             user_preference = dict(sorted(user_preference.items(), key=lambda x: x[1], reverse=True))
             user_to_user[user_id] = user_preference
             user_index[user_id] = index
             
         # Calculate the similarity between users.
+        n = len(unmatched_users)
         similarity_matrix = np.zeros((n, n))
         for user_id, user_preference in user_to_user.items():
             for target_id, preference in user_preference.items():
                 similarity_matrix[user_index[user_id]][user_index[target_id]] = preference
         
-        cluster_size = len(unmatched_users) / restriction
+        cluster_size = n / restriction
         kmeans = KMeans(n_clusters=cluster_size, random_state=0).fit(similarity_matrix)
         labels = kmeans.labels_
         

@@ -3,6 +3,7 @@ from typing import Dict, List, Tuple
 from flask import Flask, request
 
 from common.HTTPWrapper import common_http_response
+from common.Log import Log
 from common.Response import Response
 from dto.GroupVectors import GroupVectors
 from dto.Singleton import Singleton
@@ -17,6 +18,7 @@ app = Flask(__name__)
 @app.route(Config.base_api + '/survey/<int:sid>/recommend/group', methods=['GET'])
 @common_http_response
 def recommend_group(sid):
+    Log.info(f'rcvd_recommend_group, sid:{sid}')
     try:
         page_size = int(request.args.get('page_size'))
         page_no = int(request.args.get('page_no'))
@@ -56,6 +58,7 @@ def recommend_group(sid):
 @app.route(Config.base_api + '/survey/<int:sid>/recommend/ungrouped', methods=['GET'])
 @common_http_response
 def recommend_ungrouped(sid):
+    Log.info(f'rcvd_recommend_ungrouped, sid:{sid}')
     try:
         page_size = int(request.args.get('page_size'))
         page_no = int(request.args.get('page_no'))
@@ -96,6 +99,7 @@ def recommend_ungrouped(sid):
 @app.route(Config.base_api + '/survey/<int:sid>/recommend/pregrouping', methods=['GET'])
 @common_http_response
 def pre_grouping(sid):
+    Log.info(f'rcvd_pregrouping, sid:{sid}')
     # TODO 预组对接口
     current_group:List[GroupVectors] = VectorService.query_current_group_vectors(sid)
     current_ungrouped = VectorService.query_current_person_vectors(sid)

@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
 import { AiOutlineClose, AiOutlinePlus } from "react-icons/ai";
-import { toast } from "../ui/use-toast";
+import { toast } from "sonner";
 
 const type: ElementsType = "SelectField";
 
@@ -174,9 +174,8 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
       },
     });
 
-    toast({
-      title: "Success",
-      description: "Properties saved successfully",
+    toast("Changes saved", {
+      description: "The changes have been saved successfully",
     });
 
     setSelectedElement(null);

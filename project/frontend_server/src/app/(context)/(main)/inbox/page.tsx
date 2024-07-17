@@ -1,5 +1,5 @@
 "use client";
-import { ComponentProps } from "react";
+import { ComponentProps, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -18,23 +18,114 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  NotificationData,
-  ApplicationData,
   FeedbackData,
-  MessageItem
+  MessageItem,
+  AnnouncementData,
+  RequestData,
 } from "@/schemas/message";
+import {
+  userReceivedAnouncements,
+  userReceivedFeedback,
+  userReceivedRequest,
+} from "@/actions/user";
+import useUser from "@/components/hooks/useUser";
+import { ImSpinner2 } from "react-icons/im";
+import { toast } from "sonner";
+import { surveyAcceptOrDenyRequest } from "@/actions/group";
 
-export default function InboxMessageList() {
-  const [mail, setMail] = useMail();
+export default function InboxPage() {
+  const { userID, userName } = useUser();
+
+  const {
+    data: data_announcement,
+    isLoading: loading_announcement,
+    isError: error_announcement,
+  } = userReceivedAnouncements({ userID: userID, pageSize: -1, pageNo: -1 });
+  const {
+    data: data_request,
+    isLoading: loading_request,
+    isError: error_request,
+  } = userReceivedRequest({ userID: userID, pageSize: -1, pageNo: -1 });
+  const {
+    data: data_feedback,
+    isLoading: loading_feedback,
+    isError: error_feedback,
+  } = userReceivedFeedback({ userID: userID, pageSize: -1, pageNo: -1 });
+
+  useEffect(() => {
+    if (!data_announcement) return;
+    if (!data_request) return;
+    if (!data_feedback) return;
+  }, [data_announcement, data_request, data_feedback]);
+
+  if (loading_announcement || loading_request || loading_feedback) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <ImSpinner2 className="animate-spin h-10 w-10" /> Loading Inbox Data
+      </div>
+    );
+  }
+  // 合并并排序所有数据
+  const combinedData = [
+    ...data_announcement.map((item : any) => ({ ...item, type: "announcement" })),
+    ...data_request.map((item : any) => ({ ...item, type: "request" })),
+    ...data_feedback.map((item : any) => ({ ...item, type: "feedback" })),
+  ];
+
+  combinedData.sort((a, b) => Number(new Date(b.timestamp)) - Number(new Date(a.timestamp)));
+
+  const onApprove = async (item: MessageItem) => {
+    // surveyAcceptOrDenyRequest
+    try{
+      const res = await surveyAcceptOrDenyRequest({
+        surveyID: item.surveyID,
+        requestID: item.id,
+        fromUserID: userID,
+        isAccept: true,
+      });
+      console.log(res);
+    }catch (error) {
+      console.error(error);
+    }
+    console.log("Approve", item);
+  }
+
+  const onReject = async (item: MessageItem) => {
+    // surveyAcceptOrDenyRequest
+    try{
+      const res = await surveyAcceptOrDenyRequest({
+        surveyID: item.surveyID,
+        requestID: item.id,
+        fromUserID: userID,
+        isAccept: false,
+      });
+      console.log(res);
+    }catch (error) {
+      console.error(error);
+    }
+    console.log("Reject", item);
+  }
+
 
   return (
     <ScrollArea className="container h-screen lg:w-1/2 rounded-md p-4">
-        
+      {combinedData.map((item, index) => {
+        if (item.type === "announcement") {
+          return <AnnouncementCard key={index} {...item} />;
+        }
+        if (item.type === "request") {
+          return <RequestCard key={index} {...item} onApprove={onApprove} onReject={onReject} />;
+        }
+        if (item.type === "feedback") {
+          return <FeedbackCard key={index} {...item} />;
+        }
+        return null;
+      })}
     </ScrollArea>
   );
 }
 
-export const NotificationCard: React.FC<NotificationData> = ({
+export const AnnouncementCard: React.FC<AnnouncementData> = ({
   surveyName,
   title,
   content,
@@ -57,7 +148,7 @@ export const NotificationCard: React.FC<NotificationData> = ({
   );
 };
 
-export const ApplicationCard: React.FC<ApplicationData> = ({
+export const RequestCard: React.FC<RequestData> = ({
   userAvatar,
   surveyName,
   userName,

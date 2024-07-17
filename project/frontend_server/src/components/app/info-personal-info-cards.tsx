@@ -163,7 +163,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         >
           <div className="flex flex-col items-center my-5 space-y-4 h-1/2">
             <Avatar style={{ width: "10rem", height: "10rem" }} {...avatar} />
-            <Label>{data_query.data?.personal_info?.name}</Label>
+            <Label>{data_query.data?.personal_info.name}</Label>
             {mode === "edit" && (
               <Button onClick={handleAvatarChange} className="text-xs">
                 Randomize an avatar
@@ -171,7 +171,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             )}
           </div>
           <div className="items-center my-3 space-y-4 h-2/3">
-            {data_query.data.personal_info?.fields.map((field:any, index:any) => (
+            {data_query.data?.personal_info.fields.map((field:any, index:any) => (
               <FieldForm
                 key={index}
                 label={field.label}

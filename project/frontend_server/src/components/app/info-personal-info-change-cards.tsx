@@ -2,7 +2,6 @@
 
 import React, { useContext, useEffect, useRef, useState } from "react";
 import FieldForm from "./info-field";
-import { getPersonalInfoDefine } from "@/actions/query";
 import NiceAvatar, { genConfig } from "react-nice-avatar";
 import { Button } from "../ui/button";
 import {

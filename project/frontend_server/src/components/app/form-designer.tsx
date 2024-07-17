@@ -179,7 +179,7 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
       ref={draggable.setNodeRef}
       {...draggable.listeners}
       {...draggable.attributes}
-      className="relative h-[120px] flex flex-col text-foreground hover:cursor-pointer rounded-md ring-1 ring-accent ring-inset"
+      className="relative h-auto min-h-[120px] flex flex-col text-foreground hover:cursor-pointer rounded-md ring-1 ring-accent ring-inset"
       onMouseEnter={() => {
         setMouseIsOver(true);
       }}
@@ -215,7 +215,7 @@ function DesignerElementWrapper({ element }: { element: FormElementInstance }) {
       {topHalf.isOver && <div className="absolute top-0 w-full rounded-md h-[7px] bg-primary rounded-b-none" />}
       <div
         className={cn(
-          "flex w-full h-[120px] items-center rounded-md bg-accent/40 px-4 py-2 pointer-events-none opacity-100",
+          "flex w-full h-auto min-h-[120px] items-center rounded-md bg-accent/40 px-4 py-2 pointer-events-none opacity-100",
           mouseIsOver && "opacity-30",
         )}
       >

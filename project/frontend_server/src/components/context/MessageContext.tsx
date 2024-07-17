@@ -1,29 +1,59 @@
-import React, { createContext, useState } from "react";
-import {
-  NotificationData,
-  ApplicationData,
-  FeedbackData,
-  MessageItem,
-} from "@/schemas/message";
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import useUser from "../hooks/useUser";
 
-type MessaegContext = {
-    messages: MessageItem[];
-    setMessages: React.Dispatch<React.SetStateAction<MessageItem[]>>;
-    addMessage: (message: MessageItem) => void;
-};
+export const MessageContext = createContext({ messages: [] });
 
-export const MessageContext = createContext<MessaegContext | null>(null);
+export const useMessages = () => useContext(MessageContext);
 
-export function MessageContextProvider({ children }: { children: React.ReactNode }) {
-    const [messages, setMessages] = useState<MessageItem[]>([]);
+export const MessageProvider = ({ children }: { children: ReactNode }) => {
+  const [messages, setMessages] = useState<any>([]);
+  const { userID } = useUser();
+  const router = useRouter();
 
-    const addMessage = (message: MessageItem) => {
-        setMessages([...messages, message]);
+  useEffect(() => {
+    const eventSource = new EventSource(`${process.env.MESSAGE_PUSH_API_URL}/sse/register/${userID}`);
+
+    eventSource.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      setMessages((prevMessages : any) => [...prevMessages, message]);
+
+      toast('You have received a message! Please check your inbox!', {
+        action: {
+          label: 'Action',
+          onClick: () => handleActionClick(message),
+        },
+      });
     };
 
-    return (
-        <MessageContext.Provider value={{ messages, setMessages, addMessage }}>
-            {children}
-        </MessageContext.Provider>
-    );
-}
+    eventSource.onerror = (event) => {
+      console.error("Error receiving messages", event);
+      eventSource.close();
+    };
+
+    // 清理
+    return () => {
+      eventSource.close();
+    };
+  }, []);
+
+  const handleActionClick = async (message : any) => {
+    // 执行相应操作
+    // 发送ACK请求
+    console.log("Action clicked for message:", message);
+    router.push("/inbox");
+  };
+
+  return (
+    <MessageContext.Provider value={{ messages }}>
+      {children}
+    </MessageContext.Provider>
+  );
+};

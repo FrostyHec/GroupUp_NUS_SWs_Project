@@ -160,7 +160,7 @@ export function userReceivedAnouncements({
 //查询用户[发起]的所有组队的结果
 //GET
 //<backend>/user/{id}/sendrequest
-export function userSentRequest({
+export function userReceivedFeedback({
   userID,
   pageSize,
   pageNo,

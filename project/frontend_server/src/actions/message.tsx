@@ -1,55 +1,94 @@
 "use client";
-import { atom, useAtom } from "jotai";
+import axios from "axios";
+import useSWR from "swr";
 
-import { Mail, mails } from "@/components/data/inbox-data";
-import { MessageItem } from "@/schemas/message";
+// <backend>/survey/{id}/announcement
+// Get
+export function receiveAnnouncements({
+  token,
+  page_size,
+  page_no,
+  surveyId,
+}:{
+  token: string,
+  page_size: number,
+  page_no: number,
+  surveyId: number
+}) {
+  const fetcher = (url: string) =>
+    axios
+      .get(url, {
+        headers: { Authorization: "Bearer " + token },
+      })
+      .then((res) => res.data);
+  const { data, error, isLoading } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyId}/announcement?page_size=${page_size}&page_no=${page_no}`,
+    fetcher
+  );
+  return {
+    data,
+    isLoading,
+    isError: error,
+  };
+}
 
-type Config = {
-  selected: MessageItem["id"] | null;
+// <backend>/survey/{id}/announcement 
+// Post
+export function createAnnouncement({
+  token,
+  surveyId,
+  title,
+  content,
+  emergency,
+}:{
+  token: string,
+  surveyId: number,
+  title: string,
+  content: string,
+  emergency: number
+}) {
+  return axios.post(
+    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyId}/announcement`,
+    {
+      title: title,
+      description: content,
+      create_at: new Date().toISOString(),
+      update_at: new Date().toISOString(),
+      emergency: emergency,
+    },
+    {
+      headers: { Authorization: "Bearer " + token },
+    }
+  );
 };
 
-export function useMail() {
-  const configAtom = atom<Config>({
-    selected: mails[0].id,
-  });
-  return useAtom(configAtom);
-}
-
-export function sendMessage(
-  senderId: number,
-  receiverId: number,
-  content: string
-) {
-  fetch(`http://localhost:7078/api/v1/msg_push`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+// <backend>/survey/{id}/announcement/{id}
+// Put
+export function updateAnnouncement({
+  token,
+  surveyId,
+  announcementId,
+  title,
+  content,
+  emergency,
+}:{
+  token: string,
+  surveyId: number,
+  announcementId: number,
+  title: string,
+  content: string,
+  emergency: number
+}) {
+  return axios.put(
+    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyId}/announcement/${announcementId}`,
+    {
+      title: title,
+      description: content,
+      update_at: new Date().toISOString(),
+      emergency: emergency,
     },
-    body: JSON.stringify({
-      message_id: null,
-      from_id: senderId,
-      to_id: receiverId,
-      type: 1,
-      required_ack: false,
-      body: content,
-    }),
-  });
-}
-
-export let messagesList : MessageItem [] = [];
-
-export function receiveMessages(id: number) {
-  const eventSource = new EventSource(`/api/v1/sse/register/${id}`); // User ID
-
-  eventSource.onmessage = function (event) {
-    const message = JSON.parse(event.data);
-    const newMessage = document.createElement("li"); // 明确创建的元素类型
-    newMessage.textContent = JSON.stringify(message); // 将JSON对象转换为字符串
-    messagesList.push(newMessage); // 追加到列表中
-  };
-
-  eventSource.onerror = function (event) {
-    console.error("Error receiving messages", event);
-    eventSource.close();
-  };
-}
+    {
+      headers: { Authorization: "Bearer " + token },
+    }
+  );
+};

@@ -1,20 +1,21 @@
 import { AvatarFullConfig } from "react-nice-avatar";
 
 interface BaseData {
-  id: string;
+  id: number;
+  surveyID: number;
   type: string; // 类型
   timestamp: Date; // 时间戳
 }
 
-// 定义 NotificationCard 的 Props 类型
-export interface NotificationData extends BaseData {
+// 定义 AnnouncementCard 的 Props 类型
+export interface AnnouncementData extends BaseData {
   surveyName: string;
   title: string;
   content: string;
 }
 
-// 定义 ApplicationCard 的 Props 类型
-export interface ApplicationData extends BaseData {
+// 定义 RequestCard 的 Props 类型
+export interface RequestData extends BaseData {
   userAvatar: AvatarFullConfig;
   surveyName: string;
   userName: string;
@@ -31,4 +32,4 @@ export interface FeedbackData extends BaseData {
   isApproved: boolean;
 }
 
-export type MessageItem = NotificationData | ApplicationData | FeedbackData;
+export type MessageItem = AnnouncementData | RequestData | FeedbackData;

@@ -28,6 +28,7 @@ function PropertiesFormSidebar() {
         onCloseAutoFocus={() => {
           setSelectedElement(null);
         }}
+        className="overflow-y-auto"
       >
         <SheetHeader>
           <SheetTitle>Element Properties</SheetTitle>
@@ -39,19 +40,6 @@ function PropertiesFormSidebar() {
           <Separator className="mb-4" />
           <PropertiesForm elementInstance={selectedElement} />
         </div>
-        <SheetFooter>
-          <SheetClose asChild>
-            <Button
-              type="submit"
-              className="p-2"
-              onClick={() => {
-                setSelectedElement(null);
-              }}
-            >
-              Save changes
-            </Button>
-          </SheetClose>
-        </SheetFooter>
       </SheetContent>
     </Sheet>
   );

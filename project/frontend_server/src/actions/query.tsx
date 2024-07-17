@@ -188,18 +188,3 @@ export function queryGetStatus({
     isError: error,
   };
 }
-
-export async function getPersonalInfoDefine(
-  surveyId: number
-): Promise<PersonalInfoField[]> {
-  const currentSurvey = sampleSurvey.filter((survey) => survey.id === surveyId);
-  if (!currentSurvey) {
-    throw new Error("Survey not found");
-  }
-  let personalInfo = currentSurvey[0].personal_info; // PersonalInfo | null
-
-  if (personalInfo === null) {
-    return [];
-  }
-  return personalInfo.fields;
-}

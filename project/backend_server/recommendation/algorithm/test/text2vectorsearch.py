@@ -1,4 +1,5 @@
 import sys
+import time
 
 sys.path.append('..')
 from text2vec import SentenceModel, cos_sim, semantic_search
@@ -19,7 +20,11 @@ corpus = [
     'A monkey is playing drums.',
     'A cheetah is running behind its prey.'
 ]
+start_time = time.time()
 corpus_embeddings = embedder.encode(corpus)
+print("Corpus Embedding Time:", time.time() - start_time)
+
+print("Corpus embeddings:", corpus_embeddings.shape)
 
 # Query sentences:
 queries = [
@@ -28,13 +33,16 @@ queries = [
     'Someone in a gorilla costume is playing a set of drums.',
     'A cheetah chases prey on across a field.']
 
-for query in queries:
-    query_embedding = embedder.encode(query)
-    hits = semantic_search(query_embedding, corpus_embeddings, top_k=5)
-    print("\n\n======================\n\n")
-    print("Query:", query)
-    print("\nTop 5 most similar sentences in corpus:")
-    hits = hits[0]  # Get the hits for the first query
-    for hit in hits:
-        print(hit)
-        print(corpus[hit['corpus_id']], "(Score: {:.4f})".format(hit['score']))
+start_time = time.time()
+query_embedding = embedder.encode(queries)
+print("Query Embedding Time:", time.time() - start_time)
+
+print("Query embeddings:", query_embedding.shape)
+start_time  = time.time()
+hits = cos_sim(query_embedding, corpus_embeddings)
+print("Semantic Search Time:", time.time() - start_time)
+print("\n\n======================\n\n")
+print("Query:", queries)
+print(hits)
+
+# 返回的是每个Query对应的最相似的5个句子的索引

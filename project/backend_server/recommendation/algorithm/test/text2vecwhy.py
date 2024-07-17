@@ -16,7 +16,7 @@ def compute_emb(model):
         'The quick brown fox jumps over the lazy dog.'
     ]
     sentence_embeddings = model.encode(sentences)
-    print(type(sentence_embeddings), sentence_embeddings.shape)
+    print(type(sentence_embeddings), type(sentence_embeddings.shape))
 
     # The result is a list of sentence embeddings as numpy arrays
     for sentence, embedding in zip(sentences, sentence_embeddings):
@@ -32,9 +32,9 @@ if __name__ == "__main__":
     compute_emb(t2v_model)
 
     # 支持多语言的句向量模型（CoSENT），多语言（包括中英文）语义匹配任务推荐，支持fine-tune继续训练
-    sbert_model = SentenceModel("shibing624/text2vec-base-multilingual")
-    compute_emb(sbert_model)
+    # sbert_model = SentenceModel("shibing624/text2vec-base-multilingual")
+    # compute_emb(sbert_model)
 
     # 中文词向量模型(word2vec)，中文字面匹配任务和冷启动适用
-    w2v_model = Word2Vec("w2v-light-tencent-chinese")
-    compute_emb(w2v_model)
+    # w2v_model = Word2Vec("w2v-light-tencent-chinese")
+    # compute_emb(w2v_model)

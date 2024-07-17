@@ -14,22 +14,9 @@ import axios from "axios";
 import { toast } from "sonner";
 import { queryGetByUserId, queryUpdateByUserId } from "@/actions/query";
 import { surveyInfo, surveyUpdateInfo } from "@/actions/survey";
+import useSWR from "swr";
 class FormNotFoundErr extends Error {}
 class FormSubmissionNotFoundErr extends Error {}
-
-export async function GetFormStats() {
-  const visits = 0;
-  const submissions = 0;
-  const submissionRate = 0;
-  const bounceRate = 0;
-
-  return {
-    visits,
-    submissions,
-    submissionRate,
-    bounceRate,
-  };
-}
 
 // // 调用Update Query
 // export async function UpdatePersonalInfo(

@@ -31,45 +31,42 @@ export function SurveyMemberNav() {
         >
           Dashboard
         </Link>
-        <Link
+        {status === 3 && <Link
           href="form"
           className={cn(
             "text-foreground transition-colors hover:text-foreground",
             router.startsWith("/survey") &&
-              router.endsWith("form") &&
-              status === "open"
+              router.endsWith("form") 
               ? "text-foreground"
               : "text-muted-foreground"
           )}
         >
           Form
-        </Link>
-        <Link
+        </Link>}
+        {status === 3 && <Link
           href="info"
           className={cn(
             "text-foreground transition-colors hover:text-foreground",
             router.startsWith("/survey") &&
-              router.endsWith("info") &&
-              status === "open"
+              router.endsWith("info") 
               ? "text-foreground"
               : "text-muted-foreground"
           )}
         >
           Info
-        </Link>
-        <Link
+        </Link>}
+        {status === 3 && <Link
           href="match"
           className={cn(
             "text-foreground transition-colors hover:text-foreground",
             router.startsWith("/survey") &&
-              router.endsWith("match") &&
-              status === "open"
+              router.endsWith("match") 
               ? "text-foreground"
               : "text-muted-foreground"
           )}
         >
           Recommendations
-        </Link>
+        </Link>}
         <Link
           href="groups"
           className={cn(

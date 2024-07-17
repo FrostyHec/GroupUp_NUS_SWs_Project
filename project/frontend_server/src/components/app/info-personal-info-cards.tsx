@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, use, useEffect, useState } from "react";
 import FieldForm from "./info-field";
 import { queryGetByUserId, queryUpdateByUserId } from "@/actions/query";
 import Avatar, { genConfig } from "react-nice-avatar";
@@ -17,8 +17,7 @@ import {
 } from "@/schemas/survey";
 import { ImSpinner2 } from "react-icons/im";
 import { useCookies } from "next-client-cookies";
-import useUser from "../hooks/useUser";
-import { surveyInfo } from "@/actions/survey";
+import { Label } from "../ui/label";
 
 type Field = {
   id: number;
@@ -43,37 +42,26 @@ const defaultProfileData: ProfileData = {
 
 interface ProfileCardProps {
   personalId: number;
-  surveyId: number;
+  survey: any;
   mode: "edit" | "view"; // Personal ID 是本人可以Edit 如果不是本人不能Edit 只能查看信息
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({
   personalId,
-  surveyId,
+  survey,
   mode,
 }) => {
   // 预载信息
   const cookies = useCookies();
   const token = cookies.get("token") as string;
-
-  // TODO: Retrieve personal info
-  const [profileData, setProfileData] =
-    useState<ProfileData>(defaultProfileData); // 用于渲染
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [personalInfoDefine, setPersonalInfoDefine] =
-    useState<PersonalInfo | null>(null);
-  const [formSubmission, setFormSubmission] = useState<FormSubmission | null>(
-    null
-  );
+  const [avatar, setAvatar] = useState<AvatarFullConfig | null>(null);
+  const [selfInfo, setSelfInfo] = useState<string>("");
+  const [fieldValues, setFieldValues] = useState<Field[]>([]);
 
-  const {
-    data: data_survey,
-    isLoading: isLoading_survey,
-    isError: isError_survey,
-  } = surveyInfo({ surveyID: surveyId }); // From @/actions/survey
-
+  const surveyId = survey.id;
   const {
     data: data_query,
     isLoading: isLoading_query,
@@ -83,8 +71,27 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     surveyID: surveyId,
     userID: personalId,
   }); // From @/actions/query
+  useEffect(() => {
+    if (!data_query) return;
+    setFieldValues(
+      survey.personal_info.fields.map((field: any) => {
+        let result: Field = {
+          id: field.id,
+          label: field.label,
+          placeholder: field.placeholder,
+          input: data_query.data.personal_info.fields.find(
+            (e: any) => e.id === field.id
+          ).input,
+        };
+        return result;
+      })
+    );
+    setAvatar(data_query.data.personal_info.avatar);
+    setSelfInfo(data_query.data.personal_info.self_info);
+    setLoading(false);
+  }, [data_query]);
 
-  if (isLoading_survey || isLoading_query) {
+  if (isLoading_query) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-full">
         <LoaderCircle className="animate-spin h-12 w-12" /> User Profile Loading
@@ -92,7 +99,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     );
   }
 
-  if (isError_survey || isError_query) {
+  if (isError_query) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-full">
         Error loading
@@ -100,88 +107,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     );
   }
 
-  setPersonalInfoDefine(data_survey.data.personal_info);
-  setFormSubmission(data_query.data);
-  let initialProfileData: ProfileData = {
-    avatar: formSubmission
-      ? formSubmission.personal_info.avatar
-      : defaultProfileData.avatar,
-    name: formSubmission
-      ? formSubmission.personal_info.name
-      : defaultProfileData.name,
-    self_info: formSubmission
-      ? formSubmission.personal_info.self_info
-      : defaultProfileData.self_info,
-    fields: personalInfoDefine
-      ? personalInfoDefine.fields.map((field) => {
-          const fieldInput = formSubmission
-            ? formSubmission.personal_info.fields.find(
-                (input) => input.id === field.id
-              )
-            : null;
-          return {
-            id: field.id,
-            label: field.label,
-            placeholder: field.placeholder,
-            input: fieldInput ? fieldInput.input : "",
-          };
-        })
-      : [],
-  };
-  setProfileData(initialProfileData);
-
-  return (
-    <InternalProfileCard
-      profileData={profileData}
-      loading={loading}
-      personalId={personalId}
-      surveyId={surveyId}
-      mode={mode}
-      formSubmission={formSubmission}
-      isSubmitting={isSubmitting}
-      setIsSubmitting={setIsSubmitting}
-    />
-  );
-};
-
-function InternalProfileCard({
-  profileData,
-  loading,
-  personalId,
-  surveyId,
-  mode,
-  formSubmission,
-  isSubmitting,
-  setIsSubmitting,
-}: {
-  profileData: ProfileData;
-  loading: boolean;
-  personalId: number;
-  surveyId: number;
-  mode: "edit" | "view";
-  formSubmission: FormSubmission | null;
-  isSubmitting: boolean;
-  setIsSubmitting: (value: boolean) => void;
-}) {
-  const cookies = useCookies();
-  const [avatar, setAvatar] = useState<AvatarFullConfig>(
-    profileData.avatar ? profileData.avatar : genConfig()
-  );
-  const [selfInfo, setSelfInfo] = useState(profileData.self_info);
-  const [fieldValues, setFieldValues] = useState<string[]>(
-    profileData.fields.map((field) => field.input)
-  );
-
-  useEffect(() => {
-    if (!loading) {
-      setFieldValues(profileData.fields.map((field) => field.input));
-      setAvatar(profileData.avatar ? profileData.avatar : genConfig());
-    }
-  }, [loading, profileData]);
-
   const handleInputChange = (index: number, newValue: string) => {
     const newValues = [...fieldValues];
-    newValues[index] = newValue;
+    newValues[index].input = newValue;
     setFieldValues(newValues);
   };
 
@@ -194,16 +122,18 @@ function InternalProfileCard({
       setIsSubmitting(true);
       let personalInfoInput: PersonalInfoInput = {
         avatar: avatar,
-        member_id: personalId,
-        name: profileData.name, // TODO: users/useAuthInfo
+        member_id: data_query.data.personal_info.member_id,
+        name: data_query.data.personal_info.name,
         self_info: selfInfo,
-        fields: fieldValues.map((input, index) => ({
-          id: profileData.fields[index].id,
-          input: input,
+        fields: fieldValues.map((field, index) => ({
+          id: field.id as number,
+          input: field.input,
         })),
       };
+      console.log("Submitting data: ", personalInfoInput, data_query.data);
       let updatedFormSubmission = {
-        ...formSubmission,
+        ...data_query.data,
+        member_id: data_query.data.personal_info.member_id,
         personal_info: personalInfoInput,
         update_at: new Date().toISOString(),
       };
@@ -225,64 +155,61 @@ function InternalProfileCard({
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center w-full h-full">
-        <LoaderCircle className="animate-spin h-12 w-12" />
-      </div>
-    );
-  }
-
   return (
     <Card className="max-w-sm rounded-2xl overflow-hidden shadow-lg dark:shadow-slate-400 w-[450px] p-5">
       <CardContent>
-        <div className="flex flex-col items-center my-5 space-y-4 h-1/2">
-          <Avatar style={{ width: "10rem", height: "10rem" }} {...avatar} />
-          {mode === "edit" && (
-            <Button onClick={handleAvatarChange} className="text-xs">
-              Randomize an avatar
-            </Button>
-          )}
-        </div>
-        <div className="items-center my-3 space-y-4 h-2/3">
-          {profileData.fields.map((field, index) => (
-            <FieldForm
-              key={index}
-              label={field.label}
-              value={fieldValues[index]}
-              placeholder={field.placeholder}
-              editMode={mode === "edit"}
-              onChange={(newValue) => handleInputChange(index, newValue)}
-            />
-          ))}
-        </div>
-        <div className="items-center my-3 space-y-4 h-2/3">
-          <Textarea
-            placeholder="Tell others about yourself and who you want to group up with!"
-            rows={3}
-            value={selfInfo}
-            onChange={(e) => setSelfInfo(e.target.value)}
-            disabled={mode !== "edit"}
-            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
-          ></Textarea>
-        </div>
-        <div className="items-center my-1 space-y-4 h-2/3">
-          {mode === "edit" && (
-            <Button
-              onClick={() => {
-                onSubmit();
-              }}
-              disabled={isSubmitting}
-              className="w-full mt-4"
-            >
-              {!isSubmitting && <span>Save</span>}
-              {isSubmitting && <ImSpinner2 className="animate-spin" />}
-            </Button>
-          )}
-        </div>
+        <Suspense
+          fallback={<LoaderCircle className="animate-spin h-12 w-12" />}
+        >
+          <div className="flex flex-col items-center my-5 space-y-4 h-1/2">
+            <Avatar style={{ width: "10rem", height: "10rem" }} {...avatar} />
+            <Label>{data_query.data?.personal_info?.name}</Label>
+            {mode === "edit" && (
+              <Button onClick={handleAvatarChange} className="text-xs">
+                Randomize an avatar
+              </Button>
+            )}
+          </div>
+          <div className="items-center my-3 space-y-4 h-2/3">
+            {data_query.data.personal_info?.fields.map((field:any, index:any) => (
+              <FieldForm
+                key={index}
+                label={field.label}
+                value={fieldValues[index].input}
+                placeholder={field.placeholder}
+                editMode={mode === "edit"}
+                onChange={(newValue) => handleInputChange(index, newValue)}
+              />
+            ))}
+          </div>
+          <div className="items-center my-3 space-y-4 h-2/3">
+            <Textarea
+              placeholder="Tell others about yourself and who you want to group up with!"
+              rows={3}
+              value={selfInfo}
+              onChange={(e) => setSelfInfo(e.target.value)}
+              disabled={mode !== "edit"}
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+            ></Textarea>
+          </div>
+          <div className="items-center my-1 space-y-4 h-2/3">
+            {mode === "edit" && (
+              <Button
+                onClick={() => {
+                  onSubmit();
+                }}
+                disabled={isSubmitting}
+                className="w-full mt-4"
+              >
+                {!isSubmitting && <span>Save</span>}
+                {isSubmitting && <ImSpinner2 className="animate-spin" />}
+              </Button>
+            )}
+          </div>
+        </Suspense>
       </CardContent>
     </Card>
   );
-}
+};
 
 export default ProfileCard;

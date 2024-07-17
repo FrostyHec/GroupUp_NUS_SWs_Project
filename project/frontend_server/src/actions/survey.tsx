@@ -50,7 +50,7 @@ export async function surveyCreate({
     description: description ? description : "No description",
     create_at: new Date().toISOString(),
     update_at: new Date().toISOString(),
-    personal_info: {},
+    personal_info: { fields: [] },
     owners: [userId],
     members: [],
     questions: [],
@@ -65,8 +65,7 @@ export async function surveyCreate({
     .then((res) => res.data);
   let newSurvey: Survey = {
     ...body,
-    id: result.data.survey_id,
-    status: "closed",
+    id: result.data.survey_id
   };
   return newSurvey;
 }
@@ -158,4 +157,29 @@ export function surveyDelete() {
     data: {},
   };
   return { data: response };
+}
+
+// <backend>/survey/{id}/basicinfo
+export function getFormStats({
+  token,
+  id,
+}: {
+  token: string;
+  id: number;
+}) {
+  const fetcher = (url: string) =>
+    axios
+      .get(url, {
+        headers: { Authorization: "Bearer " + token },
+      })
+      .then((res) => res.data);
+  const { data, error, isLoading } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_URL}/survey/${id}/basicinfo`,
+    fetcher
+  );
+  return {
+    data,
+    isLoading,
+    isError: error,
+  };
 }

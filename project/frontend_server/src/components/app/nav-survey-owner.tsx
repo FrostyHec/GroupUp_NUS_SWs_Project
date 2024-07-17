@@ -11,14 +11,13 @@ import { surveyStatus } from "@/actions/survey";
 export function SurveyOwnerNav() {
   const router = usePathname();
   const { currentSurveyId } = useSurveys();
-  console.log(currentSurveyId);
   const { data, isLoading, isError } = surveyStatus({
     surveyID: currentSurveyId,
   });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error...</div>;
   const status = data.data.status;
-  console.log(status);
+  console.log("Navigating", status);
   return (
     <>
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
@@ -33,32 +32,30 @@ export function SurveyOwnerNav() {
         >
           Dashboard
         </Link>
-        <Link
+        {status === 1 && <Link
           href="form"
           className={cn(
             "text-foreground transition-colors hover:text-foreground",
             router.startsWith("/survey") &&
-              router.endsWith("form") &&
-              status === "closed"
+              router.endsWith("form")
               ? "text-foreground"
               : "text-muted-foreground"
           )}
         >
           Form
-        </Link>
-        <Link
+        </Link> }
+        {status === 1 && <Link
           href="info"
           className={cn(
             "text-foreground transition-colors hover:text-foreground",
             router.startsWith("/survey") &&
-              router.endsWith("info") &&
-              status === "closed"
+              router.endsWith("info") 
               ? "text-foreground"
               : "text-muted-foreground"
           )}
         >
           Info
-        </Link>
+        </Link>}
         <Link
           href="members"
           className={cn(

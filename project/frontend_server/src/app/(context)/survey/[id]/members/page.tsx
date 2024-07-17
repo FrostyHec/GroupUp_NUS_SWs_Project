@@ -33,6 +33,7 @@ import {
   surveyAddMember,
   surveyDeleteMember,
 } from "@/controller/survey-members";
+import useSurveys from "@/components/hooks/useSurveys";
 
 function UsernameTableCell({ userID }: { userID: number }) {
   const { data, isLoading, isError } = userInfo({
@@ -139,8 +140,10 @@ export function MembersTable({
   );
 }
 
-function Members({ params }: { params: { id: number } }) {
+export default function Members({ params }: { params: { id: number } }) {
   const cookies = useCookies();
+  const { role } = useSurveys();
+  if (role !== "owner") return <div>Unauthorized</div>;
   const { data, isLoading, isError } = surveyInfo({ surveyID: params.id });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error</div>;
@@ -211,34 +214,4 @@ function Members({ params }: { params: { id: number } }) {
       </main>
     </div>
   );
-}
-
-//checks if user is an owner of the survey
-function MembersAuth({
-  params,
-  authData,
-}: {
-  params: { id: number };
-  authData: any;
-}) {
-  const { data, isLoading, isError } = surveyInfo({ surveyID: params.id });
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>;
-  if (data.data.owners.includes(authData.data.user_id)) {
-    return <Members params={params} />;
-  } else {
-    return <div>Unauthorized</div>;
-  }
-}
-
-//fetches user auth info
-export default function MembersAuthProvider({
-  params,
-}: {
-  params: { id: number };
-}) {
-  const { data, isLoading, isError } = userAuthInfo();
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>;
-  return <MembersAuth params={params} authData={data} />;
 }

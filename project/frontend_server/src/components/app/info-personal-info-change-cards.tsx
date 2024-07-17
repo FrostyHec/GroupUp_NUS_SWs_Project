@@ -41,7 +41,7 @@ export const FieldsDispatchContext = createContext<React.Dispatch<any>>(
   () => {}
 );
 
-const ProfileChangeCard: React.FC<{ surveyId: number }> = ({ surveyId }) => {
+const ProfileChangeCard: React.FC<{ survey: any }> = ({ survey }) => {
   const config = {
     sex: "man",
     faceColor: "#AC6651",
@@ -60,6 +60,7 @@ const ProfileChangeCard: React.FC<{ surveyId: number }> = ({ surveyId }) => {
     bgColor: "linear-gradient(45deg, #3e1ccd 0%, #ff6871 100%)",
   };
   const myConfig = genConfig(config);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [initialFields, setInitialFields] = useState<PersonalInfoField[]>([]);
   const [fields, dispatch] = useReducer(fieldsReducer, initialFields);
@@ -72,14 +73,6 @@ const ProfileChangeCard: React.FC<{ surveyId: number }> = ({ surveyId }) => {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   const cookies = useCookies();
-  const [query, setQuery] = useState<JSON>();
-  const { userID, setUserID } = useUser();
-
-  const {
-    data: surveyData,
-    isLoading: surveyLoading,
-    isError: surveyError,
-  } = surveyInfo({ surveyID: surveyId });
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (boxRef.current) {
@@ -113,24 +106,11 @@ const ProfileChangeCard: React.FC<{ surveyId: number }> = ({ surveyId }) => {
     };
   }, [isDragging, offset]);
 
+
   // Handle survey data loading and error
   useEffect(() => {
-    if (surveyLoading) {
-      console.log("Loading survey data...");
-      return;
-    }
-    // Process survey data
-    try {
-      const data = surveyData.data.personal_info.fields;
-      console.log("Survey data loaded:", data);
-      dispatch({ type: "set", fields: data });
-      toast("Success", {
-        description: "Your profile has been updated",
-      });
-    } catch (error) {
-      console.error("Error processing survey data:", error);
-    }
-  }, [surveyData, surveyLoading, surveyError]);
+    dispatch({ type: "set", fields: survey.personal_info.fields });
+  }, []);
 
   const handleInputChange = (index: number, newValue: string) => {
     const newValues = [...fieldValues];
@@ -150,8 +130,8 @@ const ProfileChangeCard: React.FC<{ surveyId: number }> = ({ surveyId }) => {
       };
       await UpdatePersonalInfoDefine(
         cookies.get("token") as string,
-        surveyId,
-        surveyData.data,
+        survey.id,
+        survey,
         personalInfo
       );
       toast("Success", {
@@ -241,7 +221,6 @@ const ProfileChangeCard: React.FC<{ surveyId: number }> = ({ surveyId }) => {
   );
 };
 
-export default ProfileChangeCard;
 
 function fieldsReducer(fields: PersonalInfoField[], action: any) {
   switch (action.type) {
@@ -275,3 +254,5 @@ function fieldsReducer(fields: PersonalInfoField[], action: any) {
     }
   }
 }
+
+export default ProfileChangeCard;

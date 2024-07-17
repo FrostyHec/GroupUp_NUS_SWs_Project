@@ -3,7 +3,7 @@ import { SurveyNav } from "@/components/app/main-header";
 import ThemeSwitcher from "@/components/app/nav-theme-switcher";
 import SurveySwithcer from "@/components/app/nav-survey-swithcer";
 import useSurveys from "@/components/hooks/useSurveys";
-import { useEffect } from "react";;
+import { useEffect, useState } from "react";
 
 export default function Layout({
   children,
@@ -14,14 +14,20 @@ export default function Layout({
 }) {
   const { role, currentSurveyId, setCurrentSurveyId, setRoleBySurveyId } =
     useSurveys();
-
-  setCurrentSurveyId(Number(params.id));
-  setRoleBySurveyId(Number(params.id));
+  
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setCurrentSurveyId(Number(params.id));
+    setRoleBySurveyId(Number(params.id));
     console.log("Role", role);
     console.log("Current Survey Id", currentSurveyId);
+    setIsLoading(false);
   }, [role, currentSurveyId]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex flex-col min-h-screen min-w-full bg-background max-h-screen">

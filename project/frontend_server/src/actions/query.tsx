@@ -1,3 +1,4 @@
+"use client";
 import { sampleSurvey } from "@/components/data/survey-data";
 import { sampleFormSubmission } from "@/components/data/query-data";
 import { AvatarFullConfig, genConfig } from "react-nice-avatar";

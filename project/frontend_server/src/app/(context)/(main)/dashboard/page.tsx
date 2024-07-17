@@ -143,13 +143,6 @@ function OwnFormCard({ form }: { form: Survey }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 justify-between">
           <span className="truncate font-bold">{form.name}</span>
-          {form.status === "open" && <Badge>Published</Badge>}
-          {form.status === "closed" && (
-            <Badge variant={"destructive"}>Draft</Badge>
-          )}
-          {form.status === "archived" && (
-            <Badge variant={"outline"}>Archived</Badge>
-          )}
         </CardTitle>
         <CardDescription className="flex items-center justify-between text-muted-foreground text-sm">
           {formatDistance(form.create_at, new Date(), {
@@ -205,6 +198,7 @@ function MemFormCard({ form }: { form: Survey }) {
   const onSubmit = async () => {
     try {
       setIsSubmitting(true);
+      console.log("At the first time logging in the username is: ", userName);
       let personalInfoInput: PersonalInfoInput = {
         avatar: avatar,
         member_id: userID,
@@ -253,13 +247,6 @@ function MemFormCard({ form }: { form: Survey }) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 justify-between">
             <span className="truncate font-bold">{form.name}</span>
-            {form.status === "open" && <Badge>Published</Badge>}
-            {form.status === "closed" && (
-              <Badge variant={"destructive"}>Draft</Badge>
-            )}
-            {form.status === "archived" && (
-              <Badge variant={"outline"}>Archived</Badge>
-            )}
           </CardTitle>
           <CardDescription className="flex items-center justify-between text-muted-foreground text-sm">
             {formatDistance(form.create_at, new Date(), {
@@ -294,6 +281,7 @@ function MemFormCard({ form }: { form: Survey }) {
                   style={{ width: "10rem", height: "10rem" }}
                   {...avatar}
                 />
+                <Label>{userName}</Label>
                 <Button onClick={handleAvatarChange} className="text-xs">
                   Randomize an avatar
                 </Button>

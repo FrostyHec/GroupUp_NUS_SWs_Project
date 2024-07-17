@@ -155,6 +155,20 @@ export default function SurveySwitcher() {
                 </CommandItem>
               ))}
             </CommandGroup>
+            <CommandSeparator />
+            <CommandGroup>
+              <Button
+                key="logout"
+                onClick={() => {
+                  console.log("Routing to logout.");
+                  setOpen(false);
+                  router.push("/logout");
+                }}
+                className="text-sm hover:cursor-pointer w-full"
+              >
+                Logout
+              </Button>
+            </CommandGroup>
           </CommandList>
           <CommandSeparator />
         </Command>

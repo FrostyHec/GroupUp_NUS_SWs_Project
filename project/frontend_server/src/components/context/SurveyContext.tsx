@@ -74,8 +74,6 @@ export function SurveyContextProvider({ children }: { children: ReactNode }) {
         );
         const result_participate = await response_participate.data;
         const result_own = await response_own.data;
-        console.log("Participate:", result_participate);
-        console.log("Own: ", result_own);
         setOwnSurveys(result_own.data.surveys);
         setParticipateSurveys(result_participate.data.surveys);
       } catch (error) {

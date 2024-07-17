@@ -43,7 +43,6 @@ export type Survey = {
   owners: number[];
   members: number[];
   questions: FormElementInstance[];
-  status: "closed" | "archived" | "open";
   group_restriction: GroupSettings | null;
 };
 
@@ -55,7 +54,7 @@ export type FormSubmission = {
   survey_id: number;
   member_id: number;
   status: "edit" | "done";
-  questions_answer: FormElementInstance[];
+  questions_answer: JSON;
   personal_info: PersonalInfoInput; // 更改这个信息
 };
 

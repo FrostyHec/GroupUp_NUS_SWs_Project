@@ -38,7 +38,7 @@ function PublishFormBtn({ id }: { id: number }) {
         title: "Success",
         description: "Your form is now available to the public",
       });
-      router.refresh();
+      router.push(`/survey/${id}/dashboard`);
     } catch (error) {
       toast({
         title: "Error",
@@ -60,10 +60,10 @@ function PublishFormBtn({ id }: { id: number }) {
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. After publishing you will not be able
-            to edit this form. <br />
+            to edit this form and the personal information setting. <br />
             <br />
             <span className="font-medium">
-              By publishing this form you will make it available to the public
+              By publishing this form you will make it available to the members
               and you will be able to collect submissions.
             </span>
           </AlertDialogDescription>

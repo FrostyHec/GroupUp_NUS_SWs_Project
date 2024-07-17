@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useRef, useState, useTransition } from "react";
+import React, { use, useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { FormElementInstance, FormElements } from "../../schemas/form";
 import { Button } from "../ui/button";
 import { HiCursorClick } from "react-icons/hi";
@@ -25,6 +25,7 @@ function FormSubmitComponent({
 
   const [submitted, setSubmitted] = useState(false);
   const [pending, startTransition] = useTransition();
+  const [loading, setLoading] = useState(true);
 
   const validateForm: () => boolean = useCallback(() => {
     for (const field of content) {
@@ -48,7 +49,6 @@ function FormSubmitComponent({
   }, []);
 
   const { userID } = useUser();
-
   const cookies = useCookies();
 
   const { data, isLoading, isError } = queryGetByUserId({
@@ -56,15 +56,22 @@ function FormSubmitComponent({
     surveyID: surveyId,
     userID: userID,
   });
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>;
 
-  if (data) {
-    const formData = data.data;
-    Object.keys(formData.questions_answer).forEach((key) => {
-      formValues.current[key] = formData.questions_answer.key;
-    });
-  }
+  useEffect(() => {
+    if (data) {
+      const formData = data.data;
+      Object.keys(formData.questions_answer).forEach((key) => {
+        formValues.current[key] = formData.questions_answer[key];
+      });
+      setLoading(false);
+    }
+  }, [data]);
+  
+  if (isLoading || loading){ return (
+    <div className="flex items-center justify-center w-full h-screen">
+      <ImSpinner2 className="animate-spin" />
+    </div>
+  )};
 
   const submitFormData = async () => {
     console.log("submitting form");

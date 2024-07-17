@@ -21,7 +21,7 @@ import useSurveys from "../hooks/useSurveys";
 import FormSubmitComponent from "./form-form-submit-component";
 import { FormElementInstance } from "@/schemas/form";
 
-export default function FormBuilder({ form }: { form: Survey }) {
+export default function FormBuilder({ form }: { form: any }) {
   const { elements, setElements, setSelectedElement } = useDesigner();
   const { role, currentSurveyId } = useSurveys();
   const [isReady, setIsReady] = useState(false);
@@ -43,7 +43,6 @@ export default function FormBuilder({ form }: { form: Survey }) {
 
   useEffect(() => {
     if (isReady) return;
-    console.log("form builder form", form);
     const elements: FormElementInstance[] = form.questions;
     setElements(elements);
     setSelectedElement(null);

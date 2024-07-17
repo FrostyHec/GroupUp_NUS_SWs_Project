@@ -1,6 +1,5 @@
 package com.sustech.groupup.entity.converter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sustech.groupup.entity.api.QueryDTO;
 import com.sustech.groupup.entity.db.QueryEntity;
@@ -8,8 +7,6 @@ import com.sustech.groupup.entity.db.QueryStatus;
 import com.sustech.groupup.services.QueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.sql.Timestamp;
 
 @Component
 @RequiredArgsConstructor

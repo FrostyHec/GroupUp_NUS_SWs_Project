@@ -22,7 +22,7 @@ class StorageService:
     @staticmethod
     def delete(key: str):
         resp = requests.delete(Config.storage_service, params={'key': key})
-        if resp.status_code != 200:
+        if not (200 <= resp.status_code < 400):
             raise InternalException(resp)
 
     @staticmethod

@@ -70,3 +70,9 @@ mvn package -DskipTests
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/aws/deploy.yaml
 
 
+# 创建消息队列
+下载RabbitMQ v3.13.4
+rabbitmq-plugins enable rabbitmq_management
+rabbitmq-server
+
+创建队列：vector_queue

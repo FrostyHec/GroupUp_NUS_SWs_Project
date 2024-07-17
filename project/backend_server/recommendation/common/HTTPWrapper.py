@@ -13,7 +13,6 @@ class HTTPCodeType(Enum):
 def reply_json(data, status=HTTPCodeType.OK):
     return make_response(jsonify(data), status)
 
-
 def common_http_response(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):

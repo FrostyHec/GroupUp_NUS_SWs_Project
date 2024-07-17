@@ -10,3 +10,7 @@ class Log:
         # 输出红色的警告信息
         sys.stdout.write(Fore.RED + Style.BRIGHT + "WARNING: " + message + "\n")
 
+    @classmethod
+    def info(cls, message):
+        sys.stdout.write("INFO: " + message + "\n")
+

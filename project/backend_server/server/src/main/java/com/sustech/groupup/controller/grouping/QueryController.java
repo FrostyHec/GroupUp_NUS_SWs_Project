@@ -27,13 +27,17 @@ public class QueryController {
 
     @GetMapping("/{number}")
     public Response getQueryByUserId (@PathVariable long number,@PathVariable int surveyId) {
-        long queryId=queryService.getQueryIdByMemberIdAndSurveyId(number,surveyId);
+        Long queryId = queryService.getQueryIdByMemberIdAndSurveyId(number, surveyId);
+        if(queryId==null){
+            return Response.getNotFound("no-found");
+        }
         var resp = queryConverter.toDTO(queryService.getQueryById(queryId));
-        return Response.getSuccess("success",Map.of("query",resp));
+        return Response.getSuccess("success",resp);
     }
 
     @PostMapping()
-    public Response addQuery (@PathVariable long surveyId ,@RequestBody QueryDTO queryDTO) {
+    public Response addQuery (@PathVariable long surveyId ,@RequestBody QueryDTO queryDTO) throws
+                                                                                           JsonProcessingException {
         QueryEntity queryEntity = queryConverter.toEntity(queryDTO);
         queryEntity.setSurveyId(surveyId);
         queryService.createQuery(queryEntity);
@@ -41,16 +45,19 @@ public class QueryController {
     }
 
     @PutMapping("/{number}")
-    public Response updateQueryByUserId (@PathVariable long number, @PathVariable long surveyId,@RequestBody QueryDTO queryDTO) {
+    public Response updateQueryByUserId (@PathVariable long number, @PathVariable long surveyId,@RequestBody QueryDTO queryDTO) throws
+                                                                                                                                JsonProcessingException {
         QueryEntity queryEntity = queryConverter.toEntity(queryDTO);
         long queryId = queryService.getQueryIdByMemberIdAndSurveyId(number,surveyId);
         queryEntity.setId(queryId);
+        queryEntity.setSurveyId(surveyId);
         queryService.updateQuery(queryEntity);
         return Response.getSuccess("success",Map.of("query",queryDTO));
     }
 
     @DeleteMapping("/{number}")
-    public Response deleteQueryByUserId (@PathVariable long number,@PathVariable long surveyId) {
+    public Response deleteQueryByUserId (@PathVariable long number,@PathVariable long surveyId) throws
+                                                                                                JsonProcessingException {
         long queryId=queryService.getQueryIdByMemberIdAndSurveyId(number,surveyId);
         queryService.deleteQueryById(queryId);
         return Response.getSuccess("success");
@@ -70,9 +77,9 @@ public class QueryController {
         return Response.getSuccess("success",Map.of("status",queryEntity.getStatus()));
     }
 
-//    @GetMapping("/user/{id}")
-//    public Response getQueryIdByMemberId(@PathVariable long surveyId,@PathVariable long id) {
-//        Long queryId=queryService.getQueryIdByMemberIdAndSurveyId(id,surveyId);
-//        return Response.getSuccess("success",Map.of("queryId",queryId));
-//    }
+    //@GetMapping("/user/{id}")
+    //public Response getQueryIdByMemberId(@PathVariable long surveyId,@PathVariable long id) {
+    //    Long queryId=queryService.getQueryIdByMemberIdAndSurveyId(id,surveyId);
+    //    return Response.getSuccess("success",Map.of("queryId",queryId));
+    //}
 }

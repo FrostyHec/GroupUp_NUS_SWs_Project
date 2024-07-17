@@ -16,7 +16,7 @@ class Response:
         self.data = data
 
     @staticmethod
-    def get_success(msg="", data=None):
+    def get_success(data=None,msg=""):
         return Response(ResponseCodeType.SUCCESS, msg, data)
 
     @staticmethod

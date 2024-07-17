@@ -2,7 +2,6 @@ from typing import Dict
 
 from dto.Vector import Vector
 
-
 class GroupVectors:
     def __init__(self, group_id: int, group_info: Dict[int, Vector]):
         """

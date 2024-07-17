@@ -1,0 +1,132 @@
+[
+    {
+        "id": "1",
+        "type": "TitleField",
+        "extraAttributes": {
+            "title": "宿舍舍友选择问卷"
+        }
+    },
+    {
+        "id": "2",
+        "type": "ParagraphField",
+        "extraAttributes": {
+            "text": "请填写以下问卷，以帮助我们找到与您生活作息、兴趣爱好和意向专业匹配的舍友。"
+        }
+    },
+    {
+        "id": "3",
+        "type": "SubTitleField",
+        "extraAttributes": {
+            "title": "生活作息篇"
+        }
+    },
+    {
+        "id": "4",
+        "type": "NumberField",
+        "extraAttributes": {
+            "label": "平时睡觉时间（24小时制）",
+            "helperText": "请输入您通常的睡觉时间（0-23点）",
+            "placeHolder": "例如：22",
+            "required": true
+        }
+    },
+    {
+        "id": "5",
+        "type": "NumberField",
+        "extraAttributes": {
+            "label": "平时起床时间（24小时制）",
+            "helperText": "请输入您通常的起床时间（0-23点）",
+            "placeHolder": "例如：7",
+            "required": true
+        }
+    },
+    {
+        "id": "6",
+        "type": "SelectField",
+        "extraAttributes": {
+            "label": "您是否有午睡的习惯？",
+            "options": ["是", "否"],
+            "required": true
+        }
+    },
+    {
+        "id": "7",
+        "type": "SelectField",
+        "extraAttributes": {
+            "label": "请选择您通常的周末活动",
+            "options": ["运动", "阅读", "聚会", "旅行", "学习", "游戏"],
+            "required": true
+        }
+    },
+    {
+        "id": "8",
+        "type": "SubTitleField",
+        "extraAttributes": {
+            "title": "兴趣爱好篇"
+        }
+    },
+    {
+        "id": "9",
+        "type": "TextAreaField",
+        "extraAttributes": {
+            "label": "请描述您的兴趣爱好",
+            "helperText": "例如：音乐、运动、阅读等",
+            "placeHolder": "请输入您的兴趣爱好...",
+            "required": true,
+            "rows": 3
+        }
+    },
+    {
+        "id": "10",
+        "type": "SelectField",
+        "extraAttributes": {
+            "label": "您更喜欢哪种音乐类型？",
+            "options": ["流行", "摇滚", "古典", "爵士", "电子", "其他"],
+            "required": true
+        }
+    },
+    {
+        "id": "11",
+        "type": "SelectField",
+        "extraAttributes": {
+            "label": "请选择您的主要爱好",
+            "options": ["阅读", "写作", "绘画", "摄影", "旅行", "烹饪", "手工艺"],
+            "required": true
+        }
+    },
+    {
+        "id": "12",
+        "type": "SubTitleField",
+        "extraAttributes": {
+            "title": "意向专业篇"
+        }
+    },
+    {
+        "id": "13",
+        "type": "TextField",
+        "extraAttributes": {
+            "label": "您的意向专业是什么？",
+            "helperText": "请输入您的意向专业",
+            "placeHolder": "例如：计算机科学、物理、艺术等",
+            "required": true
+        }
+    },
+    {
+        "id": "14",
+        "type": "SelectField",
+        "extraAttributes": {
+            "label": "您更偏向于哪种学习方式？",
+            "options": ["独立学习", "小组学习", "课堂学习"],
+            "required": true
+        }
+    },
+    {
+        "id": "15",
+        "type": "SelectField",
+        "extraAttributes": {
+            "label": "请选择您未来的职业规划",
+            "options": ["研究人员", "工程师", "艺术家", "教师", "医生", "企业家"],
+            "required": true
+        }
+    }
+]

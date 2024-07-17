@@ -2,7 +2,8 @@ spring:
   application:
     name: groupup
   profiles:
-    active: dev
+#    active: dev
+    active: safety-nonpublic-k8s
   jackson:
     property-naming-strategy: SNAKE_CASE
   aop:

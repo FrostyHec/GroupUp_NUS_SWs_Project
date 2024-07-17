@@ -23,6 +23,11 @@ class Recommender: # Can choose different methods to encode the survey.
         self.client = OpenAI(api_key=API_key, base_url="https://api.deepseek.com")
 
     def get_vector(self, survey: JSON, answer: JSON) -> Vector:
+        """
+        :param survey: 标准问卷的json格式
+        :param answer:
+        :return:
+        """
         # Filter out the question type.
         conserved_type = ["TextField", "NumberField", "TextAreaField", "DateField", "SelectField", "CheckboxField"]
         filtered_survey = list(filter(lambda x: x['type'] not in conserved_type, survey))
@@ -52,6 +57,13 @@ class Recommender: # Can choose different methods to encode the survey.
                                     user_group: Optional[GroupVectors],
                                     current_ungrouped_person: Dict[int, Vector],
                                     restriction) -> Dict[int, float]:
+        """
+        :param user: 用户的向量
+        :param user_group: 可能用户不在一个组中，此时为None
+        :param current_group: 当前的组队的组
+        :param restriction: 组队的限制
+        :return: <groupid,recommendation_value(0~100)>
+        """
         pass
 
     def get_group_preference_order(self, user: Vector,
@@ -59,9 +71,22 @@ class Recommender: # Can choose different methods to encode the survey.
                                    current_group: List[GroupVectors],
                                    restriction
                                    ) -> Dict[int, float]:
+        """
+        :param user: 用户的向量
+        :param user_group: 可能用户不在一个组中，此时为None
+        :param current_group: 当前的组队的组
+        :param restriction: 组队的限制
+        :return: <groupid,recommendation_value(0~100)>
+        """
         pass
 
     def grouping(self, current_group: List[GroupVectors],
                  current_ungrouped: Dict[int, Vector],
                  restriction) -> List[GroupVectors]:
+        """
+        :param current_group:
+        :param current_ungrouped:
+        :param restriction:
+        :return:
+        """
         pass

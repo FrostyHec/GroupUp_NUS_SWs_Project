@@ -19,10 +19,9 @@ RUN java -version
 WORKDIR /app
 
 # Copy the executable JAR into the container
-COPY target/server-0.0.1-SNAPSHOT.jar /app/app.jar
+COPY target/message_dispatcher-1.0-SNAPSHOT.jar /app/app.jar
 
-EXPOSE 7073
-# TODO ?????????
+EXPOSE 7078
 
 # Run the JAR file
 ENTRYPOINT ["java", "-jar", "app.jar"]

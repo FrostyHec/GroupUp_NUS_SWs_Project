@@ -72,7 +72,7 @@ public class UserController {
                                    int page_size,
                                    int page_no
     ) throws JsonProcessingException {
-        if (page_size < -1 || page_size == 0 || page_no <= 0) {
+        if (!(page_size==-1||page_no==-1)&&(page_size<0||page_no<0)) {
             return Response.getInternalError("bad-params");
         }
         List<SurveyDTO> res = userService.queryOwnSurvey(id, page_size, page_no);
@@ -84,7 +84,7 @@ public class UserController {
                                            int page_size,
                                            int page_no
     ) throws JsonProcessingException {
-        if (page_size < -1 || page_size == 0 || page_no <= 0) {
+        if (!(page_size==-1||page_no==-1)&&(page_size<0||page_no<0)) {
             return Response.getInternalError("bad-params");
         }
         List<SurveyDTO> res = userService.queryParticipateSurvey(id, page_size, page_no);
@@ -135,7 +135,7 @@ public class UserController {
     public Response getUserByAuth(long request_user_id) {
         UserEntity userEntity = userService.getUserById(request_user_id);
         Map<String, Object> data = new HashMap<>();
-        data.put("user", userEntity.getId());
+        data.put("user_id", userEntity.getId());
         data.put("username", userEntity.getUsername());
         return Response.getSuccess("success", data);
     }

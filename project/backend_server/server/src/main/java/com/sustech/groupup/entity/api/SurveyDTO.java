@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SurveyDTO {
 
+    private Long id;
     private String name;
     private String description;
     private Timestamp createAt;

@@ -16,9 +16,10 @@ public class SurveyConverter {
 
     private final SurveyService surveyService;
 
-    public SurveyDTO toDTO(SurveyEntity surveyEntity) throws JsonProcessingException {
+    public SurveyDTO toDTO(SurveyEntity surveyEntity) {
 
         SurveyDTO surveyDTO = new SurveyDTO();
+        surveyDTO.setId(surveyEntity.getId());
         surveyDTO.setName(surveyEntity.getName());
         surveyDTO.setDescription(surveyEntity.getDescription());
         surveyDTO.setCreateAt(surveyEntity.getCreateAt());

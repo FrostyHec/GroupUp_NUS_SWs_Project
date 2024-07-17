@@ -49,7 +49,7 @@ public class SurveyServiceImpl implements SurveyService {
     }
 
     @Override
-    public void updateSurvey(SurveyEntity survey, List<Long> ownerIds, List<Long> memberIds) {
+    public void updateSurvey(SurveyEntity survey, List<Long> memberIds, List<Long> ownerIds) {
         surveyMapper.updateById(survey);
         surveyMapper.deleteSurveyOwnerById(survey.getId());
         for (Long ownerId : ownerIds) {

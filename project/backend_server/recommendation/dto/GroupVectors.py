@@ -1,6 +1,6 @@
-from typing import List, Dict
+from typing import Dict
 
-from algorithm.Vector import Vector
+from dto.Vector import Vector
 
 
 class GroupVectors:

@@ -1,8 +1,8 @@
 import json
 from typing import List, Dict, Optional
 
-from DTO.GroupVectors import GroupVectors
-from algorithm.Vector import Vector
+from dto.GroupVectors import GroupVectors
+from dto.Vector import Vector
 
 
 # TODO

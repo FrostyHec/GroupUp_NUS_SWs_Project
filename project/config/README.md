@@ -16,6 +16,31 @@ docker login
 docker push frosky/server:latest
 
 ```
+```
+# 建镜像
+docker build -t frosky/message_deliver:latest .
+
+# 登录到Docker Hub
+docker login
+
+# 推送镜像到Docker Hub
+docker push frosky/message_deliver:latest
+
+```
+
+```
+# 建镜像
+docker build -t frosky/message_dispatcher:latest .
+
+# 登录到Docker Hub
+docker login
+
+# 推送镜像到Docker Hub
+docker push frosky/message_dispatcher:latest
+
+```
+
+
 注意：
 更改yaml的数据库连接
 2. 更改主yaml的配置

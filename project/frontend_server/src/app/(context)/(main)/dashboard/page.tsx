@@ -195,7 +195,7 @@ function MemFormCard({ form }: { form: Survey }) {
   });
 
   const handleButtonClick = () => {
-    if (data.data.code === 200) {
+    if (data.code === 200) {
       router.push(`/survey/${form.id}/dashboard`);
     } else {
       setIsDrawerOpen(true);

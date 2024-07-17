@@ -6,9 +6,11 @@ import { Button } from "../ui/button";
 import { HiCursorClick } from "react-icons/hi";
 import { toast } from "sonner";
 import { ImSpinner2 } from "react-icons/im";
-import { SubmitForm } from "@/controller/form";
-import { useParams } from "next/navigation";
+import { submitForm } from "@/controller/form";
 import { Edit2Icon } from "lucide-react";
+import { queryGetByUserId } from "@/actions/query";
+import useUser from "../hooks/useUser";
+import { useCookies } from "next-client-cookies";
 
 function FormSubmitComponent({
   content,
@@ -19,7 +21,7 @@ function FormSubmitComponent({
 }) {
   const formValues = useRef<{ [key: string]: string }>({});
   const formErrors = useRef<{ [key: string]: boolean }>({});
-  const [renderKey, setRenderKey] = useState(new Date().getTime());
+  const [renderKey, setRenderKey] = useState(new Date().toISOString());
 
   const [submitted, setSubmitted] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -45,12 +47,31 @@ function FormSubmitComponent({
     formValues.current[key] = value;
   }, []);
 
-  const submitForm = async () => {
+  const { userID } = useUser();
+
+  const cookies = useCookies();
+
+  const { data, isLoading, isError } = queryGetByUserId({
+    token: cookies.get("token") as string,
+    surveyID: surveyId,
+    userID: userID,
+  });
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+
+  if (data) {
+    const formData = data.data;
+    Object.keys(formData.questions_answer).forEach((key) => {
+      formValues.current[key] = formData.questions_answer.key;
+    });
+  }
+
+  const submitFormData = async () => {
     console.log("submitting form");
     formErrors.current = {};
     const validForm = validateForm();
     if (!validForm) {
-      setRenderKey(new Date().getTime());
+      setRenderKey(new Date().toISOString());
       toast("Error", {
         description: "please check the form for errors",
       });
@@ -58,8 +79,13 @@ function FormSubmitComponent({
     }
 
     try {
-      const jsonContent = JSON.stringify(formValues.current);
-      await SubmitForm(surveyId, jsonContent);
+      await submitForm(
+        cookies.get("token") as string,
+        surveyId,
+        userID,
+        formValues.current,
+        data.data
+      );
       setSubmitted(true);
       toast("Success", {
         description: "Form submitted successfully",
@@ -127,7 +153,7 @@ function FormSubmitComponent({
         <Button
           className="mt-8"
           onClick={() => {
-            startTransition(submitForm);
+            startTransition(submitFormData);
           }}
           disabled={pending}
         >

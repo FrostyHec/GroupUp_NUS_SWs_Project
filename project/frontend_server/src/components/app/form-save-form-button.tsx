@@ -20,16 +20,29 @@ function SaveFormBtn({ id }: { id: number }) {
   const { elements } = useDesigner();
   const [loading, startTransition] = useTransition();
 
+  const {
+    data: surveyData,
+    isLoading: surveyLoading,
+    isError: surveyError,
+  } = surveyInfo({ surveyID: id });
+
+  if (surveyLoading) return <div>Loading...</div>;
+  if (surveyError) return <div>Error</div>;
+
   const updateContent = async () => {
     try {
-      const jsonElements = JSON.stringify(elements);
-      let survey = surveyInfo({ surveyID: id });
-      survey.data.content = jsonElements;
-      await surveyUpdateInfo({token: token, surveyID: id, surveyInfo: survey.data});
+      let survey = surveyData;
+      survey.data.questions = elements;
+      await surveyUpdateInfo({
+        token: token,
+        surveyID: id,
+        surveyInfo: survey.data,
+      });
       toast("Success", {
         description: "Your form has been saved",
       });
     } catch (error) {
+      console.error("Error saving form", surveyData);
       toast("Error", {
         description: "Something went wrong",
       });

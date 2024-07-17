@@ -2,7 +2,7 @@
 
 import React, { useContext, useEffect, useRef, useState } from "react";
 import FieldForm from "./info-field";
-import { GetPersonalInfoDefine } from "@/actions/query";
+import { getPersonalInfoDefine } from "@/actions/query";
 import NiceAvatar, { genConfig } from "react-nice-avatar";
 import { Button } from "../ui/button";
 import {
@@ -34,6 +34,7 @@ import FieldList from "./info-personal-info-define-card";
 import AddField from "./info-personal-info-add-card";
 import { useCookies } from "next-client-cookies";
 import useUser from "../hooks/useUser";
+import { surveyInfo } from "@/actions/survey";
 
 export const FieldsContext = createContext<PersonalInfoField[]>([]);
 export const FieldsDispatchContext = createContext<React.Dispatch<any>>(
@@ -59,67 +60,26 @@ const ProfileChangeCard: React.FC<{ surveyId: number }> = ({ surveyId }) => {
     bgColor: "linear-gradient(45deg, #3e1ccd 0%, #ff6871 100%)",
   };
   const myConfig = genConfig(config);
-  const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [initialFields, setInitialFields] = useState<PersonalInfoField[]>([]);
   const [fields, dispatch] = useReducer(fieldsReducer, initialFields);
   const [fieldValues, setFieldValues] = useState<string[]>([]);
 
   // These hooks are set for dragging components, please do not modify them.
+  const boxRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 100, y: 100 });
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   const cookies = useCookies();
-  const token = cookies.get("token");
   const [query, setQuery] = useState<JSON>();
   const { userID, setUserID } = useUser();
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const data = await GetPersonalInfoDefine(surveyId);
-        setInitialFields(data);
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getData();
-  }, []);
-
-  const handleInputChange = (index: number, newValue: string) => {
-    const newValues = [...fieldValues];
-    newValues[index] = newValue;
-    setFieldValues(newValues);
-  };
-
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    try {
-      let personalInfo: PersonalInfo = {
-        fields: fields.map((field, index) => ({
-          id: field.id,
-          label: field.label,
-          placeholder: field.placeholder,
-        })),
-      };
-      await UpdatePersonalInfoDefine(surveyId, personalInfo);
-      toast("Success", {
-        description: "Your profile has been updated",
-      });
-    } catch (error) {
-      toast("Error", {
-        description: "Something went wrong",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const boxRef = useRef<HTMLDivElement>(null);
+  const {
+    data: surveyData,
+    isLoading: surveyLoading,
+    isError: surveyError,
+  } = surveyInfo({ surveyID: surveyId });
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (boxRef.current) {
@@ -153,6 +113,59 @@ const ProfileChangeCard: React.FC<{ surveyId: number }> = ({ surveyId }) => {
     };
   }, [isDragging, offset]);
 
+  // Handle survey data loading and error
+  useEffect(() => {
+    if (surveyLoading) {
+      console.log("Loading survey data...");
+      return;
+    }
+    // Process survey data
+    try {
+      const data = surveyData.data.personal_info.fields;
+      console.log("Survey data loaded:", data);
+      dispatch({ type: "set", fields: data });
+      toast("Success", {
+        description: "Your profile has been updated",
+      });
+    } catch (error) {
+      console.error("Error processing survey data:", error);
+    }
+  }, [surveyData, surveyLoading, surveyError]);
+
+  const handleInputChange = (index: number, newValue: string) => {
+    const newValues = [...fieldValues];
+    newValues[index] = newValue;
+    setFieldValues(newValues);
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      let personalInfo: PersonalInfo = {
+        fields: fields.map((field: any) => ({
+          id: field.id,
+          label: field.label,
+          placeholder: field.placeholder,
+        })),
+      };
+      await UpdatePersonalInfoDefine(
+        cookies.get("token") as string,
+        surveyId,
+        surveyData.data,
+        personalInfo
+      );
+      toast("Success", {
+        description: "Your profile has been updated",
+      });
+    } catch (error) {
+      toast("Error", {
+        description: "Something went wrong",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <FieldsContext.Provider value={fields}>
       <FieldsDispatchContext.Provider value={dispatch}>
@@ -166,7 +179,7 @@ const ProfileChangeCard: React.FC<{ surveyId: number }> = ({ surveyId }) => {
               <Button className="text-xs">Randomize an avatar</Button>
             </div>
             <div className="items-center my-3 space-y-4 h-2/3">
-              {fields.map((field, index) => (
+              {fields.map((field: any, index: number) => (
                 <FieldForm
                   key={index}
                   label={field.label}
@@ -253,6 +266,9 @@ function fieldsReducer(fields: PersonalInfoField[], action: any) {
     }
     case "deleted": {
       return fields.filter((t) => t.id !== action.id);
+    }
+    case "set": {
+      return action.fields;
     }
     default: {
       throw Error("Unknown action: " + action.type);

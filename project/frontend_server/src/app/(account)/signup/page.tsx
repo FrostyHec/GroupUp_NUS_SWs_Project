@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { userSignUp } from "@/actions/user";
 import { useCookies } from "next-client-cookies";
+import { toast } from "sonner";
 
 export default function SignUp() {
   const router = useRouter();
@@ -30,7 +31,10 @@ export default function SignUp() {
       password: password,
     }).then((res) => {
       if (res.data.code == "200") {
+        toast.success("Account created successfully");
         router.push("/login");
+      } else if (res.data.code == "400") {
+        toast.error("Username already exists");
       }
     });
   };

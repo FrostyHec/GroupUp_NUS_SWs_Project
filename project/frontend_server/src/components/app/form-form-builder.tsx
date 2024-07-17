@@ -44,7 +44,7 @@ export default function FormBuilder({ form }: { form: Survey }) {
   useEffect(() => {
     if (isReady) return;
     console.log("form builder form", form);
-    const elements: FormElementInstance[] = JSON.parse(form.questions);
+    const elements: FormElementInstance[] = form.questions;
     setElements(elements);
     setSelectedElement(null);
     const readyTimeout = setTimeout(() => setIsReady(true), 500);

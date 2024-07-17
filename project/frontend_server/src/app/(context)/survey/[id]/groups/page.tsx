@@ -7,6 +7,7 @@ import {
   UserX,
   X,
 } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -37,10 +38,21 @@ import {
 } from "@/components/ui/hover-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   surveyGroupAddMember,
   surveyGroupDeleteMember,
 } from "@/controller/survey-groups";
 import { SurveyUserSearchDialog } from "@/components/app/survey-user-search-dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { surveyAllGroups } from "@/actions/group";
 import { userInfo } from "@/actions/user";
 import { useCookies } from "next-client-cookies";
@@ -48,6 +60,9 @@ import { userAuthInfo } from "@/actions/user";
 import { surveyInfo } from "@/actions/survey";
 import ProfileCard from "@/components/app/info-personal-info-cards";
 import UserAvatar from "@/components/app/user-avatar";
+import { toast } from "sonner";
+import { preGrouping } from "@/actions/recommendation";
+import { sendRequest } from "@/controller/survey-match";
 
 function UsernameText({ userID }: { userID: number }) {
   const { data, isLoading, isError } = userInfo({
@@ -60,6 +75,41 @@ function UsernameText({ userID }: { userID: number }) {
   );
 }
 
+function RequestMessageDialog({
+  callback,
+  children,
+}: {
+  callback: ({ message }: { message: string }) => void;
+  children: React.ReactNode;
+}) {
+  const [message, setMessage] = useState("Message");
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Message</DialogTitle>
+          <DialogDescription>Message</DialogDescription>
+        </DialogHeader>
+        <div className="flex items-center space-x-2">
+          <div className="grid flex-1 gap-2">
+            <Textarea
+              id="message"
+              placeholder="Type your message here."
+              onChange={(e) => setMessage(e.target.value)}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button onClick={() => callback({ message })}>Send</Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function GroupsTableForMember({
   surveyID,
   groups,
@@ -68,6 +118,9 @@ function GroupsTableForMember({
   groups: any;
 }) {
   const cookies = useCookies();
+  const { data, isLoading, isError } = userAuthInfo();
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
   return (
     <Card x-chunk="dashboard-06-chunk-0">
       <CardHeader>
@@ -80,6 +133,9 @@ function GroupsTableForMember({
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>Members</TableHead>
+              <TableHead>
+                <span className="sr-only">Actions</span>
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -115,6 +171,22 @@ function GroupsTableForMember({
                     ))}
                   </div>
                 </TableCell>
+                <TableCell>
+                  <RequestMessageDialog
+                    callback={({ message }) =>
+                      sendRequest({
+                        token: cookies.get("token") as string,
+                        surveyID,
+                        fromUserID: data.data.user_id,
+                        isToGroup: true,
+                        toID: group.id,
+                        message,
+                      })
+                    }
+                  >
+                    <Button variant="outline">Request</Button>
+                  </RequestMessageDialog>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -136,6 +208,7 @@ function GroupsForMember({
   params: { id: number };
   groupSize: number;
 }) {
+  const cookies = useCookies();
   const { data, isLoading, isError } = surveyAllGroups({
     id: params.id,
     pageSize: -1,
@@ -160,14 +233,6 @@ function GroupsForMember({
               <TabsTrigger value="full">Full</TabsTrigger>
               <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
             </TabsList>
-            <div className="ml-auto flex items-center gap-2">
-              <Button size="sm" className="h-8 gap-1">
-                <PlusCircle className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Add Groups
-                </span>
-              </Button>
-            </div>
           </div>
           <TabsContent value="all">
             <GroupsTableForMember surveyID={params.id} groups={allGroups} />
@@ -243,15 +308,16 @@ function GroupsTable({ surveyID, groups }: { surveyID: number; groups: any }) {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent
                             align="end"
-                            onClick={() =>
+                            onClick={() => {
                               surveyGroupDeleteMember({
                                 token: cookies.get("token") as string,
                                 allGroups: groups,
                                 surveyID,
                                 groupID: group.id,
                                 userID: memberID,
-                              })
-                            }
+                              });
+                              toast("Deleted");
+                            }}
                           >
                             <DropdownMenuItem>Delete</DropdownMenuItem>
                           </DropdownMenuContent>
@@ -298,6 +364,7 @@ function Groups({
   params: { id: number };
   groupSize: number;
 }) {
+  const cookies = useCookies();
   const { data, isLoading, isError } = surveyAllGroups({
     id: params.id,
     pageSize: -1,
@@ -323,6 +390,21 @@ function Groups({
               <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
             </TabsList>
             <div className="ml-auto flex items-center gap-2">
+              <Button
+                size="sm"
+                className="h-8 gap-1"
+                onClick={() =>
+                  preGrouping({
+                    token: cookies.get("token") as string,
+                    surveyID: params.id,
+                  })
+                }
+              >
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  PreGrouping
+                </span>
+              </Button>
               <Button size="sm" className="h-8 gap-1">
                 <PlusCircle className="h-3.5 w-3.5" />
                 <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">

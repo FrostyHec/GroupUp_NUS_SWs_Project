@@ -42,7 +42,7 @@ export type Survey = {
   personal_info: PersonalInfo | null; // 存这个信息
   owners: number[];
   members: number[];
-  questions: string; // TODO: 可能可以改成 FormElementInstance[]
+  questions: FormElementInstance[];
   status: "closed" | "archived" | "open";
   group_restriction: GroupSettings | null;
 };
@@ -55,7 +55,7 @@ export type FormSubmission = {
   survey_id: number;
   member_id: number;
   status: "edit" | "done";
-  questions_answer: string; // TODO: 可能可以改成 FormElementInstance[]
+  questions_answer: FormElementInstance[];
   personal_info: PersonalInfoInput; // 更改这个信息
 };
 

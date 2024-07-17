@@ -53,18 +53,12 @@ export default function SurveySwitcher() {
     setCurrentSurveyId,
     setRole,
   } = useSurveys();
-  const allOwnSurveys = sampleSurvey
-    .filter((survey) =>
-      ownSurveys.map((survey) => survey.id).includes(survey.id)
-    )
+  const allOwnSurveys = ownSurveys
     .map((survey) => ({
       label: survey.name,
       value: String(survey.id),
     }));
-  const allParticipateSurveys = sampleSurvey
-    .filter((survey) =>
-      participateSurveys.map((survey) => survey.id).includes(survey.id)
-    )
+  const allParticipateSurveys = participateSurveys
     .map((survey) => ({
       label: survey.name,
       value: String(survey.id),

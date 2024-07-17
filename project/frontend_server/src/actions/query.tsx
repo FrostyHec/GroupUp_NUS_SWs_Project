@@ -24,8 +24,9 @@ export async function queryCreate({
   let submissions = {
     create_at: new Date().toISOString(),
     update_at: new Date().toISOString(),
+    member_id: personalInfo.member_id,
     personal_info: personalInfo,
-    questions_anwswer: JSON.stringify([]),
+    questions_answer: [],
   };
   return await axios
     .post(
@@ -43,16 +44,22 @@ export async function queryCreate({
 export async function queryUpdateByUserId({
   token,
   surveyID,
+  userID,
   query,
 }: {
   token: string;
   surveyID: number;
+  userID: number;
   query: any;
 }) {
   return await axios
     .put(
-      `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/query/${query.member_id}`,
-      query,
+      `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/query/${userID}`,
+      {
+        ...query,
+        member_id: userID,
+        update_at: new Date().toISOString,
+      },
       {
         headers: { Authorization: "Bearer " + token },
       }
@@ -60,34 +67,34 @@ export async function queryUpdateByUserId({
     .then((res) => res.data);
 }
 
-// <backend>/survey/{id}/query/{id}
-// GET
-// Return: query
-export function queryGetById({
-  token,
-  surveyID,
-  userID,
-}: {
-  token: string;
-  surveyID: number;
-  userID: number;
-}) {
-  const fetcher = (url: string) =>
-    axios
-      .get(url, {
-        headers: { Authorization: "Bearer " + token },
-      })
-      .then((res) => res.data);
-  const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/query/${userID}`,
-    fetcher
-  );
-  return {
-    data,
-    isLoading,
-    isError: error,
-  };
-}
+// // <backend>/survey/{id}/query/{id}
+// // GET
+// // Return: query
+// export function queryGetById({
+//   token,
+//   surveyID,
+//   userID,
+// }: {
+//   token: string;
+//   surveyID: number;
+//   userID: number;
+// }) {
+//   const fetcher = (url: string) =>
+//     axios
+//       .get(url, {
+//         headers: { Authorization: "Bearer " + token },
+//       })
+//       .then((res) => res.data);
+//   const { data, error, isLoading } = useSWR(
+//     `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/query/${userID}`,
+//     fetcher
+//   );
+//   return {
+//     data,
+//     isLoading,
+//     isError: error,
+//   };
+// }
 
 // <backend>/survey/{id}/query/user/{id}
 // GET
@@ -108,7 +115,7 @@ export function queryGetByUserId({
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/query/user/${userID}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/query/${userID}`,
     fetcher
   );
   return {
@@ -181,7 +188,7 @@ export function queryGetStatus({
   };
 }
 
-export async function GetPersonalInfoDefine(
+export async function getPersonalInfoDefine(
   surveyId: number
 ): Promise<PersonalInfoField[]> {
   const currentSurvey = sampleSurvey.filter((survey) => survey.id === surveyId);

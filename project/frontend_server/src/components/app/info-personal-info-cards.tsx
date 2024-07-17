@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import FieldForm from "./info-field";
-import { queryGetById, queryUpdateByUserId } from "@/actions/query";
+import { queryGetByUserId, queryUpdateByUserId } from "@/actions/query";
 import Avatar, { genConfig } from "react-nice-avatar";
 import { AvatarFullConfig } from "./info-avatar-types";
 import { Button } from "../ui/button";
@@ -15,7 +15,6 @@ import {
   PersonalInfo,
   PersonalInfoInput,
 } from "@/schemas/survey";
-import { UpdatePersonalInfo } from "@/controller/form";
 import { ImSpinner2 } from "react-icons/im";
 import { useCookies } from "next-client-cookies";
 import useUser from "../hooks/useUser";
@@ -79,7 +78,11 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     data: data_query,
     isLoading: isLoading_query,
     isError: isError_query,
-  } = queryGetById({ token: token, surveyID: surveyId, userID: personalId }); // From @/actions/query
+  } = queryGetByUserId({
+    token: token,
+    surveyID: surveyId,
+    userID: personalId,
+  }); // From @/actions/query
 
   if (isLoading_survey || isLoading_query) {
     return (
@@ -97,8 +100,8 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     );
   }
 
-  setPersonalInfoDefine(data_survey.personal_info);
-  setFormSubmission(data_query);
+  setPersonalInfoDefine(data_survey.data.personal_info);
+  setFormSubmission(data_query.data);
   let initialProfileData: ProfileData = {
     avatar: formSubmission
       ? formSubmission.personal_info.avatar
@@ -127,6 +130,40 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
   };
   setProfileData(initialProfileData);
 
+  return (
+    <InternalProfileCard
+      profileData={profileData}
+      loading={loading}
+      personalId={personalId}
+      surveyId={surveyId}
+      mode={mode}
+      formSubmission={formSubmission}
+      isSubmitting={isSubmitting}
+      setIsSubmitting={setIsSubmitting}
+    />
+  );
+};
+
+function InternalProfileCard({
+  profileData,
+  loading,
+  personalId,
+  surveyId,
+  mode,
+  formSubmission,
+  isSubmitting,
+  setIsSubmitting,
+}: {
+  profileData: ProfileData;
+  loading: boolean;
+  personalId: number;
+  surveyId: number;
+  mode: "edit" | "view";
+  formSubmission: FormSubmission | null;
+  isSubmitting: boolean;
+  setIsSubmitting: (value: boolean) => void;
+}) {
+  const cookies = useCookies();
   const [avatar, setAvatar] = useState<AvatarFullConfig>(
     profileData.avatar ? profileData.avatar : genConfig()
   );
@@ -173,6 +210,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       await queryUpdateByUserId({
         token: cookies.get("token") as string,
         surveyID: surveyId,
+        userID: personalId,
         query: updatedFormSubmission,
       });
       console.log(updatedFormSubmission);
@@ -245,6 +283,6 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       </CardContent>
     </Card>
   );
-};
+}
 
 export default ProfileCard;

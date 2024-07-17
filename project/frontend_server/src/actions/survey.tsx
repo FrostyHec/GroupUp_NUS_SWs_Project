@@ -50,10 +50,10 @@ export async function surveyCreate({
     description: description ? description : "No description",
     create_at: new Date().toISOString(),
     update_at: new Date().toISOString(),
-    personal_info: null,
+    personal_info: {},
     owners: [userId],
     members: [],
-    questions: JSON.stringify([]), // TODO: 可能可以改成 FormElementInstance[]
+    questions: [],
     group_restriction: {
       groupSize: group_size,
     },
@@ -119,7 +119,7 @@ export async function surveyUpdateStatus({
   return await axios
     .put(
       `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/status`,
-      statusCode,
+      { status: statusCode },
       {
         headers: { Authorization: "Bearer " + token },
       }

@@ -100,9 +100,9 @@ export async function surveyGroupRequest({
   toID: number;
   message: string;
 }) {
-  const time = new Date().getTime();
+  const time = new Date().toISOString();
   return await axios.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/requestgroup`,
+    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/group/requestgroup`,
     {
       from_id: fromUserID,
       to_group: isToGroup,
@@ -130,9 +130,9 @@ export async function surveyGroupLeave({
   toGroupID: number;
   message: string;
 }) {
-  const time = new Date().getTime();
+  const time = new Date().toISOString();
   return await axios.delete(
-    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/requestgroup`,
+    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/group/requestgroup`,
     {
       headers: { Authorization: "Bearer " + token },
       data: {
@@ -161,7 +161,7 @@ export async function surveyAcceptOrDenyRequest({
 }) {
   const cookies = useCookies();
   const token = cookies.get("token") as string;
-  const time = new Date().getTime();
+  const time = new Date().toISOString();
   return await axios.post(
     `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/group/response`,
     {

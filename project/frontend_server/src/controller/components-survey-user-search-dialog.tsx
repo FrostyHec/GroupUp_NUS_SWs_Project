@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
 import { userUsernameSearch } from "@/actions/user";
+import { toast } from "sonner";
 
 const getTableData = (page = 1, pageSize = 5, totalData: any) => {
   const { length } = totalData;
@@ -61,6 +62,7 @@ function Page({ data, callback }: { data: any; callback: any }) {
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead>ID</TableHead>
           <TableHead>User</TableHead>
           <TableHead>Action</TableHead>
         </TableRow>
@@ -68,12 +70,18 @@ function Page({ data, callback }: { data: any; callback: any }) {
       <TableBody>
         {data.map((user: any) => (
           <TableRow key={user.id}>
+            <TableCell>{user.id}</TableCell>
             <TableCell>{user.username}</TableCell>
             <TableCell>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => callback({ userID: user.id })}
+                onClick={() => {
+                  toast("Selected", {
+                    description: `User ${user.username} selected`,
+                  });
+                  callback({ userID: user.id });
+                }}
               >
                 Select
               </Button>

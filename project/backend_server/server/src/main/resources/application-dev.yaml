@@ -1,8 +1,16 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: 
+    url: jdbc:postgresql://localhost:5432/test
+    username: test_user
+    password: password
     driver-class-name: org.postgresql.Driver
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  message-push:
+    url: http://localhost:7078/api/v1/msg_push
 server:
-  port: 7076
+  port: 7273
+

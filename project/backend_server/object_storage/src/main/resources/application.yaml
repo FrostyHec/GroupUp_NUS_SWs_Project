@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: groupup
+  profiles:
+    active: safety-nonpublic-dev
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+server:
+  port: 7002
+
+caches:
+  type: "redis" # no,mem,redis
+  size: 1000 # redis没用，记得自己去redis数据库配置文件改
+  redis-channel: "object-storage-service:file-cache"

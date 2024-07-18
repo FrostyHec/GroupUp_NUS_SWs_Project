@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: groupup
+  profiles:
+    active: safety-nonpublic-k8s
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+

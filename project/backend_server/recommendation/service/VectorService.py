@@ -61,7 +61,8 @@ class VectorService:
         if DatabaseMapper.json_is_empty(survey):
             raise ExternalException(Response.get_not_found("survey-no-found"))
         elif DatabaseMapper.json_is_empty(query):
-            raise ExternalException(Response.get_not_found("query-no-found"))
+            raise ExternalException(Response.get_not_found(f"query-no-found on query:{user_id} "
+                                                           f"survey:{survey_id}"))
         return survey,query
 
     @classmethod

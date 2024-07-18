@@ -25,10 +25,9 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    @Transactional
     public RequestEntity getRequestById(Long id) {
-        var rqid = groupResponseMapper.getRequestIdByResponseId(id);
-       return requestMapper.selectById(rqid);
+        //var rqid = groupResponseMapper.getRequestIdByResponseId(id);
+       return requestMapper.selectById(id);
     }
 
     @Override

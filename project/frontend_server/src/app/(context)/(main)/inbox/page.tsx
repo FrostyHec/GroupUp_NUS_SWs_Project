@@ -20,9 +20,9 @@ import { surveyAcceptOrDenyRequest } from "@/actions/group";
 import { Label } from "@/components/ui/label";
 import { BsInbox } from "react-icons/bs";
 import { useCookies } from "next-client-cookies";
-import {AnnouncementCard} from "@/components/app/inbox-announcement";
-import {ResponseCard} from "@/components/app/inbox-response";
-import {FeedbackCard} from "@/components/app/inbox-feedback";
+import { AnnouncementCard } from "@/components/app/inbox-announcement";
+import { ResponseCard } from "@/components/app/inbox-response";
+import { FeedbackCard } from "@/components/app/inbox-feedback";
 
 export default function InboxPage() {
   const { userID, userName } = useUser();
@@ -32,17 +32,32 @@ export default function InboxPage() {
     data: data_announcement,
     isLoading: loading_announcement,
     isError: error_announcement,
-  } = useUserReceivedAnnouncements({ token: cookies.get("token") as string, userID: userID, pageSize: -1, pageNo: -1 });
+  } = useUserReceivedAnnouncements({
+    token: cookies.get("token") as string,
+    userID: userID,
+    pageSize: -1,
+    pageNo: -1,
+  });
   const {
     data: data_request,
     isLoading: loading_request,
     isError: error_request,
-  } = useUserReceivedRequest({ token: cookies.get("token") as string, userID: userID, pageSize: -1, pageNo: -1 });
+  } = useUserReceivedRequest({
+    token: cookies.get("token") as string,
+    userID: userID,
+    pageSize: -1,
+    pageNo: -1,
+  });
   const {
     data: data_feedback,
     isLoading: loading_feedback,
     isError: error_feedback,
-  } = useUserReceivedFeedback({ token: cookies.get("token") as string, userID: userID, pageSize: -1, pageNo: -1 });
+  } = useUserReceivedFeedback({
+    token: cookies.get("token") as string,
+    userID: userID,
+    pageSize: -1,
+    pageNo: -1,
+  });
 
   const [combinedData, setCombinedData] = React.useState<MessageItem[]>([]);
 
@@ -64,12 +79,14 @@ export default function InboxPage() {
       ? data_request.data.list.map((item: any) => ({
           id: item.id,
           surveyID: item.survey_id,
-          type: "request",
+          type: "response",
           create_at: item.create_at,
           userAvatar: item.personal_info.avatar,
           surveyName: item.survey_name,
+          fromID: item.from_id,
           userName: item.user_name,
-          requestText: item.request_text,
+          requestText: item.message,
+          status: item.status,
         }))
       : [];
     let feedbacks: FeedbackData[] = data_feedback
@@ -79,13 +96,14 @@ export default function InboxPage() {
           type: "feedback",
           create_at: item.create_at,
           surveyName: item.survey_name,
-          isApproved: item.is_approved,
+          isApproved: item.status,
         }))
       : [];
     let combined = [...announcements, ...requests, ...feedbacks];
     combined.sort(
       (a, b) => Number(new Date(b.create_at)) - Number(new Date(a.create_at))
     );
+    console.log("Combined Data", combined);
     setCombinedData(combined);
   }, [data_announcement, data_request, data_feedback]);
 
@@ -96,50 +114,6 @@ export default function InboxPage() {
       </div>
     );
   }
-
-  const onApprove = async ({
-    surveyID,
-    requestID,
-  }: {
-    surveyID: number;
-    requestID: number;
-  }) => {
-    // surveyAcceptOrDenyRequest
-    try {
-      const res = await surveyAcceptOrDenyRequest({
-        token: cookies.get("token") as string,
-        surveyID,
-        requestID,
-        fromUserID: userID,
-        isAccept: true,
-      });
-      console.log(res);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const onReject = async ({
-    surveyID,
-    requestID,
-  }: {
-    surveyID: number;
-    requestID: number;
-  }) => {
-    // surveyAcceptOrDenyRequest
-    try {
-      const res = await surveyAcceptOrDenyRequest({
-        token: cookies.get("token") as string,
-        surveyID,
-        requestID,
-        fromUserID: userID,
-        isAccept: false,
-      });
-      console.log(res);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   function isAnnouncementData(item: MessageItem): item is AnnouncementData {
     return item.type === "announcement";
@@ -166,14 +140,7 @@ export default function InboxPage() {
           if (isAnnouncementData(item)) {
             return <AnnouncementCard key={index} {...item} />;
           } else if (isResponseData(item)) {
-            return (
-              <ResponseCard
-                key={index}
-                {...item}
-                onApprove={onApprove}
-                onReject={onReject}
-              />
-            );
+            return <ResponseCard key={index} {...item} />;
           } else if (isFeedbackData(item)) {
             return <FeedbackCard key={index} {...item} />;
           }
@@ -182,4 +149,3 @@ export default function InboxPage() {
     </ScrollArea>
   );
 }
-

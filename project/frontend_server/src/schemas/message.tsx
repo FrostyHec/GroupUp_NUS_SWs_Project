@@ -18,10 +18,10 @@ export interface AnnouncementData extends BaseData {
 export interface ResponseData extends BaseData {
   userAvatar: AvatarFullConfig;
   surveyName: string;
+  fromID: number;
   userName: string; // 用户名
   requestText: string;
-  onApprove: ({surveyID, requestID} : {surveyID: number; requestID: number}) => void;
-  onReject: ({surveyID, requestID} : {surveyID: number; requestID: number}) => void;
+  status: number; // 0 wait, 1 approved, 2 rejected
 }
 
 // 定义 FeedbackCard 的 Props 类型

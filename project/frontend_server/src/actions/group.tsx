@@ -2,6 +2,7 @@
 import useSWR from "swr";
 import axios from "axios";
 import { useCookies } from "next-client-cookies";
+import { create } from "domain";
 
 //查询组队
 //GET
@@ -100,14 +101,13 @@ export async function surveyGroupRequest({
   toID: number;
   message: string;
 }) {
-  const time = new Date().toISOString();
   return await axios.post(
     `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/group/requestgroup`,
     {
       from_id: fromUserID,
       to_group: isToGroup,
       to_id: toID,
-      create_at: time,
+      create_at: new Date().toISOString(),
       message,
     },
     { headers: { Authorization: "Bearer " + token } }
@@ -130,7 +130,6 @@ export async function surveyGroupLeave({
   toGroupID: number;
   message: string;
 }) {
-  const time = new Date().toISOString();
   return await axios.delete(
     `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/group/requestgroup`,
     {
@@ -138,7 +137,7 @@ export async function surveyGroupLeave({
       data: {
         from_id: fromUserID,
         to_group: toGroupID,
-        date: time,
+        date: new Date().toISOString(),
         message,
       },
     }
@@ -154,21 +153,24 @@ export async function surveyAcceptOrDenyRequest({
   requestID,
   fromUserID,
   isAccept,
+  userID
 }: {
   token: string;
   surveyID: number;
   requestID: number;
   fromUserID: number;
-  isAccept: boolean;
+  isAccept: number;
+  userID: number;
 }) {
-  const time = new Date().toISOString();
   return await axios.post(
     `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/group/response`,
     {
       request_id: requestID,
       from_id: fromUserID,
       status: isAccept,
-      update_at: time,
+      user_id: userID,
+      create_at: new Date().toISOString(),
+      update_at: new Date().toISOString(),
     },
     { headers: { Authorization: "Bearer " + token } }
   );

@@ -21,7 +21,7 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const eventSource = new EventSource(
-      `${process.env.MESSAGE_PUSH_API_URL}/sse/register/${userID}`
+      `${process.env.NEXT_PUBLIC_MESSAGE_PUSH_API_URL}/sse/register/${userID}`
     );
 
     eventSource.onmessage = (event) => {

@@ -12,12 +12,14 @@ export function useSurveyRecommendGroup({
   userID,
   pageSize,
   pageNo,
+  description,
 }: {
   token: string;
   surveyID: number;
   userID: number;
   pageSize: number;
   pageNo: number;
+  description: string;
 }) {
   const fetcher = (url: string) =>
     axios
@@ -26,7 +28,7 @@ export function useSurveyRecommendGroup({
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL_REC}/survey/${surveyID}/recommend/group?page_size=${pageSize}&page_no=${pageNo}&user_id=${userID}`,
+    `${process.env.NEXT_PUBLIC_API_URL_REC}/survey/${surveyID}/recommend/group?page_size=${pageSize}&page_no=${pageNo}&user_id=${userID}&description=${description}`,
     fetcher
   );
   return {
@@ -45,12 +47,14 @@ export function useSurveyRecommendUngrouped({
   userID,
   pageSize,
   pageNo,
+  description,
 }: {
   token: string;
   surveyID: number;
   userID: number;
   pageSize: number;
   pageNo: number;
+  description: string;
 }) {
   const fetcher = (url: string) =>
     axios
@@ -59,7 +63,7 @@ export function useSurveyRecommendUngrouped({
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL_REC}/survey/${surveyID}/recommend/ungrouped?page_size=${pageSize}&page_no=${pageNo}&user_id=${userID}`,
+    `${process.env.NEXT_PUBLIC_API_URL_REC}/survey/${surveyID}/recommend/ungrouped?page_size=${pageSize}&page_no=${pageNo}&user_id=${userID}&description=${description}`,
     fetcher
   );
   return {

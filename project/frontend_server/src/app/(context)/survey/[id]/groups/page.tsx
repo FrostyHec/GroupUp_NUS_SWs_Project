@@ -194,7 +194,6 @@ function GroupsTableForMember({
                                   View Submission
                                 </DropdownMenuItem>
                               </DialogTrigger>
-                              <DropdownMenuItem>Delete</DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                           <DialogContent>
@@ -276,34 +275,6 @@ function GroupsForMember({
               <TabsTrigger value="full">Full</TabsTrigger>
               <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
             </TabsList>
-            <div className="ml-auto flex items-center gap-2">
-              <Button
-                size="sm"
-                className="h-8 gap-1"
-                disabled={loading}
-                onClick={() => {
-                  setLoading(true);
-                  preGrouping({
-                    token: cookies.get("token") as string,
-                    surveyID: surveyID,
-                  }).then(() => {
-                    toast("PreGrouping Done");
-                    setLoading(false);
-                  });
-                }}
-              >
-                <PlusCircle className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  PreGrouping
-                </span>
-              </Button>
-              <Button size="sm" className="h-8 gap-1">
-                <PlusCircle className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Add Groups
-                </span>
-              </Button>
-            </div>
           </div>
           <TabsContent value="all">
             <GroupsTableForMember surveyID={surveyID} groups={allGroups} />
@@ -472,7 +443,7 @@ function Groups({
   const cookies = useCookies();
   const [loading, setLoading] = useState(false);
   const { data, isLoading, isError } = useSurveyAllGroups({
-    token : cookies.get("token") as string,
+    token: cookies.get("token") as string,
     id: surveyID,
     pageSize: -1,
     pageNo: -1,
@@ -515,12 +486,6 @@ function Groups({
                 <PlusCircle className="h-3.5 w-3.5" />
                 <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                   PreGrouping
-                </span>
-              </Button>
-              <Button size="sm" className="h-8 gap-1">
-                <PlusCircle className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Add Groups
                 </span>
               </Button>
             </div>

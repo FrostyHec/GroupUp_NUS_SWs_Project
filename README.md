@@ -15,9 +15,7 @@ When our class begins, we are required to find our teammates. It is not uncommon
 
 The structure of our process can be describe as follows. 
 
-```
 ![Architecture Diagram](./structure.png)
-```
 
 ### 1.4 Key Components
 - **Frontend Service**: 

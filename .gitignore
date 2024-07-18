@@ -26,12 +26,7 @@ replay_pid*
 
 # maven ignore
 target/
-*.class
-*.jar
-*.war
-*.zip
 *.tar
-*.tar.gz
 dependency-reduced-pom.xml
 .flattened-pom.xml
 pom.xml.versionsBackup
@@ -59,7 +54,6 @@ release.properties
 
 # temp ignore
 logs/
-*.log
 *.tlog
 *.doc
 *.cache

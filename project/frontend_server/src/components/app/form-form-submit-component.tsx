@@ -1,6 +1,13 @@
 "use client";
 
-import React, { use, useCallback, useEffect, useRef, useState, useTransition } from "react";
+import React, {
+  use,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { FormElementInstance, FormElements } from "../../schemas/form";
 import { Button } from "../ui/button";
 import { HiCursorClick } from "react-icons/hi";
@@ -8,9 +15,14 @@ import { toast } from "sonner";
 import { ImSpinner2 } from "react-icons/im";
 import { submitForm } from "@/controller/form";
 import { Edit2Icon } from "lucide-react";
-import { queryGetByUserId } from "@/actions/query";
+import {
+  queryGetByUserId,
+  queryGetStatus,
+  queryUpdateStatus,
+} from "@/actions/query";
 import useUser from "../hooks/useUser";
 import { useCookies } from "next-client-cookies";
+import { formatDistanceStrict } from "date-fns";
 
 function FormSubmitComponent({
   content,
@@ -26,6 +38,7 @@ function FormSubmitComponent({
   const [submitted, setSubmitted] = useState(false);
   const [pending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState(false);
 
   const validateForm: () => boolean = useCallback(() => {
     for (const field of content) {
@@ -57,21 +70,41 @@ function FormSubmitComponent({
     userID: userID,
   });
 
+  const {
+    data: statusData,
+    isLoading: statusLoading,
+    isError: statusError,
+  } = queryGetStatus({
+    token: cookies.get("token") as string,
+    surveyID: surveyId,
+    userID: userID,
+  });
+
   useEffect(() => {
-    if (data) {
-      const formData = data.data;
-      Object.keys(formData.questions_answer).forEach((key) => {
-        formValues.current[key] = formData.questions_answer[key];
-      });
-      setLoading(false);
+    if (!data) {
+      return;
     }
-  }, [data]);
-  
-  if (isLoading || loading){ return (
-    <div className="flex items-center justify-center w-full h-screen">
-      <ImSpinner2 className="animate-spin" />
-    </div>
-  )};
+    const formData = data.data;
+    Object.keys(formData.questions_answer).forEach((key) => {
+      formValues.current[key] = formData.questions_answer[key];
+    });
+    setLoading(false);
+  }, [data, isLoading, isError]);
+
+  useEffect(() => {
+    if (!statusData) {
+      return;
+    }
+    setStatus(statusData.data.status);
+  }, [statusData, statusLoading, statusError]);
+
+  if (isLoading || loading || statusLoading ) {
+    return (
+      <div className="flex items-center justify-center w-full h-screen">
+        <ImSpinner2 className="animate-spin" />
+      </div>
+    );
+  }
 
   const submitFormData = async () => {
     console.log("submitting form");
@@ -93,13 +126,38 @@ function FormSubmitComponent({
         formValues.current,
         data.data
       );
+      await queryUpdateStatus({
+        token: cookies.get("token") as string,
+        surveyID: surveyId,
+        userID: userID,
+        status: "done",
+      });
       setSubmitted(true);
       toast("Success", {
         description: "Form submitted successfully",
       });
     } catch (error) {
-      toast("Error", {
-        description: "Something went wrong",
+      toast("Submit Error", {
+        description: String(error),
+      });
+    }
+  };
+
+  const updateFormData = async () => {
+    try {
+      await queryUpdateStatus({
+        token: cookies.get("token") as string,
+        surveyID: surveyId,
+        userID: userID,
+        status: "edit",
+      });
+      setSubmitted(false);
+      toast("Success", {
+        description: "Form status updated",
+      });
+    } catch (error) {
+      toast("Update Error", {
+        description: String(error),
       });
     }
   };
@@ -124,14 +182,15 @@ function FormSubmitComponent({
           <Button
             className="mt-8"
             onClick={() => {
-              setSubmitted(false);
+              startTransition(updateFormData);
             }}
             disabled={pending}
           >
-            <>
+            {!pending && <>
               <Edit2Icon className="mr-2 size-3" />
               Edit
-            </>
+            </>}
+            {pending && <ImSpinner2 className="animate-spin" />}
           </Button>
         </div>
       </div>

@@ -71,6 +71,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     surveyID: surveyId,
     userID: personalId,
   }); // From @/actions/query
+
   useEffect(() => {
     if (!data_query) return;
     setFieldValues(
@@ -89,9 +90,9 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     setAvatar(data_query.data.personal_info.avatar);
     setSelfInfo(data_query.data.personal_info.self_info);
     setLoading(false);
-  }, [data_query]);
+  }, [data_query, isLoading_query, isError_query]);
 
-  if (isLoading_query) {
+  if (isLoading_query || loading) {
     return (
       <div className="flex flex-col items-center justify-center w-full h-full">
         <LoaderCircle className="animate-spin h-12 w-12" /> User Profile Loading

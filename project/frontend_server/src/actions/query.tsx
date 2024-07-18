@@ -131,12 +131,12 @@ export function queryGetByUserId({
 export async function queryUpdateStatus({
   token,
   surveyID,
-  queryID,
+  userID,
   status,
 }: {
   token: string;
   surveyID: number;
-  queryID: number;
+  userID: number;
   status: string;
 }) {
   let statusCode: number;
@@ -152,10 +152,13 @@ export async function queryUpdateStatus({
   }
   return await axios
     .put(
-      `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/query/${queryID}/status`,
+      `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/query/${userID}/status`,
       statusCode,
       {
-        headers: { Authorization: "Bearer " + token },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
       }
     )
     .then((res) => res.data);
@@ -166,11 +169,11 @@ export async function queryUpdateStatus({
 export function queryGetStatus({
   token,
   surveyID,
-  queryID,
+  userID,
 }: {
   token: string;
   surveyID: number;
-  queryID: number;
+  userID: number;
 }) {
   const fetcher = (url: string) =>
     axios
@@ -179,7 +182,7 @@ export function queryGetStatus({
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/query/${queryID}/status`,
+    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/query/${userID}/status`,
     fetcher
   );
   return {

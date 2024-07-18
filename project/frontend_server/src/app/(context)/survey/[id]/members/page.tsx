@@ -50,6 +50,7 @@ import ProfileCard from "@/components/app/info-personal-info-cards";
 import UserAvatar from "@/components/app/user-avatar";
 import FormDemonstrateComponent from "@/components/app/form-demonstrate-component";
 import { queryGetByUserId } from "@/actions/query";
+import { RiProfileFill } from "react-icons/ri";
 
 function UsernameTableCell({ userID }: { userID: number }) {
   const { data, isLoading, isError } = userInfo({
@@ -67,17 +68,35 @@ function UsernameProfileTableCell({
   userID: number;
   surveyInfo: any;
 }) {
+  const cookies = useCookies();
   const { data, isLoading, isError } = userInfo({
     userID,
   });
-  if (isLoading) return <TableCell>Loading...</TableCell>;
-  if (isError) return <TableCell>Error</TableCell>;
+  const {
+    data: data_query,
+    isLoading: isLoading_query,
+    isError: isError_query,
+  } = queryGetByUserId({
+    token: cookies.get("token") as string,
+    surveyID: surveyInfo.id,
+    userID,
+  });
+  if (isLoading || isLoading_query) return <TableCell>Loading...</TableCell>;
+  if (isError || isError_query) return <TableCell>Error</TableCell>;
   return (
     <TableCell className="font-medium">
       <HoverCard>
         <HoverCardTrigger>{data.data.username}</HoverCardTrigger>
         <HoverCardContent className="w-fit">
-          <ProfileCard personalId={userID} survey={surveyInfo} mode="view" />
+          {data_query?.data && (
+            <ProfileCard personalId={userID} survey={surveyInfo} mode="view" />
+          )}
+          {!data_query?.data && (
+            <div className="flex flex-col items-center w-[300px] h-[100px] gap-y-5" >
+              <RiProfileFill size={40}/>{" "}
+              User has not created its profile yet.
+            </div>
+          )}
         </HoverCardContent>
       </HoverCard>
     </TableCell>
@@ -230,6 +249,7 @@ export default function Members({ params }: { params: { id: number } }) {
   const { data, isLoading, isError } = surveyInfo({ surveyID: params.id });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error</div>;
+
   const allMembers = {
     owners: data.data.owners,
     members: data.data.members,

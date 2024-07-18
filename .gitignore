@@ -1,6 +1,6 @@
 # Compiled class file
 *.class
-
+out
 # Log file
 *.log
 
@@ -79,3 +79,5 @@ public/
 
 #self-ignore
 .non-public
+**/safety-nonpublic-*
+**/*-safety-nonpublic-*

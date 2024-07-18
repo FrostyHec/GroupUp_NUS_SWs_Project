@@ -40,6 +40,7 @@ import { surveyInfo } from "@/actions/survey";
 import UserAvatar from "@/components/app/user-avatar";
 import ProfileCard from "@/components/app/info-personal-info-cards";
 import useSurveys from "@/components/hooks/useSurveys";
+import useUser from "@/components/hooks/useUser";
 
 function Recommend({ recommend }: { recommend: number }) {
   if (recommend > 80) {
@@ -229,20 +230,15 @@ function MatchCard({
   }
 }
 
-export default function Match({
-  surveyID,
-  fromUserID,
-}: {
-  surveyID: number;
-  fromUserID: number;
-}) {
+export default function Match({ params }: { params: { id: number } }) {
+  const { userID } = useUser();
   const { role, ownSurveys, participateSurveys } = useSurveys();
   let surveyInfo: any = null;
   if (role === "owner") {
     return <div>Unauthorized</div>;
   } else if (role === "member") {
     surveyInfo = participateSurveys.find(
-      (survey: any) => survey.id === Number(surveyID)
+      (survey: any) => survey.id === Number(params.id)
     );
   } else {
     return <div>Unauthorized</div>;
@@ -252,8 +248,8 @@ export default function Match({
     isLoading: groupLoading,
     isError: groupError,
   } = surveyRecommendGroup({
-    surveyID,
-    userID: fromUserID,
+    surveyID: params.id,
+    userID: userID,
     pageSize: -1,
     pageNo: -1,
   });
@@ -262,8 +258,8 @@ export default function Match({
     isLoading: ungroupedLoading,
     isError: ungroupedError,
   } = surveyRecommendUngrouped({
-    surveyID,
-    userID: fromUserID,
+    surveyID: params.id,
+    userID: userID,
     pageSize: -1,
     pageNo: -1,
   });
@@ -285,12 +281,12 @@ export default function Match({
     <div className="m-4 flex flex-wrap gap-4">
       {allData.map((item: any) => (
         <MatchCard
-          surveyID={surveyID}
+          surveyID={params.id}
           surveyInfo={surveyInfo}
           id={item.id}
           isGroup={item.isGroup}
           recommend={item.recommend}
-          fromUserID={fromUserID}
+          fromUserID={userID}
         />
       ))}
     </div>

@@ -95,9 +95,11 @@ function Page({ data, callback }: { data: any; callback: any }) {
 
 export function UsernameSearch({
   username,
+  excludeIDs,
   callback,
 }: {
   username: string;
+  excludeIDs: number[];
   callback: ({ userID }: { userID: number }) => void;
 }) {
   const [pageIndex, setPageIndex] = useState(1);
@@ -106,7 +108,9 @@ export function UsernameSearch({
   });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error</div>;
-  const users = data.data.users;
+  const users = data.data.users.filter(
+    (user: any) => !excludeIDs.includes(user.id)
+  );
   const pageSize = 5;
   const { data: tableData } = getTableData(pageIndex, pageSize, users);
   const hasPrevious = pageIndex > 1;

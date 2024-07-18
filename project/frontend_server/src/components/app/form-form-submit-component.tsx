@@ -38,7 +38,7 @@ function FormSubmitComponent({
   const [submitted, setSubmitted] = useState(false);
   const [pending, startTransition] = useTransition();
   const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState(false);
+  const [status, setStatus] = useState(1);
 
   const validateForm: () => boolean = useCallback(() => {
     for (const field of content) {
@@ -98,7 +98,7 @@ function FormSubmitComponent({
     setStatus(statusData.data.status);
   }, [statusData, statusLoading, statusError]);
 
-  if (isLoading || loading || statusLoading ) {
+  if (isLoading || loading || statusLoading) {
     return (
       <div className="flex items-center justify-center w-full h-screen">
         <ImSpinner2 className="animate-spin" />
@@ -133,6 +133,7 @@ function FormSubmitComponent({
         status: "done",
       });
       setSubmitted(true);
+      setStatus(2);
       toast("Success", {
         description: "Form submitted successfully",
       });
@@ -152,6 +153,7 @@ function FormSubmitComponent({
         status: "edit",
       });
       setSubmitted(false);
+      setStatus(1);
       toast("Success", {
         description: "Form status updated",
       });
@@ -162,7 +164,7 @@ function FormSubmitComponent({
     }
   };
 
-  if (submitted) {
+  if (submitted || status === 2) {
     return (
       <div className="flex justify-center w-full h-full items-center p-8">
         <div className="max-w-[620px] flex flex-col gap-4 flex-grow bg-background w-full p-8 overflow-y-auto border shadow-xl shadow-blue-700 rounded-2xl">
@@ -186,10 +188,12 @@ function FormSubmitComponent({
             }}
             disabled={pending}
           >
-            {!pending && <>
-              <Edit2Icon className="mr-2 size-3" />
-              Edit
-            </>}
+            {!pending && (
+              <>
+                <Edit2Icon className="mr-2 size-3" />
+                Edit
+              </>
+            )}
             {pending && <ImSpinner2 className="animate-spin" />}
           </Button>
         </div>

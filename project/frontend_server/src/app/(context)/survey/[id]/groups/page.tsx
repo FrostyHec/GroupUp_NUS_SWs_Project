@@ -123,11 +123,13 @@ function GroupsTableForMember({
   const cookies = useCookies();
   const { userID } = useUser();
   const { role, ownSurveys, participateSurveys } = useSurveys();
-  let infoData: any = null;
+  let surveyInfoData: any = null;
   if (role === "owner") {
-    infoData = ownSurveys.find((survey: any) => survey.id === Number(surveyID));
+    surveyInfoData = ownSurveys.find(
+      (survey: any) => survey.id === Number(surveyID)
+    );
   } else if (role === "member") {
-    infoData = participateSurveys.find(
+    surveyInfoData = participateSurveys.find(
       (survey: any) => survey.id === Number(surveyID)
     );
   } else {
@@ -168,7 +170,7 @@ function GroupsTableForMember({
                           <HoverCardContent className="w-fit">
                             <ProfileCard
                               personalId={memberID}
-                              survey={infoData}
+                              survey={surveyInfoData}
                               mode="view"
                             />
                           </HoverCardContent>
@@ -179,6 +181,33 @@ function GroupsTableForMember({
                             Member
                           </p>
                         </div>
+                        <Dialog>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button size="icon" variant="ghost">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DialogTrigger asChild>
+                                <DropdownMenuItem>
+                                  View Submission
+                                </DropdownMenuItem>
+                              </DialogTrigger>
+                              <DropdownMenuItem>Delete</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Form Submission</DialogTitle>
+                            </DialogHeader>
+                            <FormDemonstrateComponent
+                              content={surveyInfoData.questions}
+                              surveyId={surveyInfoData.id}
+                              userID={memberID}
+                            />
+                          </DialogContent>
+                        </Dialog>
                       </div>
                     ))}
                   </div>
@@ -214,15 +243,16 @@ function GroupsTableForMember({
 }
 
 function GroupsForMember({
-  params,
+  surveyID,
   groupSize,
 }: {
-  params: { id: number };
+  surveyID: number;
   groupSize: number;
 }) {
   const cookies = useCookies();
+  const [loading, setLoading] = useState(false);
   const { data, isLoading, isError } = surveyAllGroups({
-    id: params.id,
+    id: surveyID,
     pageSize: -1,
     pageNo: -1,
   });
@@ -245,16 +275,44 @@ function GroupsForMember({
               <TabsTrigger value="full">Full</TabsTrigger>
               <TabsTrigger value="incomplete">Incomplete</TabsTrigger>
             </TabsList>
+            <div className="ml-auto flex items-center gap-2">
+              <Button
+                size="sm"
+                className="h-8 gap-1"
+                disabled={loading}
+                onClick={() => {
+                  setLoading(true);
+                  preGrouping({
+                    token: cookies.get("token") as string,
+                    surveyID: surveyID,
+                  }).then(() => {
+                    toast("PreGrouping Done");
+                    setLoading(false);
+                  });
+                }}
+              >
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  PreGrouping
+                </span>
+              </Button>
+              <Button size="sm" className="h-8 gap-1">
+                <PlusCircle className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  Add Groups
+                </span>
+              </Button>
+            </div>
           </div>
           <TabsContent value="all">
-            <GroupsTableForMember surveyID={params.id} groups={allGroups} />
+            <GroupsTableForMember surveyID={surveyID} groups={allGroups} />
           </TabsContent>
           <TabsContent value="full">
-            <GroupsTableForMember surveyID={params.id} groups={fullGroups} />
+            <GroupsTableForMember surveyID={surveyID} groups={fullGroups} />
           </TabsContent>
           <TabsContent value="incomplete">
             <GroupsTableForMember
-              surveyID={params.id}
+              surveyID={surveyID}
               groups={incompleteGroups}
             />
           </TabsContent>
@@ -332,27 +390,26 @@ function GroupsTable({ surveyID, groups }: { surveyID: number; groups: any }) {
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent>
+                            <DropdownMenuContent align="end">
                               <DialogTrigger asChild>
                                 <DropdownMenuItem>
                                   View Submission
                                 </DropdownMenuItem>
                               </DialogTrigger>
-                            </DropdownMenuContent>
-                            <DropdownMenuContent
-                              align="end"
-                              onClick={() => {
-                                surveyGroupDeleteMember({
-                                  token: cookies.get("token") as string,
-                                  allGroups: groups,
-                                  surveyID,
-                                  groupID: group.id,
-                                  userID: memberID,
-                                });
-                                toast("Deleted");
-                              }}
-                            >
-                              <DropdownMenuItem>Delete</DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  surveyGroupDeleteMember({
+                                    token: cookies.get("token") as string,
+                                    allGroups: groups,
+                                    surveyID,
+                                    groupID: group.id,
+                                    userID: memberID,
+                                  });
+                                  toast("Deleted");
+                                }}
+                              >
+                                Delete
+                              </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                           <DialogContent>
@@ -372,6 +429,9 @@ function GroupsTable({ surveyID, groups }: { surveyID: number; groups: any }) {
                 </TableCell>
                 <TableCell>
                   <SurveyUserSearchDialog
+                    excludeIDs={groups
+                      .map((group: any) => group.group_member)
+                      .flat()}
                     callback={({ userID }: { userID: number }) => {
                       surveyGroupAddMember({
                         token: cookies.get("token") as string,
@@ -402,16 +462,16 @@ function GroupsTable({ surveyID, groups }: { surveyID: number; groups: any }) {
 }
 
 function Groups({
-  params,
+  surveyID,
   groupSize,
 }: {
-  params: { id: number };
+  surveyID: number;
   groupSize: number;
 }) {
   const cookies = useCookies();
   const [loading, setLoading] = useState(false);
   const { data, isLoading, isError } = surveyAllGroups({
-    id: params.id,
+    id: surveyID,
     pageSize: -1,
     pageNo: -1,
   });
@@ -443,7 +503,7 @@ function Groups({
                   setLoading(true);
                   preGrouping({
                     token: cookies.get("token") as string,
-                    surveyID: params.id,
+                    surveyID: surveyID,
                   }).then(() => {
                     toast("PreGrouping Done");
                     setLoading(false);
@@ -464,13 +524,13 @@ function Groups({
             </div>
           </div>
           <TabsContent value="all">
-            <GroupsTable surveyID={params.id} groups={allGroups} />
+            <GroupsTable surveyID={surveyID} groups={allGroups} />
           </TabsContent>
           <TabsContent value="full">
-            <GroupsTable surveyID={params.id} groups={fullGroups} />
+            <GroupsTable surveyID={surveyID} groups={fullGroups} />
           </TabsContent>
           <TabsContent value="incomplete">
-            <GroupsTable surveyID={params.id} groups={incompleteGroups} />
+            <GroupsTable surveyID={surveyID} groups={incompleteGroups} />
           </TabsContent>
         </Tabs>
       </main>
@@ -478,42 +538,30 @@ function Groups({
   );
 }
 
-function GroupsAuth({
-  params,
-  authData,
-}: {
-  params: { id: number };
-  authData: any;
-}) {
-  const { data, isLoading, isError } = surveyInfo({ surveyID: params.id });
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>;
-  if (data.data.owners.includes(authData.data.user_id)) {
+export default function GroupsAuth({ params }: { params: { id: number } }) {
+  const { ownSurveys, participateSurveys, role } = useSurveys();
+  let infoData: any = null;
+  if (role === "owner") {
+    const surveyInfoData = ownSurveys.find(
+      (survey) => survey.id === Number(params.id)
+    );
     return (
       <Groups
-        params={params}
-        groupSize={data.data.group_restriction.group_size}
+        surveyID={Number(params.id)}
+        groupSize={surveyInfoData.group_restriction.group_size}
       />
     );
-  } else if (data.data.members.includes(authData.data.user_id)) {
+  } else if (role === "member") {
+    const surveyInfoData = participateSurveys.find(
+      (survey) => survey.id === Number(params.id)
+    );
     return (
       <GroupsForMember
-        params={params}
-        groupSize={data.data.group_restriction.group_size}
+        surveyID={Number(params.id)}
+        groupSize={surveyInfoData.group_restriction.group_size}
       />
     );
   } else {
     return <div>Unauthorized</div>;
   }
-}
-
-export default function GroupsAuthProvider({
-  params,
-}: {
-  params: { id: number };
-}) {
-  const { data, isLoading, isError } = userAuthInfo();
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>;
-  return <GroupsAuth params={params} authData={data} />;
 }

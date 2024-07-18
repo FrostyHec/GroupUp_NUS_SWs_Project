@@ -172,7 +172,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
             )}
           </div>
           <div className="items-center my-3 space-y-4 h-2/3">
-            {data_query.data?.personal_info.fields.map((field:any, index:any) => (
+            {fieldValues.map((field: any, index: any) => (
               <FieldForm
                 key={index}
                 label={field.label}

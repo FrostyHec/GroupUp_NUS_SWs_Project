@@ -26,7 +26,7 @@ export function surveyRecommendGroup({
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/recommend/group?page_size=${pageSize}&page_no=${pageNo}&user_id=${userID}`,
+    `${process.env.NEXT_PUBLIC_API_URL_REC}/survey/${surveyID}/recommend/group?page_size=${pageSize}&page_no=${pageNo}&user_id=${userID}`,
     fetcher
   );
   return {
@@ -59,7 +59,7 @@ export function surveyRecommendUngrouped({
       })
       .then((res) => res.data);
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/recommend/ungrouped?page_size=${pageSize}&page_no=${pageNo}&user_id=${userID}`,
+    `${process.env.NEXT_PUBLIC_API_URL_REC}/survey/${surveyID}/recommend/ungrouped?page_size=${pageSize}&page_no=${pageNo}&user_id=${userID}`,
     fetcher
   );
   return {
@@ -81,7 +81,7 @@ export async function preGrouping({
 }) {
   return axios
     .post(
-      `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/recommend/pregrouping`,
+      `${process.env.NEXT_PUBLIC_API_URL_REC}/survey/${surveyID}/recommend/pregrouping`,
       {
         headers: { Authorization: "Bearer " + token },
       }

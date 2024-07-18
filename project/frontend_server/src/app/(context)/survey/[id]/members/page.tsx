@@ -92,9 +92,8 @@ function UsernameProfileTableCell({
             <ProfileCard personalId={userID} survey={surveyInfo} mode="view" />
           )}
           {!data_query?.data && (
-            <div className="flex flex-col items-center w-[300px] h-[100px] gap-y-5" >
-              <RiProfileFill size={40}/>{" "}
-              User has not created its profile yet.
+            <div className="flex flex-col items-center w-[300px] h-[100px] gap-y-5">
+              <RiProfileFill size={40} /> User has not created its profile yet.
             </div>
           )}
         </HoverCardContent>
@@ -274,6 +273,7 @@ export default function Members({ params }: { params: { id: number } }) {
             </TabsList>
             <div className="ml-auto flex items-center gap-2">
               <SurveyUserSearchDialog
+                excludeIDs={[...data.data.owners, ...data.data.members]}
                 callback={({ userID }: { userID: number }) => {
                   surveyAddMember({
                     token: cookies.get("token") as string,

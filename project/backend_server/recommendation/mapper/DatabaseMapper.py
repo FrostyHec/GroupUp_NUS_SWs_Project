@@ -80,7 +80,9 @@ class DatabaseMapper:
     @classmethod
     def get_query(cls, survey_id: int, user_id: int):
         query = """SELECT questions_answer FROM query 
-        WHERE survey_id = :survey_id and member_id = :user_id and status=2;"""
+        WHERE survey_id = :survey_id and member_id = :user_id""" # status==2? TODO
+        # and
+        # status=2;
         params = {'user_id': user_id, 'survey_id': survey_id}
         return cls.__execute_query(query, cls.__to_json, params)
 

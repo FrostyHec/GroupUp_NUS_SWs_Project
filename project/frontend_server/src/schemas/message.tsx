@@ -26,7 +26,7 @@ export interface ResponseData extends BaseData {
 
 // 定义 FeedbackCard 的 Props 类型
 export interface FeedbackData extends BaseData {
-  surveyName: string;
+  surveyID: number;
   isApproved: number; // 0 wait, 1 approved, 2 rejected
 }
 

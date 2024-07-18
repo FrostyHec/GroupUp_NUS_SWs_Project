@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
 export const FeedbackCard: React.FC<FeedbackData> = ({
-  surveyName,
+  surveyID,
   isApproved,
 }) => {
   return (
@@ -28,13 +28,13 @@ export const FeedbackCard: React.FC<FeedbackData> = ({
           <Label
             className={`mt-2 ${
               isApproved === 0
-                ? "border-gray-500"
+                ? "text-gray-500"
                 : isApproved === 1
-                ? "border-green-500"
-                : "border-red-500"
+                ? "text-green-500"
+                : "text-red-500"
             }`}
           >
-            Feedback of your request from survey {surveyName}
+            Feedback of your request from survey {surveyID}
           </Label>
         </div>
       </CardHeader>
@@ -42,10 +42,10 @@ export const FeedbackCard: React.FC<FeedbackData> = ({
         <div className="flex-1">
           <p className={`mt-2 text-gray-800`}>
             {isApproved === 0
-              ? `Your request from survey ${surveyName} is yet to be approved`
+              ? `Your request from survey ${surveyID} is yet to be approved`
               : isApproved === 1
-              ? `Your request from survey ${surveyName} has been approved`
-              : `Your request from survey ${surveyName} has been rejected`}
+              ? `Your request from survey ${surveyID} has been approved`
+              : `Your request from survey ${surveyID} has been rejected`}
           </p>
         </div>
       </CardContent>

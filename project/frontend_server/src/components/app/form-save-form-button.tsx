@@ -1,34 +1,53 @@
 import React, { useTransition } from "react";
 import { Button } from "../ui/button";
-import { ArrowDownToLine } from 'lucide-react';
+import { HiSaveAs } from "react-icons/hi";
 import useDesigner from "../hooks/useDesigner";
-import { UpdateFormContent } from "@/actions/form";
-import { toast } from "../ui/use-toast";
-import { Loader } from 'lucide-react';
+import { toast } from "sonner";
+import { FaSpinner } from "react-icons/fa";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
+import { useSurveyInfo, surveyUpdateInfo } from "@/actions/survey";
+import { useCookies } from "next-client-cookies";
 
 function SaveFormBtn({ id }: { id: number }) {
+  const cookies = useCookies();
+  const token = cookies.get("token") as string;
+
   const { elements } = useDesigner();
   const [loading, startTransition] = useTransition();
 
-  const updateFormContent = async () => {
+  const {
+    data: surveyData,
+    isLoading: surveyLoading,
+    isError: surveyError,
+  } = useSurveyInfo({
+    token: token,
+    surveyID: id,
+  });
+
+  if (surveyLoading) return <div>Loading...</div>;
+  if (surveyError) return <div>Error</div>;
+
+  const updateContent = async () => {
     try {
-      const jsonElements = JSON.stringify(elements);
-      await UpdateFormContent(id, jsonElements);
-      toast({
-        title: "Success",
+      let survey = surveyData;
+      survey.data.questions = elements;
+      await surveyUpdateInfo({
+        token: token,
+        surveyID: id,
+        surveyInfo: survey.data,
+      });
+      toast("Success", {
         description: "Your form has been saved",
       });
     } catch (error) {
-      toast({
-        title: "Error",
+      console.error("Error saving form", surveyData);
+      toast("Error", {
         description: "Something went wrong",
-        variant: "destructive",
       });
     }
   };
@@ -41,11 +60,11 @@ function SaveFormBtn({ id }: { id: number }) {
             className="gap-2"
             disabled={loading}
             onClick={() => {
-              startTransition(updateFormContent);
+              startTransition(updateContent);
             }}
           >
-            <ArrowDownToLine className="h-4 w-4" />
-            {loading && <Loader className="animate-spin" />}
+            <HiSaveAs className="h-4 w-4" />
+            {loading && <FaSpinner className="animate-spin" />}
           </Button>
         </TooltipTrigger>
         <TooltipContent side="top" sideOffset={2}>

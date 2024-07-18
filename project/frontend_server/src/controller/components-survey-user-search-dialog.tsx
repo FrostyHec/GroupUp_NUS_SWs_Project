@@ -2,15 +2,22 @@ import { useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
-import { userUsernameSearch } from "@/actions/user";
+import { useUsernameSearch } from "@/actions/user";
+import { toast } from "sonner";
+import {useCookies} from "next-client-cookies";
 
 const getTableData = (page = 1, pageSize = 5, totalData: any) => {
   const { length } = totalData;
@@ -56,6 +63,7 @@ function Page({ data, callback }: { data: any; callback: any }) {
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead>ID</TableHead>
           <TableHead>User</TableHead>
           <TableHead>Action</TableHead>
         </TableRow>
@@ -63,12 +71,18 @@ function Page({ data, callback }: { data: any; callback: any }) {
       <TableBody>
         {data.map((user: any) => (
           <TableRow key={user.id}>
+            <TableCell>{user.id}</TableCell>
             <TableCell>{user.username}</TableCell>
             <TableCell>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => callback({ userID: user.id })}
+                onClick={() => {
+                  toast("Selected", {
+                    description: `User ${user.username} selected`,
+                  });
+                  callback({ userID: user.id });
+                }}
               >
                 Select
               </Button>
@@ -82,19 +96,51 @@ function Page({ data, callback }: { data: any; callback: any }) {
 
 export function UsernameSearch({
   username,
+  excludeIDs,
   callback,
 }: {
   username: string;
+  excludeIDs: number[];
   callback: ({ userID }: { userID: number }) => void;
 }) {
   const [pageIndex, setPageIndex] = useState(1);
-  const { users } = userUsernameSearch({ findUsername: username }).data.data;
-  const { data } = getTableData(pageIndex, 5, users);
+  const cookies = useCookies();
+  const { data, isLoading, isError } = useUsernameSearch({
+    token: cookies.get("token") as string,
+    findUsername: username,
+  });
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+  const users = data.data.users.filter(
+    (user: any) => !excludeIDs.includes(user.id)
+  );
+  const pageSize = 5;
+  const { data: tableData } = getTableData(pageIndex, pageSize, users);
+  const hasPrevious = pageIndex > 1;
+  const hasNext = pageIndex < users.length / pageSize;
   return (
     <div>
-      <Page data={data} callback={callback} />
-      <button onClick={() => setPageIndex(pageIndex - 1)}>Previous</button>
-      <button onClick={() => setPageIndex(pageIndex + 1)}>Next</button>
+      <Page data={tableData} callback={callback} />
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              className={
+                hasPrevious ? undefined : "pointer-events-none opacity-50"
+              }
+              onClick={() => setPageIndex(pageIndex - 1)}
+            />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              className={hasNext ? undefined : "pointer-events-none opacity-50"}
+              onClick={() => setPageIndex(pageIndex + 1)}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 }

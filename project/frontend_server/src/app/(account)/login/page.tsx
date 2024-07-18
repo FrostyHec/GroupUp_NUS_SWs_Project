@@ -13,11 +13,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { userLogIn } from "@/actions/user";
 import { useCookies } from "next-client-cookies";
+import { toast } from "sonner";
 
 export default function LogIn() {
   const router = useRouter();
   const cookies = useCookies();
-  if (cookies.get("token")) {
+  if (cookies.get("token") && cookies.get("token") !== "undefined") {
     router.push("/dashboard");
   }
   const handleSubmit = (event: any) => {
@@ -25,11 +26,24 @@ export default function LogIn() {
     const formData = new FormData(event.target);
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
-    const response = userLogIn({ username: username, password: password }).data;
-    cookies.set("token", response.data.token);
-    if (response.code == "200") {
-      router.push("/dashboard");
-    }
+    userLogIn({ username: username, password: password }).then((res) => {
+      console.log("Logging in user", res);
+      if (res.data.code === 200) {
+        toast("Login Success", {
+          description: "You have successfully logged in",
+        });
+        cookies.set("token", res.data.data.token);
+        router.push("/dashboard");
+      } else if (res.data.code === 401) {
+        toast("Login Failed", {
+          description: "Invalid username or password",
+        });
+      } else if (res.data.code === 404) {
+        toast("Login Failed", {
+          description: "User not found",
+        });
+      }
+    });
   };
   return (
     <main className="flex justify-center items-center h-screen">

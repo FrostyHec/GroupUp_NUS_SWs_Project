@@ -13,14 +13,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { UsernameSearch } from "@/controller/components-survey-user-search-dialog";
+import { useSWRConfig } from "swr";
 
 export function SurveyUserSearchDialog({
+  excludeIDs,
   callback,
   children,
 }: {
+  excludeIDs: number[];
   callback: ({ userID }: { userID: any }) => void;
   children: React.ReactNode;
 }) {
+  const { mutate } = useSWRConfig();
+
   const [username, setUsername] = useState("");
   const [selectedUserID, setSelectedUserID] = useState(0);
 
@@ -53,15 +58,27 @@ export function SurveyUserSearchDialog({
           </div>
           <Button className="px-3">Search</Button>
         </div>
-        <UsernameSearch username={username} callback={handleSelectUser} />
+        <UsernameSearch
+          username={username}
+          excludeIDs={excludeIDs}
+          callback={handleSelectUser}
+        />
         <DialogFooter className="sm:justify-start">
           <DialogClose asChild>
-            <Button type="button" variant="secondary">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setSelectedUserID(0)}
+            >
               Close
             </Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button type="button" onClick={handleSubmit}>
+            <Button
+              type="button"
+              onClick={handleSubmit}
+              disabled={selectedUserID <= 0}
+            >
               Submit
             </Button>
           </DialogClose>

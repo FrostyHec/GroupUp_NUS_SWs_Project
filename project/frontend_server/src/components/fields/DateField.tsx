@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ElementsType, FormElement, FormElementInstance, SubmitFunction } from "../app/form-form-elements";
+import { ElementsType, FormElement, FormElementInstance, SubmitFunction } from "../../schemas/form";
 import useDesigner from "../hooks/useDesigner";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -84,11 +84,13 @@ function FormComponent({
   submitValue,
   isInvalid,
   defaultValue,
+  disabled,
 }: {
   elementInstance: FormElementInstance;
   submitValue?: SubmitFunction;
   isInvalid?: boolean;
   defaultValue?: string;
+  disabled?: boolean;
 }) {
   const element = elementInstance as CustomInstance;
 
@@ -135,6 +137,7 @@ function FormComponent({
               submitValue(element.id, value);
             }}
             initialFocus
+            disabled={disabled}
           />
         </PopoverContent>
       </Popover>

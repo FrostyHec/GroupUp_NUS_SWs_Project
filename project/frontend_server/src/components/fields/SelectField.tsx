@@ -1,6 +1,6 @@
 "use client";
 
-import { ElementsType, FormElement, FormElementInstance, SubmitFunction } from "../app/form-form-elements";
+import { ElementsType, FormElement, FormElementInstance, SubmitFunction } from "../../schemas/form";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { z } from "zod";
@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Separator } from "../ui/separator";
 import { Button } from "../ui/button";
 import { AiOutlineClose, AiOutlinePlus } from "react-icons/ai";
-import { toast } from "../ui/use-toast";
+import { toast } from "sonner";
 
 const type: ElementsType = "SelectField";
 
@@ -90,11 +90,13 @@ function FormComponent({
   submitValue,
   isInvalid,
   defaultValue,
+  disabled,
 }: {
   elementInstance: FormElementInstance;
   submitValue?: SubmitFunction;
   isInvalid?: boolean;
   defaultValue?: string;
+  disabled?: boolean;
 }) {
   const element = elementInstance as CustomInstance;
 
@@ -121,6 +123,7 @@ function FormComponent({
           setError(!valid);
           submitValue(element.id, value);
         }}
+        disabled={disabled}
       >
         <SelectTrigger className={cn("w-full", error && "border-red-500")}>
           <SelectValue placeholder={placeHolder} />
@@ -171,9 +174,8 @@ function PropertiesComponent({ elementInstance }: { elementInstance: FormElement
       },
     });
 
-    toast({
-      title: "Success",
-      description: "Properties saved successfully",
+    toast("Changes saved", {
+      description: "The changes have been saved successfully",
     });
 
     setSelectedElement(null);

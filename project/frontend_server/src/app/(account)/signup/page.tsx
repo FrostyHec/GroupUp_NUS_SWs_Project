@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { userSignUp } from "@/actions/user";
 import { useCookies } from "next-client-cookies";
+import { toast } from "sonner";
 
 export default function SignUp() {
   const router = useRouter();
@@ -25,17 +26,17 @@ export default function SignUp() {
     const formData = new FormData(event.target);
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
-     userSignUp({
+    userSignUp({
       username: username,
       password: password,
-    }).then(
-        resp =>{
-          const response = resp.data
-          if (response.code == "200") {
-            router.push("/login");
-          }
-        }
-    );
+    }).then((res) => {
+      if (res.data.code == "200") {
+        toast.success("Account created successfully");
+        router.push("/login");
+      } else if (res.data.code == "400") {
+        toast.error("Username already exists");
+      }
+    });
   };
   return (
     <main className="flex justify-center items-center h-screen">

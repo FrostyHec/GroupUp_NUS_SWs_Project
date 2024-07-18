@@ -267,11 +267,13 @@ function GroupsForMember({
 function GroupsTable({ surveyID, groups }: { surveyID: number; groups: any }) {
   const cookies = useCookies();
   const { role, ownSurveys, participateSurveys } = useSurveys();
-  let infoData: any = null;
+  let surveyInfoData: any = null;
   if (role === "owner") {
-    infoData = ownSurveys.find((survey: any) => survey.id === Number(surveyID));
+    surveyInfoData = ownSurveys.find(
+      (survey: any) => survey.id === Number(surveyID)
+    );
   } else if (role === "member") {
-    infoData = participateSurveys.find(
+    surveyInfoData = participateSurveys.find(
       (survey: any) => survey.id === Number(surveyID)
     );
   } else {
@@ -312,7 +314,7 @@ function GroupsTable({ surveyID, groups }: { surveyID: number; groups: any }) {
                           <HoverCardContent className="w-fit">
                             <ProfileCard
                               personalId={memberID}
-                              survey={infoData}
+                              survey={surveyInfoData}
                               mode="view"
                             />
                           </HoverCardContent>
@@ -323,28 +325,47 @@ function GroupsTable({ surveyID, groups }: { surveyID: number; groups: any }) {
                             Member
                           </p>
                         </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button size="icon" variant="ghost">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent
-                            align="end"
-                            onClick={() => {
-                              surveyGroupDeleteMember({
-                                token: cookies.get("token") as string,
-                                allGroups: groups,
-                                surveyID,
-                                groupID: group.id,
-                                userID: memberID,
-                              });
-                              toast("Deleted");
-                            }}
-                          >
-                            <DropdownMenuItem>Delete</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Dialog>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button size="icon" variant="ghost">
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DialogTrigger asChild>
+                                <DropdownMenuItem>
+                                  View Submission
+                                </DropdownMenuItem>
+                              </DialogTrigger>
+                            </DropdownMenuContent>
+                            <DropdownMenuContent
+                              align="end"
+                              onClick={() => {
+                                surveyGroupDeleteMember({
+                                  token: cookies.get("token") as string,
+                                  allGroups: groups,
+                                  surveyID,
+                                  groupID: group.id,
+                                  userID: memberID,
+                                });
+                                toast("Deleted");
+                              }}
+                            >
+                              <DropdownMenuItem>Delete</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Form Submission</DialogTitle>
+                            </DialogHeader>
+                            <FormDemonstrateComponent
+                              content={surveyInfoData.questions}
+                              surveyId={surveyInfoData.id}
+                              userID={memberID}
+                            />
+                          </DialogContent>
+                        </Dialog>
                       </div>
                     ))}
                   </div>

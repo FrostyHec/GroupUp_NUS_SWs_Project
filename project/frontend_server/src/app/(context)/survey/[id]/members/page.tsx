@@ -29,6 +29,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SurveyUserSearchDialog } from "@/components/app/survey-user-search-dialog";
 import { useCookies } from "next-client-cookies";
@@ -41,6 +48,8 @@ import {
 import useSurveys from "@/components/hooks/useSurveys";
 import ProfileCard from "@/components/app/info-personal-info-cards";
 import UserAvatar from "@/components/app/user-avatar";
+import FormDemonstrateComponent from "@/components/app/form-demonstrate-component";
+import { queryGetByUserId } from "@/actions/query";
 
 function UsernameTableCell({ userID }: { userID: number }) {
   const { data, isLoading, isError } = userInfo({
@@ -49,6 +58,93 @@ function UsernameTableCell({ userID }: { userID: number }) {
   if (isLoading) return <TableCell>Loading...</TableCell>;
   if (isError) return <TableCell>Error</TableCell>;
   return <TableCell className="font-medium">{data.data.username}</TableCell>;
+}
+
+function UsernameProfileTableCell({
+  userID,
+  surveyInfo,
+}: {
+  userID: number;
+  surveyInfo: any;
+}) {
+  const { data, isLoading, isError } = userInfo({
+    userID,
+  });
+  if (isLoading) return <TableCell>Loading...</TableCell>;
+  if (isError) return <TableCell>Error</TableCell>;
+  return (
+    <TableCell className="font-medium">
+      <HoverCard>
+        <HoverCardTrigger>{data.data.username}</HoverCardTrigger>
+        <HoverCardContent className="w-fit">
+          <ProfileCard personalId={userID} survey={surveyInfo} mode="view" />
+        </HoverCardContent>
+      </HoverCard>
+    </TableCell>
+  );
+}
+
+function ActionsDropdown({
+  surveyInfo,
+  userID,
+  userRole,
+}: {
+  surveyInfo: any;
+  userID: number;
+  userRole: string;
+}) {
+  const cookies = useCookies();
+  const { data, isLoading, isError } = queryGetByUserId({
+    token: cookies.get("token") as string,
+    surveyID: surveyInfo.id,
+    userID,
+  });
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error</div>;
+  return (
+    <Dialog>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button aria-haspopup="true" size="icon" variant="ghost">
+            <MoreHorizontal className="h-4 w-4" />
+            <span className="sr-only">Toggle menu</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DialogTrigger>
+            <DropdownMenuItem
+              disabled={userRole === "owner" || data.code !== 200}
+            >
+              View Submission
+            </DropdownMenuItem>
+          </DialogTrigger>
+          <DropdownMenuItem
+            disabled={userRole === "owner"}
+            onClick={() => {
+              surveyDeleteMember({
+                token: cookies.get("token") as string,
+                surveyID: surveyInfo.id,
+                surveyInfo,
+                userID,
+              });
+            }}
+          >
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Form Submission</DialogTitle>
+        </DialogHeader>
+        <FormDemonstrateComponent
+          content={surveyInfo.questions}
+          surveyId={surveyInfo.id}
+          userID={userID}
+        />
+      </DialogContent>
+    </Dialog>
+  );
 }
 
 export function MembersTable({
@@ -88,50 +184,30 @@ export function MembersTable({
                   <Badge variant="outline">Owner</Badge>
                 </TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem disabled>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <ActionsDropdown
+                    surveyInfo={surveyInfo}
+                    userID={memberID}
+                    userRole="owner"
+                  />
                 </TableCell>
               </TableRow>
             ))}
             {members.members.map((memberID: number) => (
               <TableRow key={memberID}>
                 <TableCell>{memberID}</TableCell>
-                <UsernameTableCell userID={memberID} />
+                <UsernameProfileTableCell
+                  userID={memberID}
+                  surveyInfo={surveyInfo}
+                />
                 <TableCell>
                   <Badge variant="outline">Member</Badge>
                 </TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={() =>
-                          surveyDeleteMember({
-                            token: cookies.get("token") as string,
-                            surveyID,
-                            surveyInfo,
-                            userID: memberID,
-                          })
-                        }
-                      >
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <ActionsDropdown
+                    surveyInfo={surveyInfo}
+                    userID={memberID}
+                    userRole="member"
+                  />
                 </TableCell>
               </TableRow>
             ))}

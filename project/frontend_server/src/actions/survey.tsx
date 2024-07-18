@@ -1,5 +1,5 @@
 "use client";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import axios from "axios";
 import { useCookies } from "next-client-cookies";
 import { Survey, surveySchema, surveySchemaType } from "@/schemas/survey";
@@ -65,7 +65,7 @@ export async function surveyCreate({
     .then((res) => res.data);
   let newSurvey: Survey = {
     ...body,
-    id: result.data.survey_id
+    id: result.data.survey_id,
   };
   return newSurvey;
 }
@@ -84,7 +84,10 @@ export async function surveyUpdateInfo({
     .put(`${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}`, surveyInfo, {
       headers: { Authorization: "Bearer " + token },
     })
-    .then((res) => res.data);
+    .then((res) => {
+      mutate(`${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyInfo.id}`);
+      return res.data;
+    });
 }
 
 //<backend>/survey/{id}/status
@@ -123,7 +126,10 @@ export async function surveyUpdateStatus({
         headers: { Authorization: "Bearer " + token },
       }
     )
-    .then((res) => res.data);
+    .then((res) => {
+      mutate(`${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/status`);
+      return res.data;
+    });
 }
 
 //<backend>/survey/{id}/status
@@ -160,13 +166,7 @@ export function surveyDelete() {
 }
 
 // <backend>/survey/{id}/basicinfo
-export function getFormStats({
-  token,
-  id,
-}: {
-  token: string;
-  id: number;
-}) {
+export function getFormStats({ token, id }: { token: string; id: number }) {
   const fetcher = (url: string) =>
     axios
       .get(url, {

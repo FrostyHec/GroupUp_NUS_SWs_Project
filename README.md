@@ -1,23 +1,23 @@
 # GroupUp_NUS_SWs_Project
+Github Repository: [https://github.com/FrostyHec/GroupUp_NUS_SWs_Project](https://github.com/FrostyHec/GroupUp_NUS_SWs_Project)
+Team Member:
+- Student 1: Zhengdong Huang, t0933325, Backend Design and Cloud Service Design
+- Student 2: Hemu Liu, t0933548, Backend Design and Cloud Service Design
+- Student 3: Zihang Wu, t0933464, Frontend Design
+- Student 4: Yicheng Xiao, t0933333, Frontend Design and Poster Design
+
 ## 1. Project Overview
-
-### 1.1 Group Members and Work Distribution
-- Zhengdong Huang： Backend Design and Cloud Service Design
-- Hemu Liu: Backend Design and Cloud Service Design
-- Zihang Wu: Frontend Design
-- Yicheng Xiao: Frontend Design and Poster Design
-
-### 1.2 Project Description
+### 1.1 Project Description
 
 When our class begins, we are required to find our teammates. It is not uncommon that we tend to naturally group up with someone from the same universities because of familiarity. However, by grouping up like this, we cannot even get to know each other pretty well. Then this idea comes across us: We can design a cloud-based grouping application for this scenario! We aim to design a system where you can find your teammates based on recommendation!
 
-### 1.3 System Architecture
+### 1.2 System Architecture
 
 The structure of our process can be describe as follows. 
 
 ![Architecture Diagram](./structure.png)
 
-### 1.4 Key Components
+### 1.3 Key Components
 - **Frontend Service**: 
  - Main Page:
   - Dashboard: You can checkout all the surveys you created and participated in.

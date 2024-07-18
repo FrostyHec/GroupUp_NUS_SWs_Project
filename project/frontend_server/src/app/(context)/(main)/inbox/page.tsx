@@ -135,17 +135,19 @@ export default function InboxPage() {
           No Messages
         </div>
       )}
-      {combinedData.length !== 0 &&
-        combinedData.map((item, index) => {
-          if (isAnnouncementData(item)) {
-            return <AnnouncementCard key={index} {...item} />;
-          } else if (isResponseData(item)) {
-            return <ResponseCard key={index} {...item} />;
-          } else if (isFeedbackData(item)) {
-            return <FeedbackCard key={index} {...item} />;
-          }
-          return null;
-        })}
+      <div className="flex flex-col gap-y-4">
+        {combinedData.length !== 0 &&
+          combinedData.map((item, index) => {
+            if (isAnnouncementData(item)) {
+              return <AnnouncementCard key={index} {...item} />;
+            } else if (isResponseData(item)) {
+              return <ResponseCard key={index} {...item} />;
+            } else if (isFeedbackData(item)) {
+              return <FeedbackCard key={index} {...item} />;
+            }
+            return null;
+          })}
+      </div>
     </ScrollArea>
   );
 }

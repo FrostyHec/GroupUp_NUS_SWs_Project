@@ -19,15 +19,17 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
   const { userID } = useUser();
   const router = useRouter();
 
-  useEffect(() => {
-    const eventSource = new EventSource(
-      `${process.env.NEXT_PUBLIC_MESSAGE_PUSH_API_URL}/sse/register/${userID}`
-    );
+  const eventSource = new EventSource(
+    `${process.env.NEXT_PUBLIC_MESSAGE_PUSH_API_URL}/sse/register/${userID}`
+  );
 
+  useEffect(() => {
     eventSource.onmessage = (event) => {
       const message = JSON.parse(event.data);
       setMessages((prevMessages: any) => [...prevMessages, message]);
-
+      if (message.data.push_type === 2 && (message.data.body.unposed.length === 0 && message.data.body.posed.length === 0)) {
+        return;
+      }
       toast("You have received a message! Please check your inbox!", {
         action: {
           label: "Action",
@@ -45,7 +47,7 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
     return () => {
       eventSource.close();
     };
-  }, []);
+  }, [eventSource]);
 
   const handleActionClick = async (message: any) => {
     // 执行相应操作

@@ -39,6 +39,7 @@ import { useCookies } from "next-client-cookies";
 import { surveyInfo } from "@/actions/survey";
 import UserAvatar from "@/components/app/user-avatar";
 import ProfileCard from "@/components/app/info-personal-info-cards";
+import useSurveys from "@/components/hooks/useSurveys";
 
 function Recommend({ recommend }: { recommend: number }) {
   if (recommend > 80) {
@@ -111,19 +112,12 @@ function RequestMessageDialog({
   );
 }
 
-function GroupMember({ userID }: { userID: number }) {
-  const { data, isLoading, isError } = userInfo({ userID });
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>;
-  return <p>{data.data.username}</p>;
-}
-
 function GroupMembers({
   groupInfo,
-  surveyID,
+  surveyInfo,
 }: {
   groupInfo: any;
-  surveyID: number;
+  surveyInfo: any;
 }) {
   return (
     <div className="flex flex-wrap -space-x-3 overflow-hidden">
@@ -135,7 +129,7 @@ function GroupMembers({
           <HoverCardContent className="w-fit">
             <ProfileCard
               personalId={memberID}
-              surveyId={surveyID}
+              survey={surveyInfo}
               mode="view"
             />
           </HoverCardContent>
@@ -147,12 +141,14 @@ function GroupMembers({
 
 function MatchCard({
   surveyID,
+  surveyInfo,
   id,
   isGroup,
   recommend,
   fromUserID,
 }: {
   surveyID: number;
+  surveyInfo: any;
   id: number;
   isGroup: boolean;
   recommend: number;
@@ -167,13 +163,6 @@ function MatchCard({
     surveyID,
     groupID: id,
   });
-  const {
-    data: userData,
-    isLoading: userLoading,
-    isError: userError,
-  } = userInfo({
-    userID: id,
-  });
   if (isGroup) {
     if (groupLoading) return <div>Loading...</div>;
     if (groupError) return <div>Error</div>;
@@ -183,7 +172,7 @@ function MatchCard({
           <Recommend recommend={recommend} />
         </CardHeader>
         <CardContent>
-          <GroupMembers groupInfo={groupData.data} surveyID={surveyID} />
+          <GroupMembers groupInfo={groupData.data} surveyInfo={surveyInfo} />
         </CardContent>
         <CardFooter>
           <RequestMessageDialog
@@ -204,8 +193,6 @@ function MatchCard({
       </Card>
     );
   } else {
-    if (userLoading) return <div>Loading...</div>;
-    if (userError) return <div>Error</div>;
     return (
       <Card className="w-64">
         <CardHeader>
@@ -217,7 +204,7 @@ function MatchCard({
               <UserAvatar id={id} />
             </HoverCardTrigger>
             <HoverCardContent className="w-fit">
-              <ProfileCard personalId={id} surveyId={surveyID} mode="view" />
+              <ProfileCard personalId={id} survey={surveyInfo} mode="view" />
             </HoverCardContent>
           </HoverCard>
         </CardContent>
@@ -242,13 +229,24 @@ function MatchCard({
   }
 }
 
-function Match({
+export default function Match({
   surveyID,
   fromUserID,
 }: {
   surveyID: number;
   fromUserID: number;
 }) {
+  const { role, ownSurveys, participateSurveys } = useSurveys();
+  let surveyInfo: any = null;
+  if (role === "owner") {
+    return <div>Unauthorized</div>;
+  } else if (role === "member") {
+    surveyInfo = participateSurveys.find(
+      (survey: any) => survey.id === Number(surveyID)
+    );
+  } else {
+    return <div>Unauthorized</div>;
+  }
   const {
     data: groupData,
     isLoading: groupLoading,
@@ -288,6 +286,7 @@ function Match({
       {allData.map((item: any) => (
         <MatchCard
           surveyID={surveyID}
+          surveyInfo={surveyInfo}
           id={item.id}
           isGroup={item.isGroup}
           recommend={item.recommend}
@@ -296,34 +295,4 @@ function Match({
       ))}
     </div>
   );
-}
-
-//checks if user is an member of the survey
-function MatchAuth({
-  params,
-  authData,
-}: {
-  params: { id: number };
-  authData: any;
-}) {
-  const { data, isLoading, isError } = surveyInfo({ surveyID: params.id });
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>;
-  if (data.data.members.includes(authData.data.user_id)) {
-    return <Match surveyID={params.id} fromUserID={authData.data.user_id} />;
-  } else {
-    return <div>Unauthorized</div>;
-  }
-}
-
-//gets user auth info
-export default function MatchAuthProvider({
-  params,
-}: {
-  params: { id: number };
-}) {
-  const { data, isLoading, isError } = userAuthInfo();
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>;
-  return <MatchAuth params={params} authData={data} />;
 }

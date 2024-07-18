@@ -71,7 +71,7 @@ export function surveyRecommendUngrouped({
 
 //进行预组队
 //POST
-//<backend>/survey/{id}/pregrouping
+//<backend>/survey/{id}/recommend/pregrouping
 export async function preGrouping({
   token,
   surveyID,
@@ -80,8 +80,11 @@ export async function preGrouping({
   surveyID: number;
 }) {
   return axios
-    .post(`${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/pregrouping`, {
-      headers: { Authorization: "Bearer " + token },
-    })
+    .post(
+      `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/recommend/pregrouping`,
+      {
+        headers: { Authorization: "Bearer " + token },
+      }
+    )
     .then((res) => res.data);
 }

@@ -1,3 +1,4 @@
+"use client";
 import React, {
   ReactNode,
   createContext,
@@ -19,15 +20,17 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const eventSource = new EventSource(`${process.env.MESSAGE_PUSH_API_URL}/sse/register/${userID}`);
+    const eventSource = new EventSource(
+      `${process.env.MESSAGE_PUSH_API_URL}/sse/register/${userID}`
+    );
 
     eventSource.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      setMessages((prevMessages : any) => [...prevMessages, message]);
+      setMessages((prevMessages: any) => [...prevMessages, message]);
 
-      toast('You have received a message! Please check your inbox!', {
+      toast("You have received a message! Please check your inbox!", {
         action: {
-          label: 'Action',
+          label: "Action",
           onClick: () => handleActionClick(message),
         },
       });
@@ -44,7 +47,7 @@ export const MessageProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const handleActionClick = async (message : any) => {
+  const handleActionClick = async (message: any) => {
     // 执行相应操作
     // 发送ACK请求
     console.log("Action clicked for message:", message);

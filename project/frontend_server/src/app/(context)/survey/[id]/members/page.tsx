@@ -17,6 +17,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import {
   Table,
   TableBody,
   TableCell,
@@ -34,6 +39,8 @@ import {
   surveyDeleteMember,
 } from "@/controller/survey-members";
 import useSurveys from "@/components/hooks/useSurveys";
+import ProfileCard from "@/components/app/info-personal-info-cards";
+import UserAvatar from "@/components/app/user-avatar";
 
 function UsernameTableCell({ userID }: { userID: number }) {
   const { data, isLoading, isError } = userInfo({

@@ -60,9 +60,12 @@ import { userAuthInfo } from "@/actions/user";
 import { surveyInfo } from "@/actions/survey";
 import ProfileCard from "@/components/app/info-personal-info-cards";
 import UserAvatar from "@/components/app/user-avatar";
+import FormDemonstrateComponent from "@/components/app/form-demonstrate-component";
 import { toast } from "sonner";
 import { preGrouping } from "@/actions/recommendation";
 import { sendRequest } from "@/controller/survey-match";
+import useSurveys from "@/components/hooks/useSurveys";
+import useUser from "@/components/hooks/useUser";
 
 function UsernameText({ userID }: { userID: number }) {
   const { data, isLoading, isError } = userInfo({
@@ -118,9 +121,18 @@ function GroupsTableForMember({
   groups: any;
 }) {
   const cookies = useCookies();
-  const { data, isLoading, isError } = userAuthInfo();
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error</div>;
+  const { userID } = useUser();
+  const { role, ownSurveys, participateSurveys } = useSurveys();
+  let infoData: any = null;
+  if (role === "owner") {
+    infoData = ownSurveys.find((survey: any) => survey.id === Number(surveyID));
+  } else if (role === "member") {
+    infoData = participateSurveys.find(
+      (survey: any) => survey.id === Number(surveyID)
+    );
+  } else {
+    return <div>Unauthorized</div>;
+  }
   return (
     <Card x-chunk="dashboard-06-chunk-0">
       <CardHeader>
@@ -156,7 +168,7 @@ function GroupsTableForMember({
                           <HoverCardContent className="w-fit">
                             <ProfileCard
                               personalId={memberID}
-                              surveyId={surveyID}
+                              survey={infoData}
                               mode="view"
                             />
                           </HoverCardContent>
@@ -177,7 +189,7 @@ function GroupsTableForMember({
                       sendRequest({
                         token: cookies.get("token") as string,
                         surveyID,
-                        fromUserID: data.data.user_id,
+                        fromUserID: userID,
                         isToGroup: true,
                         toID: group.id,
                         message,
@@ -254,6 +266,17 @@ function GroupsForMember({
 
 function GroupsTable({ surveyID, groups }: { surveyID: number; groups: any }) {
   const cookies = useCookies();
+  const { role, ownSurveys, participateSurveys } = useSurveys();
+  let infoData: any = null;
+  if (role === "owner") {
+    infoData = ownSurveys.find((survey: any) => survey.id === Number(surveyID));
+  } else if (role === "member") {
+    infoData = participateSurveys.find(
+      (survey: any) => survey.id === Number(surveyID)
+    );
+  } else {
+    return <div>Unauthorized</div>;
+  }
   return (
     <Card x-chunk="dashboard-06-chunk-0">
       <CardHeader>
@@ -289,7 +312,7 @@ function GroupsTable({ surveyID, groups }: { surveyID: number; groups: any }) {
                           <HoverCardContent className="w-fit">
                             <ProfileCard
                               personalId={memberID}
-                              surveyId={surveyID}
+                              survey={infoData}
                               mode="view"
                             />
                           </HoverCardContent>
@@ -365,6 +388,7 @@ function Groups({
   groupSize: number;
 }) {
   const cookies = useCookies();
+  const [loading, setLoading] = useState(false);
   const { data, isLoading, isError } = surveyAllGroups({
     id: params.id,
     pageSize: -1,
@@ -393,12 +417,17 @@ function Groups({
               <Button
                 size="sm"
                 className="h-8 gap-1"
-                onClick={() =>
+                disabled={loading}
+                onClick={() => {
+                  setLoading(true);
                   preGrouping({
                     token: cookies.get("token") as string,
                     surveyID: params.id,
-                  })
-                }
+                  }).then(() => {
+                    toast("PreGrouping Done");
+                    setLoading(false);
+                  });
+                }}
               >
                 <PlusCircle className="h-3.5 w-3.5" />
                 <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">

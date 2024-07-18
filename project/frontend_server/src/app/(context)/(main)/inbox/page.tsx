@@ -4,8 +4,6 @@ import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Mail, mails } from "@/components/data/inbox-data";
-import { useMail } from "@/actions/message";
 import Avatar from "react-nice-avatar";
 import React from "react";
 import {
@@ -52,10 +50,52 @@ export default function InboxPage() {
     isError: error_feedback,
   } = userReceivedFeedback({ userID: userID, pageSize: -1, pageNo: -1 });
 
+  const [combinedData, setCombinedData] = React.useState<MessageItem[]>([]);
+
   useEffect(() => {
     if (!data_announcement) return;
     if (!data_request) return;
     if (!data_feedback) return;
+    // 处理数据
+    let announcements: AnnouncementData[] = data_announcement.data.map(
+      (item: any) => ({ 
+        id: item.id,
+        surveyID: item.survey_id,
+        type: "announcement",
+        create_at: item.create_at,
+        update_at: item.update_at,
+        surveyName: item.survey_name,
+        title: item.title,
+        description: item.description})
+    );
+    let requests : RequestData[] = data_request.data.map(
+      (item: any) => ({
+        id: item.id,
+        surveyID: item.survey_id,
+        type: "request",
+        create_at: item.create_at,
+        update_at: item.update_at,
+        userAvatar: item.user_avatar,
+        surveyName: item.personal_info.,
+        userName: item.user_name,
+        requestText: item.request_text
+      })
+    );
+    let feedbacks : FeedbackData[] = data_feedback.data.map(
+      (item: any) => ({
+        id: item.id,
+        surveyID: item.survey_id,
+        type: "feedback",
+        create_at: item.create_at,
+        update_at: item.update_at,
+        userAvatar: item.user_avatar,
+        surveyName: item.survey_name,
+        approverName: item.approver_name,
+        isApproved: item.is_approved
+      })
+    );
+    setFeedbacks(data_feedback.data);
+    let combined;
   }, [data_announcement, data_request, data_feedback]);
 
   if (loading_announcement || loading_request || loading_feedback) {
@@ -67,16 +107,21 @@ export default function InboxPage() {
   }
   // 合并并排序所有数据
   const combinedData = [
-    ...data_announcement.map((item : any) => ({ ...item, type: "announcement" })),
-    ...data_request.map((item : any) => ({ ...item, type: "request" })),
-    ...data_feedback.map((item : any) => ({ ...item, type: "feedback" })),
+    ...data_announcement.map((item: any) => ({
+      ...item,
+      type: "announcement",
+    })),
+    ...data_request.map((item: any) => ({ ...item, type: "request" })),
+    ...data_feedback.map((item: any) => ({ ...item, type: "feedback" })),
   ];
 
-  combinedData.sort((a, b) => Number(new Date(b.timestamp)) - Number(new Date(a.timestamp)));
+  combinedData.sort(
+    (a, b) => Number(new Date(b.timestamp)) - Number(new Date(a.timestamp))
+  );
 
   const onApprove = async (item: MessageItem) => {
     // surveyAcceptOrDenyRequest
-    try{
+    try {
       const res = await surveyAcceptOrDenyRequest({
         surveyID: item.surveyID,
         requestID: item.id,
@@ -84,15 +129,15 @@ export default function InboxPage() {
         isAccept: true,
       });
       console.log(res);
-    }catch (error) {
+    } catch (error) {
       console.error(error);
     }
     console.log("Approve", item);
-  }
+  };
 
   const onReject = async (item: MessageItem) => {
     // surveyAcceptOrDenyRequest
-    try{
+    try {
       const res = await surveyAcceptOrDenyRequest({
         surveyID: item.surveyID,
         requestID: item.id,
@@ -100,12 +145,11 @@ export default function InboxPage() {
         isAccept: false,
       });
       console.log(res);
-    }catch (error) {
+    } catch (error) {
       console.error(error);
     }
     console.log("Reject", item);
-  }
-
+  };
 
   return (
     <ScrollArea className="container h-screen lg:w-1/2 rounded-md p-4">
@@ -114,7 +158,14 @@ export default function InboxPage() {
           return <AnnouncementCard key={index} {...item} />;
         }
         if (item.type === "request") {
-          return <RequestCard key={index} {...item} onApprove={onApprove} onReject={onReject} />;
+          return (
+            <RequestCard
+              key={index}
+              {...item}
+              onApprove={onApprove}
+              onReject={onReject}
+            />
+          );
         }
         if (item.type === "feedback") {
           return <FeedbackCard key={index} {...item} />;
@@ -128,7 +179,7 @@ export default function InboxPage() {
 export const AnnouncementCard: React.FC<AnnouncementData> = ({
   surveyName,
   title,
-  content,
+  description,
 }) => {
   return (
     <Card className="bg-white p-4 shadow-lg rounded-md border border-gray-200">
@@ -137,7 +188,7 @@ export const AnnouncementCard: React.FC<AnnouncementData> = ({
         <CardDescription>{surveyName}</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="mt-2 text-gray-700">{content}</p>{" "}
+        <p className="mt-2 text-gray-700">{description}</p>{" "}
       </CardContent>
       <CardFooter>
         <Badge key="notification" variant="outline">

@@ -25,13 +25,15 @@ export const FeedbackCard: React.FC<FeedbackData> = ({
     >
       <CardContent>
         <div className="flex-1">
-          <p className={`mt-2 text-xl ${
+          <p
+            className={`mt-2 text-xl ${
               isApproved === 0
                 ? "text-gray-500"
                 : isApproved === 1
                 ? "text-green-500"
                 : "text-red-500"
-            } `}>
+            } `}
+          >
             {isApproved === 0
               ? `Your request from survey ${surveyID} is yet to be approved`
               : isApproved === 1

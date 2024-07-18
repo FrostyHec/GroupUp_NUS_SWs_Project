@@ -16,7 +16,7 @@ export const AnnouncementCard: React.FC<AnnouncementData> = ({
   description,
 }) => {
   return (
-    <Card className="bg-white p-4 shadow-lg rounded-md border border-gray-200 h-[200px] overflow-y-auto">
+    <Card className="bg-white p-4 shadow-lg rounded-md border border-gray-200">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>From {surveyName}</CardDescription>

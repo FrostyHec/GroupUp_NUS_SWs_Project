@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
-import { surveyInfo, surveyUpdateInfo } from "@/actions/survey";
+import { useSurveyInfo, surveyUpdateInfo } from "@/actions/survey";
 import { useCookies } from "next-client-cookies";
 
 function SaveFormBtn({ id }: { id: number }) {
@@ -24,7 +24,10 @@ function SaveFormBtn({ id }: { id: number }) {
     data: surveyData,
     isLoading: surveyLoading,
     isError: surveyError,
-  } = surveyInfo({ surveyID: id });
+  } = useSurveyInfo({
+    token: token,
+    surveyID: id,
+  });
 
   if (surveyLoading) return <div>Loading...</div>;
   if (surveyError) return <div>Error</div>;

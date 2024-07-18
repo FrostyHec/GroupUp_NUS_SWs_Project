@@ -16,8 +16,8 @@ import { ImSpinner2 } from "react-icons/im";
 import { submitForm } from "@/controller/form";
 import { Edit2Icon } from "lucide-react";
 import {
-  queryGetByUserId,
-  queryGetStatus,
+  useQueryGetByUserId,
+  useQueryGetStatus,
   queryUpdateStatus,
 } from "@/actions/query";
 import useUser from "../hooks/useUser";
@@ -64,7 +64,7 @@ function FormSubmitComponent({
   const { userID } = useUser();
   const cookies = useCookies();
 
-  const { data, isLoading, isError } = queryGetByUserId({
+  const { data, isLoading, isError } = useQueryGetByUserId({
     token: cookies.get("token") as string,
     surveyID: surveyId,
     userID: userID,
@@ -74,7 +74,7 @@ function FormSubmitComponent({
     data: statusData,
     isLoading: statusLoading,
     isError: statusError,
-  } = queryGetStatus({
+  } = useQueryGetStatus({
     token: cookies.get("token") as string,
     surveyID: surveyId,
     userID: userID,

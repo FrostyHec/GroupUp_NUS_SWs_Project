@@ -32,8 +32,6 @@ import { Label } from "../ui/label";
 import FieldList from "./info-personal-info-define-card";
 import AddField from "./info-personal-info-add-card";
 import { useCookies } from "next-client-cookies";
-import useUser from "../hooks/useUser";
-import { surveyInfo } from "@/actions/survey";
 
 export const FieldsContext = createContext<PersonalInfoField[]>([]);
 export const FieldsDispatchContext = createContext<React.Dispatch<any>>(
@@ -41,24 +39,7 @@ export const FieldsDispatchContext = createContext<React.Dispatch<any>>(
 );
 
 const ProfileChangeCard: React.FC<{ survey: any }> = ({ survey }) => {
-  const config = {
-    sex: "man",
-    faceColor: "#AC6651",
-    earSize: "big",
-    eyeStyle: "smile",
-    noseStyle: "long",
-    mouthStyle: "peace",
-    shirtStyle: "polo",
-    glassesStyle: "none",
-    hairColor: "#000",
-    hairStyle: "thick",
-    hatStyle: "none",
-    hatColor: "#F48150",
-    eyeBrowStyle: "up",
-    shirtColor: "#77311D",
-    bgColor: "linear-gradient(45deg, #3e1ccd 0%, #ff6871 100%)",
-  };
-  const myConfig = genConfig(config);
+  const myConfig = genConfig("Default Configuration");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [initialFields, setInitialFields] = useState<PersonalInfoField[]>([]);
@@ -103,7 +84,7 @@ const ProfileChangeCard: React.FC<{ survey: any }> = ({ survey }) => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging, offset]);
+  }, [isDragging, offset, handleMouseMove, handleMouseUp]);
 
 
   // Handle survey data loading and error

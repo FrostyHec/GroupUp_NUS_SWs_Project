@@ -8,12 +8,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import {
-  userAllOwnSurveys,
-  userAuthInfo,
-  userAllParticipateSurveys,
-} from "@/actions/user";
-import { sampleSurvey } from "../data/survey-data";
 import useUser from "../hooks/useUser";
 import { useCookies } from "next-client-cookies";
 import axios from "axios";

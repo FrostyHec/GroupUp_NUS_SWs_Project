@@ -23,7 +23,7 @@ export default function Layout({
     console.log("Role", role);
     console.log("Current Survey Id", currentSurveyId);
     setIsLoading(false);
-  }, [role, currentSurveyId]);
+  }, [role, currentSurveyId, params.id, setCurrentSurveyId, setRoleBySurveyId]);
 
   if (isLoading) {
     return <div>Loading...</div>;

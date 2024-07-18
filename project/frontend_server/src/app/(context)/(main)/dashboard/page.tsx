@@ -25,9 +25,6 @@ import {
   PersonalInfoInput,
   PersonalInfoFieldInput,
 } from "@/schemas/survey";
-import { userAllOwnSurveys } from "@/actions/user";
-import { userAllParticipateSurveys } from "@/actions/user";
-import { sampleSurvey } from "@/components/data/survey-data";
 import {
   Drawer,
   DrawerContent,
@@ -43,7 +40,7 @@ import Avatar, { AvatarFullConfig, genConfig } from "react-nice-avatar";
 import { ImSpinner2 } from "react-icons/im";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
-import { queryCreate, queryGetByUserId } from "@/actions/query";
+import { queryCreate, useQueryGetByUserId } from "@/actions/query";
 import { useCookies } from "next-client-cookies";
 import useUser from "@/components/hooks/useUser";
 import useSurveys from "@/components/hooks/useSurveys";
@@ -175,13 +172,10 @@ function MemFormCard({ form }: { form: Survey }) {
 
   const router = useRouter();
   const cookies = useCookies();
-  const token = cookies.get("token");
+  const token = cookies.get("token") as string;
   const { userID, userName } = useUser();
-  if (!token) {
-    router.push("/login");
-    return;
-  }
-  const { data, isLoading, isError } = queryGetByUserId({
+
+  const { data, isLoading, isError } = useQueryGetByUserId({
     token: token,
     surveyID: form.id,
     userID: userID,
@@ -289,11 +283,10 @@ function MemFormCard({ form }: { form: Survey }) {
               <div className="items-center my-7 space-y-4 h-2/3">
                 {personalInfoDefine !== undefined &&
                   personalInfoDefine.map((field, index) => (
-                    <div className="flex flex-row items-center m-2">
+                    <div key={index} className="flex flex-row items-center m-2">
                       <Label className="w-1/4 mr-2">{field.label}</Label>
                       <Input
                         type="text"
-                        key={index}
                         value={fieldValues[index]?.input}
                         placeholder={field.placeholder}
                         onChange={(newValue) =>

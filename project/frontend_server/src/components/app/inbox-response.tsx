@@ -1,89 +1,56 @@
-import { ComponentProps } from "react";
-import { formatDistance } from "date-fns";
+import React from "react";
+import { ResponseData } from "@/schemas/message";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import Avatar from "react-nice-avatar";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
-import { cn } from "@/lib/utils";
-import { Badge } from "../ui/badge";
-import { ScrollArea } from "../ui/scroll-area";
-import { Separator } from "../ui/separator";
-import { Mail } from "../data/inbox-data";
-import { useMail } from "@/actions/message";
-
-interface MailListProps {
-  items: Mail[];
-}
-
-export function InboxMessageList({ items }: MailListProps) {
-  const [mail, setMail] = useMail();
-
+export const ResponseCard: React.FC<ResponseData> = ({
+  id,
+  surveyID,
+  userAvatar,
+  surveyName,
+  userName,
+  requestText,
+  onApprove,
+  onReject,
+}) => {
   return (
-    <ScrollArea className="h-screen">
-      <div className="flex flex-col gap-2 p-4 pt-0">
-        {items.map((item) => (
-          <button
-            key={item.id}
-            className={cn(
-              "flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-accent",
-              mail.selected === item.id && "bg-muted"
-            )}
-            onClick={() =>
-              setMail({
-                ...mail,
-                selected: item.id,
-              })
-            }
+    <Card className="bg-white p-4 shadow-lg rounded-md border border-gray-200 flex items-center space-x-4">
+      <CardHeader>
+        <Avatar style={{ width: 20, height: 20 }} {...userAvatar} />
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold">{userName}</h3>
+          <p className="text-gray-700 mt-1">{surveyName}</p>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <p className="text-gray-600 mt-2">{requestText}</p>
+        <div className="mt-4 flex space-x-2">
+          <Button
+            onClick={() => onApprove({ surveyID: surveyID, requestID: id })}
+            className="bg-green-200"
           >
-            <div className="flex w-full flex-col gap-1">
-              <div className="flex items-center">
-                <div className="flex items-center gap-2">
-                  <div className="font-semibold">{item.name}</div>
-                  {!item.read && (
-                    <span className="flex h-2 w-2 rounded-full bg-blue-600" />
-                  )}
-                </div>
-                <div
-                  className={cn(
-                    "ml-auto text-xs",
-                    mail.selected === item.id
-                      ? "text-foreground"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {formatDistance(item.date, new Date(), {
-                    addSuffix: true,
-                  })}
-                </div>
-              </div>
-              <div className="text-xs font-medium">{item.subject}</div>
-            </div>
-            <div className="line-clamp-2 text-xs text-muted-foreground">
-              {item.text.substring(0, 300)}
-            </div>
-            {item.labels.length ? (
-              <div className="flex items-center gap-2">
-                {item.labels.map((label) => (
-                  <Badge key={label} variant={getBadgeVariantFromLabel(label)}>
-                    {label}
-                  </Badge>
-                ))}
-              </div>
-            ) : null}
-          </button>
-        ))}
-      </div>
-    </ScrollArea>
+            Accept
+          </Button>
+          <Button
+            onClick={() => onReject({ surveyID: surveyID, requestID: id })}
+            className="bg-red-200"
+          >
+            Decline
+          </Button>
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Badge key="application" variant="default">
+          Application
+        </Badge>
+      </CardFooter>
+    </Card>
   );
-}
-
-function getBadgeVariantFromLabel(
-  label: string
-): ComponentProps<typeof Badge>["variant"] {
-  if (["work"].includes(label.toLowerCase())) {
-    return "default";
-  }
-
-  if (["personal"].includes(label.toLowerCase())) {
-    return "outline";
-  }
-
-  return "secondary";
-}
+};

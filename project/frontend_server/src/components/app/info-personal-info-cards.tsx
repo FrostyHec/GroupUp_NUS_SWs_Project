@@ -2,7 +2,7 @@
 
 import React, { Suspense, use, useEffect, useState } from "react";
 import FieldForm from "./info-field";
-import { queryGetByUserId, queryUpdateByUserId } from "@/actions/query";
+import { useQueryGetByUserId, queryUpdateByUserId } from "@/actions/query";
 import Avatar, { genConfig } from "react-nice-avatar";
 import { AvatarFullConfig } from "./info-avatar-types";
 import { Button } from "../ui/button";
@@ -66,7 +66,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     data: data_query,
     isLoading: isLoading_query,
     isError: isError_query,
-  } = queryGetByUserId({
+  } = useQueryGetByUserId({
     token: token,
     surveyID: surveyId,
     userID: personalId,

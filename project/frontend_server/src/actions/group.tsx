@@ -6,15 +6,15 @@ import { useCookies } from "next-client-cookies";
 //查询组队
 //GET
 //<backend>/survey/{surveyId}/group/{id}
-export function surveyGroupInfo({
+export function useSurveyGroupInfo({
+  token,
   surveyID,
   groupID,
 }: {
+  token: string;
   surveyID: number;
   groupID: number;
 }) {
-  const cookies = useCookies();
-  const token = cookies.get("token") as string;
   const fetcher = (url: string) =>
     axios
       .get(url, {
@@ -35,17 +35,17 @@ export function surveyGroupInfo({
 //查询组队集
 //GET
 //<backend>/survey/{id}/allgroup
-export function surveyAllGroups({
+export function useSurveyAllGroups({
+  token,
   id,
   pageSize,
   pageNo,
 }: {
+  token: string;
   id: number;
   pageSize: number;
   pageNo: number;
 }) {
-  const cookies = useCookies();
-  const token = cookies.get("token") as string;
   const fetcher = (url: string) =>
     axios
       .get(url, {
@@ -149,18 +149,18 @@ export async function surveyGroupLeave({
 //POST
 //<backend>/survey/{id}/group/response
 export async function surveyAcceptOrDenyRequest({
+  token,
   surveyID,
   requestID,
   fromUserID,
   isAccept,
 }: {
+  token: string;
   surveyID: number;
   requestID: number;
   fromUserID: number;
   isAccept: boolean;
 }) {
-  const cookies = useCookies();
-  const token = cookies.get("token") as string;
   const time = new Date().toISOString();
   return await axios.post(
     `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyID}/group/response`,

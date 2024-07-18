@@ -15,8 +15,9 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
-import { userUsernameSearch } from "@/actions/user";
+import { useUsernameSearch } from "@/actions/user";
 import { toast } from "sonner";
+import {useCookies} from "next-client-cookies";
 
 const getTableData = (page = 1, pageSize = 5, totalData: any) => {
   const { length } = totalData;
@@ -103,7 +104,9 @@ export function UsernameSearch({
   callback: ({ userID }: { userID: number }) => void;
 }) {
   const [pageIndex, setPageIndex] = useState(1);
-  const { data, isLoading, isError } = userUsernameSearch({
+  const cookies = useCookies();
+  const { data, isLoading, isError } = useUsernameSearch({
+    token: cookies.get("token") as string,
     findUsername: username,
   });
   if (isLoading) return <div>Loading...</div>;

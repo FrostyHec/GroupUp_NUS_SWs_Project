@@ -24,19 +24,14 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { surveyGroupInfo } from "@/actions/group";
-import { userInfo } from "@/actions/user";
+import { useSurveyGroupInfo } from "@/actions/group";
 import {
-  surveyRecommendGroup,
-  surveyRecommendUngrouped,
+  useSurveyRecommendGroup,
+  useSurveyRecommendUngrouped,
 } from "@/actions/recommendation";
-import { userAuthInfo } from "@/actions/user";
 import { sendRequest } from "@/controller/survey-match";
 import { useCookies } from "next-client-cookies";
-import { surveyInfo } from "@/actions/survey";
 import UserAvatar from "@/components/app/user-avatar";
 import ProfileCard from "@/components/app/info-personal-info-cards";
 import useSurveys from "@/components/hooks/useSurveys";
@@ -123,7 +118,7 @@ function GroupMembers({
   return (
     <div className="flex flex-wrap -space-x-3 overflow-hidden">
       {groupInfo.member_id.map((memberID: number) => (
-        <HoverCard>
+        <HoverCard key={memberID}>
           <HoverCardTrigger>
             <UserAvatar id={memberID} />
           </HoverCardTrigger>
@@ -156,11 +151,13 @@ function MatchCard({
   fromUserID: number;
 }) {
   const cookies = useCookies();
+  const token = cookies.get("token") as string;
   const {
     data: groupData,
     isLoading: groupLoading,
     isError: groupError,
-  } = surveyGroupInfo({
+  } = useSurveyGroupInfo({
+    token: token,
     surveyID,
     groupID: id,
   });
@@ -233,21 +230,14 @@ function MatchCard({
 export default function Match({ params }: { params: { id: number } }) {
   const { userID } = useUser();
   const { role, ownSurveys, participateSurveys } = useSurveys();
-  let surveyInfo: any = null;
-  if (role === "owner") {
-    return <div>Unauthorized</div>;
-  } else if (role === "member") {
-    surveyInfo = participateSurveys.find(
-      (survey: any) => survey.id === Number(params.id)
-    );
-  } else {
-    return <div>Unauthorized</div>;
-  }
+  const cookies = useCookies();
+
   const {
     data: groupData,
     isLoading: groupLoading,
     isError: groupError,
-  } = surveyRecommendGroup({
+  } = useSurveyRecommendGroup({
+    token: cookies.get("token") as string,
     surveyID: params.id,
     userID: userID,
     pageSize: -1,
@@ -257,12 +247,24 @@ export default function Match({ params }: { params: { id: number } }) {
     data: ungroupedData,
     isLoading: ungroupedLoading,
     isError: ungroupedError,
-  } = surveyRecommendUngrouped({
+  } = useSurveyRecommendUngrouped({
+    token: cookies.get("token") as string,
     surveyID: params.id,
     userID: userID,
     pageSize: -1,
     pageNo: -1,
   });
+
+  let surveyInfo: any = null;
+  if (role === "owner") {
+    return <div>Unauthorized</div>;
+  } else if (role === "member") {
+    surveyInfo = participateSurveys.find(
+        (survey: any) => survey.id === Number(params.id)
+    );
+  } else {
+    return <div>Unauthorized</div>;
+  }
   if (groupLoading || ungroupedLoading) return <div>Loading...</div>;
   if (groupError || ungroupedError) return <div>Error</div>;
   const grouped = groupData.data.list.map((group: any) => ({
@@ -281,6 +283,7 @@ export default function Match({ params }: { params: { id: number } }) {
     <div className="m-4 flex flex-wrap gap-4">
       {allData.map((item: any) => (
         <MatchCard
+          key={item.id}
           surveyID={params.id}
           surveyInfo={surveyInfo}
           id={item.id}

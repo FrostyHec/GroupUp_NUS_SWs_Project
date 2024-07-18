@@ -6,19 +6,19 @@ import { useCookies } from "next-client-cookies";
 //推荐已组队
 //GET
 //<backend>/survey/{id}/recommend/group
-export function surveyRecommendGroup({
+export function useSurveyRecommendGroup({
+  token,
   surveyID,
   userID,
   pageSize,
   pageNo,
 }: {
+  token: string;
   surveyID: number;
   userID: number;
   pageSize: number;
   pageNo: number;
 }) {
-  const cookies = useCookies();
-  const token = cookies.get("token") as string;
   const fetcher = (url: string) =>
     axios
       .get(url, {
@@ -39,19 +39,19 @@ export function surveyRecommendGroup({
 //推荐未组队
 //GET
 //<backend>/survey/{id}/recommend/ungrouped
-export function surveyRecommendUngrouped({
+export function useSurveyRecommendUngrouped({
+  token,
   surveyID,
   userID,
   pageSize,
   pageNo,
 }: {
+  token: string;
   surveyID: number;
   userID: number;
   pageSize: number;
   pageNo: number;
 }) {
-  const cookies = useCookies();
-  const token = cookies.get("token") as string;
   const fetcher = (url: string) =>
     axios
       .get(url, {

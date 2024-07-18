@@ -12,8 +12,8 @@ import {
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { queryGetByUserId, queryUpdateByUserId } from "@/actions/query";
-import { surveyInfo, surveyUpdateInfo } from "@/actions/survey";
+import { useQueryGetByUserId, queryUpdateByUserId } from "@/actions/query";
+import { useSurveyInfo, surveyUpdateInfo } from "@/actions/survey";
 import useSWR from "swr";
 class FormNotFoundErr extends Error {}
 class FormSubmissionNotFoundErr extends Error {}

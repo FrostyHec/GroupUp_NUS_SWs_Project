@@ -60,5 +60,19 @@ Detailed steps to deploy the application.
     ```bash
     command_to_run
     ```
+    
+3. **Frontend Implementation**: 
+    If you want to implement the frontend service, you need to first go in to the root directory and create a `.env.local` file. 
+    ```bash
+    NEXT_PUBLIC_API_URL= # The backend service API URL.
+    MESSAGE_PUSH_API_URL= # The SSE message push service API URL.
+    ```
+    You can either manually designate the API in the `.env.local` or designate them through DockerFile. You can use the following command to start the progress. Make sure your system has Node.js version larger than `13.5.6`.
+    ```bash
+    npm install # Install all the dependencies used
+    npm run dev # You can run this to modify and test in local environment after connected with backend service. 
+    npm run build # You can run this to bundle the project into static files that can be deployed to a production environment.
+    ```
+    
 
 **Note**: Replace placeholders with actual details relevant to the project. Ensure all commands and links are accurate and up to date.

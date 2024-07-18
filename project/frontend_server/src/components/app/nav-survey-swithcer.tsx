@@ -27,8 +27,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter, useParams, usePathname } from "next/navigation";
-import { userAllOwnSurveys, userAllParticipateSurveys } from "@/actions/user";
-import { sampleSurvey } from "../data/survey-data";
 import useSurveys from "../hooks/useSurveys";
 import { MdSettingsBackupRestore } from "react-icons/md";
 import { set } from "date-fns";

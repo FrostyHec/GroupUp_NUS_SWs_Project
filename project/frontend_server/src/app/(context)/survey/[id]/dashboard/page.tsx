@@ -1,5 +1,5 @@
 "use client";
-import { getFormStats } from "@/actions/survey";
+import { useFormStats } from "@/actions/survey";
 import {
   Card,
   CardContent,
@@ -16,8 +16,8 @@ import { FaWpforms } from "react-icons/fa";
 import { GoNumber } from "react-icons/go";
 import { Separator } from "@/components/ui/separator";
 import { useCookies } from "next-client-cookies";
-import { AnnouncementCard } from "@/app/(context)/(main)/inbox/page";
-import { createAnnouncement, receiveAnnouncements } from "@/actions/message";
+import { AnnouncementCard } from "@/components/app/inbox-announcement";
+import { createAnnouncement, useReceiveAnnouncements } from "@/actions/message";
 import useSurveys from "@/components/hooks/useSurveys";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@radix-ui/react-dialog";
@@ -40,7 +40,7 @@ import { toast } from "sonner";
 export default function DashboardPage({ params }: { params: { id: string } }) {
   const cookies = useCookies();
   const token = cookies.get("token") as string;
-  const { data, isLoading, isError } = getFormStats({
+  const { data, isLoading, isError } = useFormStats({
     token,
     id: Number(params.id),
   });
@@ -55,7 +55,7 @@ export default function DashboardPage({ params }: { params: { id: string } }) {
     data: announcementData,
     isLoading: announcementLoading,
     isError: announcementError,
-  } = receiveAnnouncements({
+  } = useReceiveAnnouncements({
     token,
     page_size: -1,
     page_no: -1,
@@ -173,7 +173,7 @@ async function CardStatsWrapper({ data }: { data: any }) {
 }
 
 interface StatsCardProps {
-  data?: Awaited<ReturnType<typeof getFormStats>>;
+  data?: Awaited<ReturnType<typeof useFormStats>>;
   loading: boolean;
 }
 
@@ -221,7 +221,7 @@ function StatsCards(props: StatsCardProps) {
   );
 }
 
-export function StatsCard({
+function StatsCard({
   title,
   value,
   icon,

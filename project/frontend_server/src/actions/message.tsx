@@ -4,7 +4,7 @@ import useSWR from "swr";
 
 // <backend>/survey/{id}/announcement
 // Get
-export function receiveAnnouncements({
+export function useReceiveAnnouncements({
   token,
   page_size,
   page_no,

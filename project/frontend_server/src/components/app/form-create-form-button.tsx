@@ -32,7 +32,6 @@ import useSurveys from "../hooks/useSurveys";
 import { useCookies } from "next-client-cookies";
 import { add } from "date-fns";
 import { surveyCreate } from "@/actions/survey";
-import { userAuthInfo } from "@/actions/user";
 import useUser from "../hooks/useUser";
 
 function CreateFormBtn() {

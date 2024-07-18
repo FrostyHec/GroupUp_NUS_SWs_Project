@@ -39,8 +39,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SurveyUserSearchDialog } from "@/components/app/survey-user-search-dialog";
 import { useCookies } from "next-client-cookies";
-import { userAuthInfo, userInfo } from "@/actions/user";
-import { surveyInfo } from "@/actions/survey";
+import { useUserInfo } from "@/actions/user";
+import { useSurveyInfo } from "@/actions/survey";
 import {
   surveyAddMember,
   surveyDeleteMember,
@@ -49,11 +49,13 @@ import useSurveys from "@/components/hooks/useSurveys";
 import ProfileCard from "@/components/app/info-personal-info-cards";
 import UserAvatar from "@/components/app/user-avatar";
 import FormDemonstrateComponent from "@/components/app/form-demonstrate-component";
-import { queryGetByUserId } from "@/actions/query";
+import { useQueryGetByUserId } from "@/actions/query";
 import { RiProfileFill } from "react-icons/ri";
 
 function UsernameTableCell({ userID }: { userID: number }) {
-  const { data, isLoading, isError } = userInfo({
+  const cookies = useCookies();
+  const { data, isLoading, isError } = useUserInfo({
+    token: cookies.get("token") as string,
     userID,
   });
   if (isLoading) return <TableCell>Loading...</TableCell>;
@@ -69,14 +71,15 @@ function UsernameProfileTableCell({
   surveyInfo: any;
 }) {
   const cookies = useCookies();
-  const { data, isLoading, isError } = userInfo({
+  const { data, isLoading, isError } = useUserInfo({
+    token: cookies.get("token") as string,
     userID,
   });
   const {
     data: data_query,
     isLoading: isLoading_query,
     isError: isError_query,
-  } = queryGetByUserId({
+  } = useQueryGetByUserId({
     token: cookies.get("token") as string,
     surveyID: surveyInfo.id,
     userID,
@@ -112,7 +115,7 @@ function ActionsDropdown({
   userRole: string;
 }) {
   const cookies = useCookies();
-  const { data, isLoading, isError } = queryGetByUserId({
+  const { data, isLoading, isError } = useQueryGetByUserId({
     token: cookies.get("token") as string,
     surveyID: surveyInfo.id,
     userID,
@@ -165,7 +168,7 @@ function ActionsDropdown({
   );
 }
 
-export function MembersTable({
+function MembersTable({
   surveyID,
   surveyInfo,
   members,
@@ -244,8 +247,11 @@ export function MembersTable({
 export default function Members({ params }: { params: { id: number } }) {
   const cookies = useCookies();
   const { role } = useSurveys();
+  const { data, isLoading, isError } = useSurveyInfo({
+    token: cookies.get("token") as string,
+    surveyID: params.id,
+  });
   if (role !== "owner") return <div>Unauthorized</div>;
-  const { data, isLoading, isError } = surveyInfo({ surveyID: params.id });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error</div>;
 

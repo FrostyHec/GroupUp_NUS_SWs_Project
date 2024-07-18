@@ -1,10 +1,5 @@
 "use client";
-import { sampleSurvey } from "@/components/data/survey-data";
-import { sampleFormSubmission } from "@/components/data/query-data";
-import { AvatarFullConfig, genConfig } from "react-nice-avatar";
 import {
-  PersonalInfo,
-  PersonalInfoField,
   PersonalInfoInput,
 } from "@/schemas/survey";
 import axios from "axios";
@@ -100,7 +95,7 @@ export async function queryUpdateByUserId({
 // <backend>/survey/{id}/query/user/{id}
 // GET
 // Return: Query
-export function queryGetByUserId({
+export function useQueryGetByUserId({
   token,
   surveyID,
   userID,
@@ -166,7 +161,7 @@ export async function queryUpdateStatus({
 
 // <backend>/survey/{id}/query/{id}/status
 // GET
-export function queryGetStatus({
+export function useQueryGetStatus({
   token,
   surveyID,
   userID,

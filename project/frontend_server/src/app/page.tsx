@@ -18,7 +18,7 @@ const HomePage = () => {
     } else {
       router.push('/login');
     }
-  }, [router]);
+  }, [router, cookies]);
 
   return (
     <div>

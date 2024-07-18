@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { FormElementInstance, FormElements } from "../../schemas/form";
 import { ImSpinner2 } from "react-icons/im";
-import { queryGetByUserId } from "@/actions/query";
+import { useQueryGetByUserId } from "@/actions/query";
 import { useCookies } from "next-client-cookies";
 
 function FormDemonstrateComponent({
@@ -23,7 +23,7 @@ function FormDemonstrateComponent({
   }, []);
   const cookies = useCookies();
 
-  const { data, isLoading, isError } = queryGetByUserId({
+  const { data, isLoading, isError } = useQueryGetByUserId({
     token: cookies.get("token") as string,
     surveyID: surveyId,
     userID: userID,

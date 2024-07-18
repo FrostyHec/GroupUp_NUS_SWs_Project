@@ -6,6 +6,7 @@ import useUser from "@/components/hooks/useUser";
 
 export default function InfoPage({ params }: { params: { id: string } }) {
   const { role, ownSurveys, participateSurveys} = useSurveys();
+  const { userID } = useUser();
   let infoData: any = null;
   if(role === "owner") {
     infoData = ownSurveys.find((survey) => survey.id === Number(params.id));
@@ -15,7 +16,7 @@ export default function InfoPage({ params }: { params: { id: string } }) {
     return <div>Unauthorized</div>;
   }
 
-  const { userID } = useUser();
+  
   return (
     <div className="flex items-center justify-center h-screen bg-accent bg-[url(/paper.svg)] dark:bg-[url(/paper-dark.svg)]">
       {role === "member" && (

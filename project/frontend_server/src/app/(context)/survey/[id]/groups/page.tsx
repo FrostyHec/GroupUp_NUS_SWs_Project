@@ -53,11 +53,9 @@ import {
 } from "@/controller/survey-groups";
 import { SurveyUserSearchDialog } from "@/components/app/survey-user-search-dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { surveyAllGroups } from "@/actions/group";
-import { userInfo } from "@/actions/user";
+import { useSurveyAllGroups } from "@/actions/group";
+import { useUserInfo } from "@/actions/user";
 import { useCookies } from "next-client-cookies";
-import { userAuthInfo } from "@/actions/user";
-import { surveyInfo } from "@/actions/survey";
 import ProfileCard from "@/components/app/info-personal-info-cards";
 import UserAvatar from "@/components/app/user-avatar";
 import FormDemonstrateComponent from "@/components/app/form-demonstrate-component";
@@ -68,7 +66,9 @@ import useSurveys from "@/components/hooks/useSurveys";
 import useUser from "@/components/hooks/useUser";
 
 function UsernameText({ userID }: { userID: number }) {
-  const { data, isLoading, isError } = userInfo({
+  const cookies = useCookies();
+  const { data, isLoading, isError } = useUserInfo({
+    token: cookies.get("token") as string,
     userID: userID,
   });
   if (isLoading) return <div>Loading...</div>;
@@ -251,7 +251,8 @@ function GroupsForMember({
 }) {
   const cookies = useCookies();
   const [loading, setLoading] = useState(false);
-  const { data, isLoading, isError } = surveyAllGroups({
+  const { data, isLoading, isError } = useSurveyAllGroups({
+    token: cookies.get("token") as string,
     id: surveyID,
     pageSize: -1,
     pageNo: -1,
@@ -470,7 +471,8 @@ function Groups({
 }) {
   const cookies = useCookies();
   const [loading, setLoading] = useState(false);
-  const { data, isLoading, isError } = surveyAllGroups({
+  const { data, isLoading, isError } = useSurveyAllGroups({
+    token : cookies.get("token") as string,
     id: surveyID,
     pageSize: -1,
     pageNo: -1,

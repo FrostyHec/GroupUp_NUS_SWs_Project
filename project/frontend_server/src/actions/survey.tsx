@@ -8,9 +8,13 @@ import { toast } from "sonner";
 //问卷查询
 //GET
 //<backend>/survey/{id}
-export function surveyInfo({ surveyID }: { surveyID: number }) {
-  const cookies = useCookies();
-  const token = cookies.get("token") as string;
+export function useSurveyInfo({
+  token,
+  surveyID,
+}: {
+  token: string;
+  surveyID: number;
+}) {
   const fetcher = (url: string) =>
     axios
       .get(url, {
@@ -134,9 +138,13 @@ export async function surveyUpdateStatus({
 
 //<backend>/survey/{id}/status
 // GET
-export function surveyStatus({ surveyID }: { surveyID: number }) {
-  const cookies = useCookies();
-  const token = cookies.get("token") as string;
+export function useSurveyStatus({
+  token,
+  surveyID,
+}: {
+  token: string;
+  surveyID: number;
+}) {
   const fetcher = (url: string) =>
     axios
       .get(url, {
@@ -166,7 +174,7 @@ export function surveyDelete() {
 }
 
 // <backend>/survey/{id}/basicinfo
-export function getFormStats({ token, id }: { token: string; id: number }) {
+export function useFormStats({ token, id }: { token: string; id: number }) {
   const fetcher = (url: string) =>
     axios
       .get(url, {

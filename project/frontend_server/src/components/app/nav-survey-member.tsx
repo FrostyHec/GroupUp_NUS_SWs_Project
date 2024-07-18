@@ -2,16 +2,18 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import useSurveys from "../hooks/useSurveys";
-import { sampleSurvey } from "../data/survey-data";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { surveyStatus } from "@/actions/survey";
+import { useSurveyStatus } from "@/actions/survey";
+import {useCookies} from "next-client-cookies";
 
 export function SurveyMemberNav() {
   const router = usePathname();
   const { currentSurveyId } = useSurveys();
-  const { data, isLoading, isError } = surveyStatus({
+  const cookies = useCookies();
+  const { data, isLoading, isError } = useSurveyStatus({
+    token: cookies.get("token") as string,
     surveyID: currentSurveyId,
   });
   if (isLoading) return <div>Loading...</div>;

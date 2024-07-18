@@ -1,11 +1,11 @@
 "use client";
-import { surveyInfo, surveyStatus } from "@/actions/survey";
+import { useSurveyStatus } from "@/actions/survey";
 import FormBuilder from "@/components/app/form-form-builder";
 import DesignerContextProvider from "@/components/context/DesignerContext";
 import React from "react";
 import useSurveys from "@/components/hooks/useSurveys";
-
-async function BuilderPage({
+import {useCookies} from "next-client-cookies";
+export default function BuilderPage({
   params,
 }: {
   params: {
@@ -13,20 +13,23 @@ async function BuilderPage({
   };
 }) {
   const { ownSurveys, participateSurveys, role } = useSurveys();
+  const cookies = useCookies();
+  const {
+    data: statusData,
+    isLoading: statusLoading,
+    isError: statusError,
+  } = useSurveyStatus({
+    token: cookies.get("token") as string,
+    surveyID: Number(params.id) });
+
   let infoData : any = null;
-  if(role === "owner") { 
+  if(role === "owner") {
     infoData = ownSurveys.find((survey) => survey.id === Number(params.id));
   }else if(role === "member") {
     infoData = participateSurveys.find((survey) => survey.id === Number(params.id));
   }else {
     return <div>Unauthorized</div>;
   }
-
-  const {
-    data: statusData,
-    isLoading: statusLoading,
-    isError: statusError,
-  } = surveyStatus({ surveyID: Number(params.id) });
   if (statusLoading) return <div>Loading...</div>;
   if (statusError) return <div>Error</div>;
 
@@ -47,5 +50,3 @@ async function BuilderPage({
     </DesignerContextProvider>
   );
 }
-
-export default BuilderPage;

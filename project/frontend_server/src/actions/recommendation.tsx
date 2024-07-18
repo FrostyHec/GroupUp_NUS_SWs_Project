@@ -74,7 +74,7 @@ export function useSurveyRecommendUngrouped({
 }
 
 //进行预组队
-//POST
+// GET
 //<backend>/survey/{id}/recommend/pregrouping
 export async function preGrouping({
   token,
@@ -83,8 +83,8 @@ export async function preGrouping({
   token: string;
   surveyID: number;
 }) {
-  return axios
-    .post(
+  return await axios
+    .get(
       `${process.env.NEXT_PUBLIC_API_URL_REC}/survey/${surveyID}/recommend/pregrouping`,
       {
         headers: { Authorization: "Bearer " + token },

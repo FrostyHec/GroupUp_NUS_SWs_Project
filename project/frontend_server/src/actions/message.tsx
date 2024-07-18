@@ -34,7 +34,7 @@ export function receiveAnnouncements({
 
 // <backend>/survey/{id}/announcement 
 // Post
-export function createAnnouncement({
+export async function createAnnouncement({
   token,
   surveyId,
   title,
@@ -47,7 +47,7 @@ export function createAnnouncement({
   content: string,
   emergency: number
 }) {
-  return axios.post(
+  return await axios.post(
     `${process.env.NEXT_PUBLIC_API_URL}/survey/${surveyId}/announcement`,
     {
       title: title,

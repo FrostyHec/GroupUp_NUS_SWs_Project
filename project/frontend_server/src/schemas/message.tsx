@@ -14,20 +14,20 @@ export interface AnnouncementData extends BaseData {
   description: string;
 }
 
-// 定义 RequestCard 的 Props 类型
-export interface RequestData extends BaseData {
+// 定义 ResponseCard 的 Props 类型
+export interface ResponseData extends BaseData {
   userAvatar: AvatarFullConfig;
   surveyName: string;
   userName: string; // 用户名
   requestText: string;
+  onApprove: ({surveyID, requestID} : {surveyID: number; requestID: number}) => void;
+  onReject: ({surveyID, requestID} : {surveyID: number; requestID: number}) => void;
 }
 
 // 定义 FeedbackCard 的 Props 类型
 export interface FeedbackData extends BaseData {
-  userAvatar: AvatarFullConfig[];
   surveyName: string;
-  approverName: string;
-  isApproved: boolean;
+  isApproved: number; // 0 wait, 1 approved, 2 rejected
 }
 
-export type MessageItem = AnnouncementData | RequestData | FeedbackData;
+export type MessageItem = AnnouncementData | ResponseData | FeedbackData;

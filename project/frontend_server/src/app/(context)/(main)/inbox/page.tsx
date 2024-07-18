@@ -1,6 +1,6 @@
 "use client";
 import { ComponentProps, useEffect } from "react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, set } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -19,7 +19,7 @@ import {
   FeedbackData,
   MessageItem,
   AnnouncementData,
-  RequestData,
+  ResponseData,
 } from "@/schemas/message";
 import {
   userReceivedAnouncements,
@@ -30,6 +30,8 @@ import useUser from "@/components/hooks/useUser";
 import { ImSpinner2 } from "react-icons/im";
 import { toast } from "sonner";
 import { surveyAcceptOrDenyRequest } from "@/actions/group";
+import { Label } from "@/components/ui/label";
+import { BsInbox } from "react-icons/bs";
 
 export default function InboxPage() {
   const { userID, userName } = useUser();
@@ -53,49 +55,42 @@ export default function InboxPage() {
   const [combinedData, setCombinedData] = React.useState<MessageItem[]>([]);
 
   useEffect(() => {
-    if (!data_announcement) return;
-    if (!data_request) return;
-    if (!data_feedback) return;
+    console.log(data_announcement, data_request, data_feedback);
     // 处理数据
-    let announcements: AnnouncementData[] = data_announcement.data.map(
-      (item: any) => ({ 
+    let announcements: AnnouncementData[] = data_announcement ? data_announcement.data.entities.map(
+      (item: any) => ({
         id: item.id,
         surveyID: item.survey_id,
         type: "announcement",
         create_at: item.create_at,
-        update_at: item.update_at,
         surveyName: item.survey_name,
         title: item.title,
-        description: item.description})
-    );
-    let requests : RequestData[] = data_request.data.map(
-      (item: any) => ({
-        id: item.id,
-        surveyID: item.survey_id,
-        type: "request",
-        create_at: item.create_at,
-        update_at: item.update_at,
-        userAvatar: item.user_avatar,
-        surveyName: item.personal_info.,
-        userName: item.user_name,
-        requestText: item.request_text
+        description: item.description,
       })
+    ) : [];
+    let requests: ResponseData[] = data_request ? data_request.data.list.map((item: any) => ({
+      id: item.id,
+      surveyID: item.survey_id,
+      type: "request",
+      create_at: item.create_at,
+      userAvatar: item.personal_info.avatar,
+      surveyName: item.survey_name,
+      userName: item.user_name,
+      requestText: item.request_text,
+    })) : [];
+    let feedbacks: FeedbackData[] = data_feedback ? data_feedback.data.list.map((item: any) => ({
+      id: item.id,
+      surveyID: item.survey_id,
+      type: "feedback",
+      create_at: item.create_at,
+      surveyName: item.survey_name,
+      isApproved: item.is_approved,
+    })): [];
+    let combined = [...announcements, ...requests, ...feedbacks];
+    combined.sort(
+      (a, b) => Number(new Date(b.create_at)) - Number(new Date(a.create_at))
     );
-    let feedbacks : FeedbackData[] = data_feedback.data.map(
-      (item: any) => ({
-        id: item.id,
-        surveyID: item.survey_id,
-        type: "feedback",
-        create_at: item.create_at,
-        update_at: item.update_at,
-        userAvatar: item.user_avatar,
-        surveyName: item.survey_name,
-        approverName: item.approver_name,
-        isApproved: item.is_approved
-      })
-    );
-    setFeedbacks(data_feedback.data);
-    let combined;
+    setCombinedData(combined);
   }, [data_announcement, data_request, data_feedback]);
 
   if (loading_announcement || loading_request || loading_feedback) {
@@ -105,26 +100,19 @@ export default function InboxPage() {
       </div>
     );
   }
-  // 合并并排序所有数据
-  const combinedData = [
-    ...data_announcement.map((item: any) => ({
-      ...item,
-      type: "announcement",
-    })),
-    ...data_request.map((item: any) => ({ ...item, type: "request" })),
-    ...data_feedback.map((item: any) => ({ ...item, type: "feedback" })),
-  ];
 
-  combinedData.sort(
-    (a, b) => Number(new Date(b.timestamp)) - Number(new Date(a.timestamp))
-  );
-
-  const onApprove = async (item: MessageItem) => {
+  const onApprove = async ({
+    surveyID,
+    requestID,
+  }: {
+    surveyID: number;
+    requestID: number;
+  }) => {
     // surveyAcceptOrDenyRequest
     try {
       const res = await surveyAcceptOrDenyRequest({
-        surveyID: item.surveyID,
-        requestID: item.id,
+        surveyID,
+        requestID,
         fromUserID: userID,
         isAccept: true,
       });
@@ -132,15 +120,20 @@ export default function InboxPage() {
     } catch (error) {
       console.error(error);
     }
-    console.log("Approve", item);
   };
 
-  const onReject = async (item: MessageItem) => {
+  const onReject = async ({
+    surveyID,
+    requestID,
+  }: {
+    surveyID: number;
+    requestID: number;
+  }) => {
     // surveyAcceptOrDenyRequest
     try {
       const res = await surveyAcceptOrDenyRequest({
-        surveyID: item.surveyID,
-        requestID: item.id,
+        surveyID,
+        requestID,
         fromUserID: userID,
         isAccept: false,
       });
@@ -148,30 +141,46 @@ export default function InboxPage() {
     } catch (error) {
       console.error(error);
     }
-    console.log("Reject", item);
   };
+
+  function isAnnouncementData(item: MessageItem): item is AnnouncementData {
+    return item.type === "announcement";
+  }
+
+  function isResponseData(item: MessageItem): item is ResponseData {
+    return item.type === "response";
+  }
+
+  function isFeedbackData(item: MessageItem): item is FeedbackData {
+    return item.type === "feedback";
+  }
 
   return (
     <ScrollArea className="container h-screen lg:w-1/2 rounded-md p-4">
-      {combinedData.map((item, index) => {
-        if (item.type === "announcement") {
-          return <AnnouncementCard key={index} {...item} />;
-        }
-        if (item.type === "request") {
-          return (
-            <RequestCard
-              key={index}
-              {...item}
-              onApprove={onApprove}
-              onReject={onReject}
-            />
-          );
-        }
-        if (item.type === "feedback") {
-          return <FeedbackCard key={index} {...item} />;
-        }
-        return null;
-      })}
+      {combinedData.length === 0 && (
+        <div className="flex flex-col items-center justify-center h-full">
+          <BsInbox className="h-10 w-10" />
+          No Messages
+        </div>
+      )}
+      {combinedData.length !== 0 &&
+        combinedData.map((item, index) => {
+          if (isAnnouncementData(item)) {
+            return <AnnouncementCard key={index} {...item} />;
+          } else if (isResponseData(item)) {
+            return (
+              <RequestCard
+                key={index}
+                {...item}
+                onApprove={onApprove}
+                onReject={onReject}
+              />
+            );
+          } else if (isFeedbackData(item)) {
+            return <FeedbackCard key={index} {...item} />;
+          }
+          return null;
+        })}
     </ScrollArea>
   );
 }
@@ -182,16 +191,16 @@ export const AnnouncementCard: React.FC<AnnouncementData> = ({
   description,
 }) => {
   return (
-    <Card className="bg-white p-4 shadow-lg rounded-md border border-gray-200">
+    <Card className="bg-white p-4 shadow-lg rounded-md border border-gray-200 h-[200px] overflow-y-auto">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-        <CardDescription>{surveyName}</CardDescription>
+        <CardDescription>From {surveyName}</CardDescription>
       </CardHeader>
       <CardContent>
         <p className="mt-2 text-gray-700">{description}</p>{" "}
       </CardContent>
       <CardFooter>
-        <Badge key="notification" variant="outline">
+        <Badge key="notification" variant="default">
           Notification
         </Badge>
       </CardFooter>
@@ -199,7 +208,9 @@ export const AnnouncementCard: React.FC<AnnouncementData> = ({
   );
 };
 
-export const RequestCard: React.FC<RequestData> = ({
+export const RequestCard: React.FC<ResponseData> = ({
+  id,
+  surveyID,
   userAvatar,
   surveyName,
   userName,
@@ -208,7 +219,7 @@ export const RequestCard: React.FC<RequestData> = ({
   onReject,
 }) => {
   return (
-    <Card className="bg-white p-4 shadow-lg rounded-md border border-gray-200 flex items-start space-x-4">
+    <Card className="bg-white p-4 shadow-lg rounded-md border border-gray-200 flex items-center space-x-4">
       <CardHeader>
         <Avatar style={{ width: 20, height: 20 }} {...userAvatar} />
         <div className="flex-1">
@@ -219,10 +230,16 @@ export const RequestCard: React.FC<RequestData> = ({
       <CardContent>
         <p className="text-gray-600 mt-2">{requestText}</p>
         <div className="mt-4 flex space-x-2">
-          <Button onClick={onApprove} className="bg-green-200">
+          <Button
+            onClick={() => onApprove({ surveyID: surveyID, requestID: id })}
+            className="bg-green-200"
+          >
             Accept
           </Button>
-          <Button onClick={onReject} className="bg-red-200">
+          <Button
+            onClick={() => onReject({ surveyID: surveyID, requestID: id })}
+            className="bg-red-200"
+          >
             Decline
           </Button>
         </div>
@@ -237,32 +254,42 @@ export const RequestCard: React.FC<RequestData> = ({
 };
 
 export const FeedbackCard: React.FC<FeedbackData> = ({
-  userAvatar,
   surveyName,
-  approverName,
   isApproved,
 }) => {
   return (
     <Card
       className={`bg-white p-4 shadow-lg rounded-md border border-gray-200 flex items-start space-x-4 ${
-        isApproved ? "border-green-500" : "border-red-500"
+        isApproved === 0
+          ? "border-gray-500"
+          : isApproved === 1
+          ? "border-green-500"
+          : "border-red-500"
       }`}
     >
       <CardHeader>
-        <Avatar style={{ width: 20, height: 20 }} {...userAvatar} />
         <div className="flex-1">
-          <h3 className="text-lg font-semibold">{approverName}</h3>
-          <p className="text-gray-700 mt-1">{surveyName}</p>
+          <Label
+            className={`mt-2 ${
+              isApproved === 0
+                ? "border-gray-500"
+                : isApproved === 1
+                ? "border-green-500"
+                : "border-red-500"
+            }`}
+          >
+            Feedback of your request from survey {surveyName}
+          </Label>
         </div>
       </CardHeader>
       <CardContent>
         <div className="flex-1">
-          <p
-            className={`mt-2 ${isApproved ? "text-green-500" : "text-red-500"}`}
-          >
-            {isApproved
-              ? `I have accepted your request!`
-              : `Sorry, I can't accept your request.`}
+          <p className={`mt-2 text-gray-800`}>
+            {isApproved === 0
+              ? `Your request from survey ${surveyName} is yet to be approved`
+              : isApproved === 1
+              ? `Your request from survey ${surveyName} has been approved`
+              : `Your request from survey ${surveyName} has been rejected`}
           </p>
         </div>
       </CardContent>

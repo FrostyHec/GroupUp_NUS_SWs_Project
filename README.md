@@ -1,5 +1,6 @@
 # GroupUp_NUS_SWs_Project
 Github Repository: [https://github.com/FrostyHec/GroupUp_NUS_SWs_Project](https://github.com/FrostyHec/GroupUp_NUS_SWs_Project)
+
 Team Member:
 - Student 1: Zhengdong Huang, t0933325, Backend Design and Cloud Service Design
 - Student 2: Hemu Liu, t0933548, Backend Design and Cloud Service Design

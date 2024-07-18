@@ -25,6 +25,7 @@
         <module>message_push</module>
         <module>object_storage</module>
         <module>server</module>
+        <module>DatabaseBatch</module>
     </modules>
 
     <packaging>pom</packaging>

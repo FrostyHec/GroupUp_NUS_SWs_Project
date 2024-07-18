@@ -1,3 +1,5 @@
+import pickle
+
 import requests
 
 from common.Log import Log
@@ -8,6 +10,7 @@ from exception.Exception import InternalException
 class StorageService:
     @staticmethod
     def upload(key: str, data):
+        data = pickle.dumps(data)
         resp = requests.post(Config.storage_service,
                              params={'key': key},
                              files={'file': data})

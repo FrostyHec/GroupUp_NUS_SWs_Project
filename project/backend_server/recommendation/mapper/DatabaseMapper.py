@@ -1,4 +1,3 @@
-import json
 from typing import Optional, Dict, List, Tuple
 
 from sqlalchemy import create_engine, text
@@ -32,7 +31,7 @@ class DatabaseMapper:
         return res
 
     @classmethod
-    def get_restriction(cls, survey_id: int) -> json:
+    def get_restriction(cls, survey_id: int):
         query = 'SELECT group_restriction FROM survey WHERE id = :survey_id;'
         params = {'survey_id': survey_id}
         return cls.__execute_query(query, cls.__to_json, params)
@@ -43,16 +42,20 @@ class DatabaseMapper:
 
     @classmethod
     def __to_json(cls, result):
-        row = result.fetchall()
+        row = result.fetchone()
         if row:
-            result_json = json.dumps(row)
+            x = row[0]
+            result_json = json.dumps(x)
+            result_json = json.loads(result_json)
         else:
-            result_json = json.dumps({})
+            result_json = {}
+        if isinstance(result_json, str):
+            raise 'Error!result_json is str!:'
         return result_json
 
     @classmethod
     def json_is_empty(cls, json_str):
-        return json_str == json.dumps({})
+        return json_str is None or len(json_str) == 0
 
     @classmethod
     def __to_single(cls, result):
@@ -69,14 +72,15 @@ class DatabaseMapper:
         return result.fetchall()
 
     @classmethod
-    def get_survey(cls, survey_id: int) -> json:
-        query = 'SELECT survey FROM survey WHERE id = :survey_id;'
+    def get_survey(cls, survey_id: int):
+        query = 'SELECT questions FROM survey WHERE id = :survey_id;'
         params = {'survey_id': survey_id}
         return cls.__execute_query(query, cls.__to_json, params)
 
     @classmethod
-    def get_query(cls, survey_id: int, user_id: int) -> json:
-        query = 'SELECT query FROM query WHERE id = :survey_id and member_id = :user_id;'
+    def get_query(cls, survey_id: int, user_id: int):
+        query = """SELECT questions_answer FROM query 
+        WHERE survey_id = :survey_id and member_id = :user_id and status=2;"""
         params = {'user_id': user_id, 'survey_id': survey_id}
         return cls.__execute_query(query, cls.__to_json, params)
 
@@ -84,13 +88,14 @@ class DatabaseMapper:
     def get_user_groups(cls, survey_id: int, user_id: int) -> (Optional[int], list[int]):
         query = """
         select group_id from group_member m
-        join group_table t on m.group_id == t.id
-        where survey_id = : survey_id and member_id = :user_id;
+        join group_table t on m.group_id = t.id
+        where survey_id = :survey_id and member_id = :user_id;
                  """
         params = {'user_id': user_id, 'survey_id': survey_id}
-        group_id = int(cls.__execute_query(query, cls.__to_single, params))
+        group_id = cls.__execute_query(query, cls.__to_single, params)
         if group_id is None:
             return None, []
+        group_id = int(group_id)
 
         query2 = """
         select member_id from group_member where group_id = :group_id;
@@ -112,7 +117,7 @@ class DatabaseMapper:
         """
         query1 = """
         select id,member_id from group_table t
-        join group_member m on t.id==m.group_id 
+        join group_member m on t.id=m.group_id 
         where survey_id = :survey_id
         ;
         """
@@ -137,20 +142,20 @@ class DatabaseMapper:
     @classmethod
     def get_query_and_survey(cls, query_id: int):
         query = """
-        select survey_id,update_at,questions_answer,member_id from query where id= :query_id;
+        select survey_id,update_at,questions_answer,member_id,status from query where id= :query_id;
         """
         params = {'query_id': query_id}
         result = cls.__execute_query(query, cls.__empty_to, params)
         row = result.fetchone()
-        survey_id, update_at, questions_answer, member_id = row[0], row[1], row[2], row[3]
+        survey_id, update_at, questions_answer, member_id, status = (row[0], row[1], row[2],
+                                                                     row[3], row[4])
 
         query2 = """
         select questions from survey where id = :survey_id;
         """
         params2 = {'survey_id': survey_id}
         questions = cls.__execute_query(query2, cls.__to_json, params2)
-        questions_answer = json.dumps(questions_answer)
-        return questions, update_at, questions_answer, survey_id, member_id
+        return questions, update_at, questions_answer, survey_id, member_id, status
 
     @classmethod
     def update_grouping_result(cls, sid: int, group_res: List[GroupVectors]):
@@ -176,7 +181,7 @@ class DatabaseMapper:
                 gid = new_group.id
             assert gid != -1
             for mid in members:
-                group_members.append(GroupMember(group_id=gid,member_id=mid))
+                group_members.append(GroupMember(group_id=gid, member_id=mid))
 
         # 批量添加
         session.add_all(group_members)
@@ -184,7 +189,7 @@ class DatabaseMapper:
         session.close()
 
     @classmethod
-    def get_single_user(cls, survey_id:int, user_id:Optional[int]=None)->List[int]:
+    def get_single_user(cls, survey_id: int, user_id: Optional[int] = None) -> List[int]:
         # 查询所有<uid,sid>存在query但不存在<uid,gid>与<gid,sid> for some gid的组，最后过滤user_id
         query = """
         with grouped_uids as (
@@ -196,13 +201,11 @@ class DatabaseMapper:
         )
         select member_id from query where survey_id=:survey_id and member_id not in (
             select member_id from grouped_uids
-        )
+        ) and status=2 
         """
         params = {'survey_id': survey_id}
         if user_id is not None:
             query += " and member_id != :user_id"
             params['user_id'] = user_id
-        return cls.__execute_query(query, cls.__to_multiple, params)
-
-
-
+        res = cls.__execute_query(query, cls.__to_multiple, params)
+        return [int(e[0]) for e in res]

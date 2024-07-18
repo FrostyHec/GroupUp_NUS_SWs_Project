@@ -10,8 +10,12 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupResponseDTO {
+    private long fromId;
+    private long surveyId;
+    private Timestamp creatAt;
+    private Timestamp updateAt;
+    private String message;
+    private int status;
     private Long requestId;
     private Long userId;
-    private int status;
-    private Timestamp updateAt;
 }

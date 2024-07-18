@@ -9,6 +9,8 @@ spring:
     port: 5672
     username: guest
     password: guest
+  message-push:
+    url: http://localhost:7078/api/v1/msg_push
 server:
   port: 7273
 

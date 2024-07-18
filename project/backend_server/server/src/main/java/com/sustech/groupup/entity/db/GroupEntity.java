@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 @TableName("group_table")
 public class GroupEntity {
     @TableId(type = IdType.AUTO)

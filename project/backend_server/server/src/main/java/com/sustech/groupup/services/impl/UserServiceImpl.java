@@ -6,10 +6,12 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sustech.groupup.controller.grouping.SurveyController;
+import com.sustech.groupup.entity.api.AnnouncementDTO;
 import com.sustech.groupup.entity.api.QueryDTO;
 import com.sustech.groupup.entity.api.SurveyDTO;
 import com.sustech.groupup.entity.converter.QueryConverter;
 import com.sustech.groupup.entity.converter.SurveyConverter;
+import com.sustech.groupup.entity.db.AnnouncementEntity;
 import com.sustech.groupup.entity.db.QueryEntity;
 import com.sustech.groupup.entity.db.SurveyEntity;
 import com.sustech.groupup.mapper.QueryMapper;
@@ -99,7 +101,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Long> queryReceivedAnnouncement(long uid, int pageSize, int pageNo) {
+    public List<AnnouncementDTO> queryReceivedAnnouncement(long uid, int pageSize, int pageNo) {
         return announcementMapper.getAnnouncementByUser(uid,pageSize,pageNo);
     }
 

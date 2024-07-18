@@ -12,6 +12,7 @@ import com.sustech.groupup.exception.ExternalException;
 import com.sustech.groupup.mapper.AnnouncementMapper;
 import com.sustech.groupup.mapper.SurveyMapper;
 import com.sustech.groupup.services.AnnouncementService;
+import com.sustech.groupup.services.MessagePushService;
 import com.sustech.groupup.utils.Response;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
     private final AnnouncementMapper announcementMapper;
     private final SurveyMapper surveyMapper;
+    private final MessagePushService messagePushService;
     @Override
     @Transactional
     public List<AnnouncementDTO> getAnnouncements(long surveyId, int pageSize, int pageNo,
@@ -42,6 +44,8 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         }
         AnnouncementEntity entity = AnnouncementConverter.toEntity(surveyID,dto);
         announcementMapper.insert(entity);
+        var members = surveyMapper.getMemberIdBySurveyId(entity.getSurveyId());
+        messagePushService.pushEmptyToIds(requestUserId,members);
         return entity.getId();
     }
 

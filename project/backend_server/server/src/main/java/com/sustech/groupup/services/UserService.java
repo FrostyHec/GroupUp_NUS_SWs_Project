@@ -3,10 +3,12 @@ package com.sustech.groupup.services;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sustech.groupup.entity.api.AnnouncementDTO;
 import com.sustech.groupup.entity.api.LoginAuthDTO;
 import com.sustech.groupup.entity.api.QueryDTO;
 import com.sustech.groupup.entity.api.SurveyDTO;
 import com.sustech.groupup.entity.api.UserPublicQueryDTO;
+import com.sustech.groupup.entity.db.AnnouncementEntity;
 import com.sustech.groupup.entity.db.QueryEntity;
 import com.sustech.groupup.entity.db.UserEntity;
 
@@ -35,7 +37,7 @@ public interface UserService {
     /**
      * return survey id list or throw failed exception
      */
-    List<Long> queryReceivedAnnouncement(long uid, int pageSize, int pageNo);
+    List<AnnouncementDTO> queryReceivedAnnouncement(long uid, int pageSize, int pageNo);
     List<UserPublicQueryDTO> queryUserLikeName(String username);
     UserEntity getUserById(long id);
 }

@@ -1,12 +1,10 @@
 package com.sustech.groupup.controller.grouping;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sustech.groupup.entity.api.QueryDTO;
-import com.sustech.groupup.entity.api.SurveyDTO;
+import com.sustech.groupup.entity.api.StatusDTO;
 import com.sustech.groupup.entity.converter.QueryConverter;
 import com.sustech.groupup.entity.db.QueryEntity;
-import com.sustech.groupup.entity.db.SurveyEntity;
 import com.sustech.groupup.services.QueryService;
 import com.sustech.groupup.utils.Response;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +13,6 @@ import com.sustech.groupup.config.Constant;
 
 import lombok.RequiredArgsConstructor;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -64,9 +61,10 @@ public class QueryController {
     }
 
     @PutMapping("/{number}/status")
-    public Response updateSurveyStatusById (@PathVariable long number,@PathVariable long surveyId, @RequestParam int status) {
+    public Response updateQueryStatusById(@PathVariable long number, @PathVariable long surveyId,
+                                          @RequestBody StatusDTO dto) {
         long queryId=queryService.getQueryIdByMemberIdAndSurveyId(number,surveyId);
-        queryService.updateStatusByQueryId(queryId,status);
+        queryService.updateStatusByQueryId(queryId,dto.getStatus());
         return Response.getSuccess("success","");
     }
 

@@ -20,6 +20,7 @@ public class RequestEntity {
     @TableId(type = IdType.AUTO)
     private Long id;
 
+    private long surveyId;
     private Long fromId;
     private boolean toGroup;
     private Long toId;

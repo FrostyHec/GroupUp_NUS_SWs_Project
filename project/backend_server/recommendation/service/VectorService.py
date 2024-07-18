@@ -1,5 +1,6 @@
 import asyncio
-from asyncio import Queue
+import pickle
+from queue import Queue
 from typing import Optional, List, Tuple, Dict
 
 from common.Log import Log
@@ -16,7 +17,7 @@ from service.StorageService import StorageService
 class VectorService:
     @classmethod
     def query_user_vector(cls, survey_id: int, user_id: int) -> Vector:
-        return cls.__fetch_vectors(survey_id, [user_id])[user_id]
+        return cls.fetch_vectors(survey_id, [user_id])[user_id]
 
     @classmethod
     def query_user_group_vectors(cls, survey_id: int, user_id: int) -> Optional[GroupVectors]:
@@ -24,7 +25,7 @@ class VectorService:
         group_id, user_ids = DatabaseMapper.get_user_groups(survey_id, user_id)
         if group_id is None:
             return None
-        res_dict =  cls.__fetch_vectors(survey_id, user_ids)
+        res_dict =  cls.fetch_vectors(survey_id, user_ids)
         return GroupVectors(group_id, res_dict)
 
 
@@ -34,7 +35,7 @@ class VectorService:
         # TODO 1. 查询当前分组情况，并且对每个组查询其成员的向量
         ug,gu = DatabaseMapper.get_groups(survey_id,user_id)
         uids = [key for key in ug]
-        vecs = cls.__fetch_vectors(survey_id,uids)
+        vecs = cls.fetch_vectors(survey_id, uids)
         res = []
         for group_id, value in gu.items():
             group_info = {}
@@ -71,19 +72,19 @@ class VectorService:
         return Singleton.recommender.get_willing(survey,description,query)
 
     @classmethod
-    def __fetch_vectors(cls, survey_id: int, user_ids: List[int]) -> Dict[int, Vector]:
+    def fetch_vectors(cls, survey_id: int, user_ids: List[int]) -> Dict[int, Vector]:
         que:Queue[Tuple[int,Vector]] = Queue()
         def push_to_queue(uid: int, key: str, queue: Queue, res):
             code, data = res
             if code != 200:
                 # try generating immediately
-                Log.warn(f"Failed to get vector from storage service, generating immediately")
+                Log.warn(f"Failed to get vector from storage service:{uid}, generating immediately")
                 vec = cls.generate_user_vector(survey_id, uid)
                 Utils.async_execution(StorageService.upload, (key, vec),
                                      exception_handler=StorageService.common_failure_handler)
             else:
                 vec = Utils.deserialize_object_from_bytes(data)
-            queue.put((uid, vec))
+            queue.put((uid, vec)) #?
         async def async_main():
             futures = []
             for uid in user_ids:
@@ -109,6 +110,6 @@ class VectorService:
     def query_current_person_vectors(cls,survey_id:int, user_id:Optional[int]=None)->Dict[int,Vector]:
         # TODO 注意：只拉取填了表单的人
         uids = DatabaseMapper.get_single_user(survey_id,user_id)
-        return cls.__fetch_vectors(survey_id,uids)
+        return cls.fetch_vectors(survey_id, uids)
 
 

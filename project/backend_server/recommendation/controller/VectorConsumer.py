@@ -1,8 +1,10 @@
+import datetime
 import json
+import time
 from enum import Enum
 
 import pika
-
+from tzlocal import get_localzone
 from common.Log import Log
 from common.Utils import Utils
 from config.Config import Config
@@ -10,7 +12,8 @@ from dto.Singleton import Singleton
 from mapper.DatabaseMapper import DatabaseMapper
 from service.StorageService import StorageService
 
-
+date_format = '%Y-%m-%dT%H:%M:%S.%f%z'
+local_timezone = get_localzone()
 class VectorMessageType(Enum):
     UPDATE = 1
     DELETE = 2
@@ -44,34 +47,45 @@ class VectorConsumer:
 
     @staticmethod
     def callback(ch, method, properties, body):
-        message = body.decode('utf-8')
-        data = json.loads(message)
-        Log.info(f"Received message on vector consumer: {body}\n,data:{data}")
+        try:
+            message = body.decode('utf-8')
+            data = json.loads(message)
+            Log.info(f"Received message on vector consumer: {body}\n,data:{data}")
 
-        type = int(data['type'])
-        if type == VectorMessageType.DELETE.value:
-            VectorConsumer.delete_vector(data)
-        elif type == VectorMessageType.UPDATE.value:
-            VectorConsumer.update_vector(data)
-        else:
-            Log.warn(f"Unknown message type: {type}")
+            type = int(data['type'])
+            if type == VectorMessageType.DELETE.value:
+                VectorConsumer.delete_vector(data)
+            elif type == VectorMessageType.UPDATE.value:
+                VectorConsumer.update_vector(data)
+            else:
+                Log.warn(f"Unknown message type: {type}")
+        except Exception as e:
+            Log.warn(f"Error while processing message: {e}")
+
 
     @classmethod
     def update_vector(cls, data):
-        update_time = data['update_time']
+        rcvd_update_time = datetime.datetime.strptime(data['update_time'], date_format).replace(tzinfo=datetime.timezone.utc)
         query_id = data['query_id']
-        if update_time is None:
+        if rcvd_update_time is None:
             Log.warn(f"error!update time is NULL!:{data}")
             return
         # 从数据库中检查是否为最新
-        questions, update_at, questions_answer, survey_id, member_id = DatabaseMapper.get_query_and_survey(
+        questions, update_at, questions_answer, survey_id, member_id, status \
+            = DatabaseMapper.get_query_and_survey(
             query_id)
-        if update_time < update_at:
-            Log.info(f"Message is outdated, skipping:{data}")
+        update_at = update_at.replace(tzinfo=local_timezone)
+        if status != 2 or  update_at-rcvd_update_time>datetime.timedelta(seconds=1):
+            Log.warn(f"Message is outdated, skipping:{data}")
             return
 
+        t1 = time.time()
+        Log.info(f"Updating vector for survey:{survey_id}, member:{member_id}")
         vec = Singleton.recommender.get_vector(questions, questions_answer)
+        Log.info(f"Generated vector:{vec},time taken:{time.time()-t1}")
+
         StorageService.upload(Utils.get_key(survey_id, member_id), vec)
+        Log.info(f"Vector updated for survey:{survey_id}, member:{member_id}")
 
     @classmethod
     def delete_vector(cls, data):

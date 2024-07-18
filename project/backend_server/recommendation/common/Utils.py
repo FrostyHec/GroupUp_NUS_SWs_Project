@@ -27,7 +27,7 @@ class Utils:
                              success_handler_param = None
                              ):
         try:
-            res = await function(*params)
+            res = function(*params)
             if success_handler is None:
                 return res
             if success_handler_param is None:

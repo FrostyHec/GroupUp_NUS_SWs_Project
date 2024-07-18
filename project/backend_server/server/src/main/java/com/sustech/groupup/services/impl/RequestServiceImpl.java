@@ -4,16 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sustech.groupup.entity.db.GroupResponseEntity;
-import com.sustech.groupup.entity.db.QueryEntity;
 import com.sustech.groupup.entity.db.RequestEntity;
-import com.sustech.groupup.mapper.GroupMapper;
 import com.sustech.groupup.mapper.GroupResponseMapper;
 import com.sustech.groupup.mapper.RequestMapper;
-import com.sustech.groupup.mapper.UserMapper;
-import com.sustech.groupup.services.GroupResponseService;
 import com.sustech.groupup.services.RequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,8 +25,10 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional
     public RequestEntity getRequestById(Long id) {
-       return requestMapper.selectById(id);
+        var rqid = groupResponseMapper.getRequestIdByResponseId(id);
+       return requestMapper.selectById(rqid);
     }
 
     @Override
@@ -53,7 +52,4 @@ public class RequestServiceImpl implements RequestService {
         Page<RequestEntity> page = new Page<>(pageNo, pageSize== -1 ? Long.MAX_VALUE : pageSize);
         return requestMapper.selectPage(page,queryWrapper);
     }
-
-
-
 }

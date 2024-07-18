@@ -8,6 +8,7 @@ import java.util.Map;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sustech.groupup.entity.api.*;
+import com.sustech.groupup.entity.db.AnnouncementEntity;
 import com.sustech.groupup.entity.db.GroupResponseEntity;
 import com.sustech.groupup.entity.db.QueryEntity;
 import com.sustech.groupup.entity.db.RequestEntity;
@@ -96,8 +97,9 @@ public class UserController {
                                               int page_size,
                                               int page_no
     ) {
-        List<Long> res = userService.queryReceivedAnnouncement(id, page_size, page_no);
-        return Response.getSuccess(Map.of("ids", res));
+        List<AnnouncementDTO> res = userService.queryReceivedAnnouncement(id, page_size, page_no);
+        log.warn(res.toString());
+        return Response.getSuccess(Map.of("entities", res));
     }
 
     @GetMapping("/{id}/sendrequest")
@@ -107,7 +109,7 @@ public class UserController {
         IPage<RequestEntity> queryResult =
                 requestService.getRequestListByFromId(id, pageNo, pageSize);
         Map<String, Object> data = new HashMap<>();
-        data.put("total_size", queryResult.getSize());
+        data.put("total_size", queryResult.getTotal());
         data.put("list", queryResult.getRecords());
         return Response.getSuccess("success", data);
     }
@@ -116,10 +118,10 @@ public class UserController {
     public Response getResponsesByUserId(@PathVariable long id,
                                          @RequestParam(defaultValue = "-1") int pageSize,
                                          @RequestParam(defaultValue = "1") int pageNo) {
-        IPage<GroupResponseEntity> queryResult =
+        IPage<ResponseDTO> queryResult =
                 groupResponseService.getAllResponsesByUserId(pageSize, pageNo, id);
         Map<String, Object> data = new HashMap<>();
-        data.put("total_size", queryResult.getSize());
+        data.put("total_size", queryResult.getTotal());
         data.put("list", queryResult.getRecords());
         return Response.getSuccess("success", data);
     }

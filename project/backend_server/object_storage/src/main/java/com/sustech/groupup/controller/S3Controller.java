@@ -177,7 +177,7 @@ public class S3Controller {
                                                             .bucket(BUCKET_NAME)
                                                             .key(key)
                                                             .build();
-
+        //TODO 存入cache
         try {
             ResponseInputStream<GetObjectResponse> s3Object = s3.getObject(getObjectRequest);
             InputStreamResource resource = new InputStreamResource(s3Object);

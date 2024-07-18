@@ -58,6 +58,7 @@ create table group_member(
 create table announcement(
     id serial primary key,
     survey_id int8,
+    survey_name int8,
     create_at timestamp,
     update_at timestamp,
     title varchar,
@@ -65,6 +66,7 @@ create table announcement(
 );
 create table request_grouping(
     id serial primary key ,
+    survey_id int8,
     from_id int8, -- creator
     to_group bool,
     to_id int8,

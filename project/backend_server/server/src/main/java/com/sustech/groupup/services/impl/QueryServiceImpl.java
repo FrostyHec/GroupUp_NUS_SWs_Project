@@ -12,11 +12,13 @@ import com.sustech.groupup.services.QueryService;
 import com.sustech.groupup.services.VectorService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class QueryServiceImpl implements QueryService {
 
     private final QueryMapper queryMapper;

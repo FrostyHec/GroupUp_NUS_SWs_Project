@@ -27,7 +27,6 @@ public class AnnouncementController {
 
     private final AnnouncementService announcementService;
 
-
     @GetMapping("/{aid}")
     public Response getAnnouncement(@PathVariable long id,
                                     @PathVariable long aid,
@@ -73,7 +72,7 @@ public class AnnouncementController {
                                      int page_size, int page_no,
                                      long request_user_id
     ) {
-        if (page_size < -1 || page_size == 0 || page_no <= 0) {
+        if (!(page_size==-1)&&(page_size<=0||page_no<=0)){
             return Response.getInternalError("bad-params");
         }
         List<AnnouncementDTO> res =

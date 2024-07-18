@@ -53,13 +53,13 @@ class Recommender:
         """
         # Filter out the question type.
         conserved_type = ["TextField", "NumberField", "TextAreaField", "DateField", "SelectField", "CheckboxField"]
-        filtered_survey = list(filter(lambda x: x['type'] not in conserved_type, survey))
+        filtered_survey = list(filter(lambda x: x['type'] in conserved_type, survey))
         
         corpus = []
         for survey in filtered_survey:
             target_id = survey['id']
-            result = [item.value for item in answer if item.key == target_id]
-            content = str(result[0])
+            result = answer[target_id]
+            content = str(result)
             corpus.append(content)
         
         corpus_np = np.array(corpus)
@@ -71,7 +71,7 @@ class Recommender:
     def get_willing(self, survey, willing: str, answer) -> Vector:
          # Filter out the question type.
         conserved_type = ["TextField", "NumberField", "TextAreaField", "DateField", "SelectField", "CheckboxField"]
-        filtered_survey = list(filter(lambda x: x['type'] not in conserved_type, survey))
+        filtered_survey = list(filter(lambda x: x['type'] in conserved_type, survey))
         
         # Make Prompts to deepseek chat to transform the willing into a survey answer.
         user_content = '问卷内容：' + str(filtered_survey) + '\n\n' + '文本内容：' + willing
@@ -87,14 +87,14 @@ class Recommender:
         response = '\n'.join(response.splitlines()[1:-1])
         response = json.loads(response)
         if(len(response) != len(filtered_survey)):
-            raise Exception("The answer is not complete.")
+            raise Exception(f"The answer is not complete.:resp:{response}")
         
         # Transform the answer into embeddings.
         corpus = []
         for answer_willing in response:
             answer_id = answer_willing['id']
-            answer_input = [item.value for item in answer if item.key == answer_id]
-            content = str(answer_willing['answer']) + " " + answer_input[0]
+            answer_input = str(answer[answer_id])
+            content = str(answer_willing['answer']) + " " + answer_input
             corpus.append(content)
         corpus_np = np.array(corpus)
         vector = self.model.encode(corpus_np)
@@ -113,6 +113,8 @@ class Recommender:
         :param restriction: 组队的限制
         :return: <groupid,recommendation_value(0~100)>
         """
+        if len(current_ungrouped_person)==0:
+            return {}
         if user_group is not None:
             user_group_vector = user_group.info
             user_group_vector = list(user_group_vector.values())
@@ -124,7 +126,7 @@ class Recommender:
         
         queries_embedding = user_group_vector.vector
         group_ids = list(current_ungrouped_person.keys())
-        group_vectors = list(current_ungrouped_person.values())
+        group_vectors = [value.vector for value in current_ungrouped_person.values()]
         group_transpose = np.transpose(np.array(group_vectors), (1, 0, 2))
         result = np.zeros(len(group_vectors), dtype=float)
         for index, query_embedding in enumerate(queries_embedding):
@@ -132,7 +134,8 @@ class Recommender:
             similarities = cos_sim(query_embedding, group_embedding)
             result = np.add(result, similarities)
         result = result / len(queries_embedding)* 100
-        result_dict = dict(zip(group_ids, result))
+        rec_row = [float(element.item()) for row in result for element in row]
+        result_dict = dict(zip(group_ids, rec_row))
         return result_dict
 
     def get_group_preference_order(self, user: Vector,
@@ -147,6 +150,8 @@ class Recommender:
         :param restriction: 组队的限制
         :return: <groupid,recommendation_value(0~100)>
         """
+        if len(current_group)==0:
+            return {}
         if user_group is not None:
             user_group_vector = user_group.info
             user_group_vector = list(user_group_vector.values())

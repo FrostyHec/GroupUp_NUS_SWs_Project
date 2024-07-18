@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 public class GroupResponseEntity {
     @TableId(type = IdType.AUTO)
     private Long id;
-
+    private Timestamp createAt;
     private Timestamp updateAt;
     private Long requestId;
     private Long userId;

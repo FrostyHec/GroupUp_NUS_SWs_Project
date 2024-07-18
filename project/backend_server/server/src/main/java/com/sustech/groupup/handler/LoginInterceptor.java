@@ -12,7 +12,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import com.sustech.groupup.exception.ExternalException;
 import com.sustech.groupup.utils.JwtUtil;
 import com.sustech.groupup.utils.Response;
-import com.sustech.groupup.utils.ResponseCodeType;
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -24,6 +23,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(@NonNull HttpServletRequest request,
                              @NonNull HttpServletResponse response,
                              @NonNull Object handler) {
+        log.info("auth verifying request :{}",request);
         String token = request.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")){
             throwUnauthorizedException("no-auth");
@@ -43,6 +43,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     }
 
     private void throwUnauthorizedException(String msg) {
+        log.warn("auth verification failed");
         throw new ExternalException(Response.getUnauthorized(msg));
     }
 }

@@ -30,7 +30,7 @@ public class UserGetAnnouncementTest {
 
         var res = announcementAPI.successfulGetByUser(auth, -1, 1);
         assert res.size() == 1;
-        assert res.getFirst() == 1;
+        assert res.get(0) == 1;
     }
 
     @Test

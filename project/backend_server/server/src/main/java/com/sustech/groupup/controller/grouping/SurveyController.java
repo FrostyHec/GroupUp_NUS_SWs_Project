@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sustech.groupup.entity.api.GroupWithMemberDTO;
+import com.sustech.groupup.entity.api.StatusDTO;
 import com.sustech.groupup.entity.api.SurveyDTO;
 import com.sustech.groupup.entity.converter.SurveyConverter;
 import com.sustech.groupup.entity.db.GroupEntity;
@@ -67,9 +68,9 @@ public class SurveyController {
         return Response.getSuccess();
     }
 
-    @PostMapping("/{id}/status")
-    public Response updateSurveyStatusById (@PathVariable long id, @RequestParam int status) {
-        surveyService.updateStatusBySurveyId(id,status);
+    @PutMapping("/{id}/status")
+    public Response updateSurveyStatusById (@PathVariable long id, @RequestBody StatusDTO dto) {
+        surveyService.updateStatusBySurveyId(id,dto.getStatus());
         return Response.getSuccess();
     }
 

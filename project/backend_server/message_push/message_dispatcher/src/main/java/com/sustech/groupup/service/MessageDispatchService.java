@@ -19,7 +19,8 @@ public class MessageDispatchService {
     private final MessageDeliver messageDeliver;
     public long push(SingleMessageDTO msg) {
         String ip = sseipMapper.findSSEIP(msg);
-        if(StringUtils.isBlank(ip)){//没有这个sse连接
+        if(StringUtils.isBlank(ip)){
+            //没有这个sse连接
             switch (msg.getType()){
                 case NEW -> {
                     msg.setMessageId(null);
@@ -37,9 +38,20 @@ public class MessageDispatchService {
                 }
             }
             return msg.getMessageId();
+        }else {
+            switch (msg.getType()) {
+                case UPDATE ->{
+                    //如果在unposed则更新,如果在unacked则删除unacked,放置入unposed
+                    unackedMapper.deleteIfExists(msg);
+                }
+                case DELETE -> {
+                    //如果在unposed则删除,如果在unacked则删除unacked
+                    unackedMapper.deleteIfExists(msg);
+                }
+            }
+            //调用这个ip把消息发给pusher
+            return messageDeliver.pushMessage(ip, msg);
         }
-        //调用这个ip把消息发给pusher
-        return messageDeliver.pushMessage(ip,msg);
     }
 
     public void ack(long mid) {

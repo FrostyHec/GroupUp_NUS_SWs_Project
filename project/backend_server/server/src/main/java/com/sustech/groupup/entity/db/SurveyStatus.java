@@ -8,8 +8,8 @@ import lombok.Getter;
 @Getter
 public enum SurveyStatus {
     CLOSED(1),
-    OPENED(2),
-    ARCHIVED(3)
+    ARCHIVED(2),
+    OPENED(3)
     ;
     @EnumValue
     @JsonValue

@@ -56,13 +56,13 @@ public class UserServiceImpl implements UserService {
         } else if (users.size() > 1) {
             throw new ExternalException(Response.getInternalError("user-duplicate"));
         }
-        UserEntity user = users.getFirst();
+        UserEntity user = users.get(0);
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new ExternalException(Response.getBadRequest("wrong-password"));
         }
 
         String token = jwtUtil.generateToken(user.getId());
-        return new LoginAuthDTO(users.getFirst().getId(), token);
+        return new LoginAuthDTO(users.get(0).getId(), token);
     }
 
     @Override

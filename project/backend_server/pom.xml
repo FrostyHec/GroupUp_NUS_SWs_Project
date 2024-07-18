@@ -22,8 +22,9 @@
     </properties>
 
     <modules>
-        <module>server</module>
         <module>message_push</module>
+        <module>object_storage</module>
+        <module>server</module>
     </modules>
 
     <packaging>pom</packaging>

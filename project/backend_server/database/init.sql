@@ -74,9 +74,10 @@ create table request_grouping(
     status int -- 1 accepted / 2 denied / 3 wait
 );
 create table response_group_request(
-    create_at timestamp,
-    update_at timestamp,
-    request_id int8,
-    user_id int8,
+    id serial primary key ,
+    create_at timestamp not null ,
+    update_at timestamp not null ,
+    request_id int8 not null ,
+    user_id int8 not null ,
     response_type int --1 accept, 2 denied, 3 wait[排在前面]
 );

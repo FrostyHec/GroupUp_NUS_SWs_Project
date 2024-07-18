@@ -6,7 +6,7 @@ import com.sustech.groupup.mapper.SSEIPRawMapper;
 
 import lombok.RequiredArgsConstructor;
 
-//TODO  find ways for fixing the annotation failure
+
 @DynamicTableNameMapper
 @RequiredArgsConstructor
 public class SSEIPMapper{

@@ -36,7 +36,9 @@ public interface SurveyMapper extends BaseMapper<SurveyEntity> {
 
     @Select("""
             <script>
-                    select survey_id from survey_member where member_id = #{id}
+                    select survey_id from survey_member sm
+                    join survey s on sm.survey_id=s.id
+                    where member_id = #{id} and s.status!=1
                     <if test="pageSize != -1">
                         limit #{pageSize} offset (#{pageNo}-1)*#{pageSize}
                     </if>

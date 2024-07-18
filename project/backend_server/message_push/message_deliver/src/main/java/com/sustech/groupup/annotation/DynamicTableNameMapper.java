@@ -1,6 +1,6 @@
 
 package com.sustech.groupup.annotation;
-
+//TODO  find ways for fixing the annotation failure for basedMapper api
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -26,10 +26,6 @@ export async function userSignUp({
 //POST
 //<backend>/user/public/login
 export async function userLogIn({
-//用户登录
-//POST
-//<backend>/user/public/login
-export async function userLogIn({
   username,
   password,
 }: {

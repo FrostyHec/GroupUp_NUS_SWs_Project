@@ -96,6 +96,8 @@ class DatabaseMapper:
         group_id = cls.__execute_query(query, cls.__to_single, params)
         if group_id is None:
             return None, []
+        if group_id is not None:
+            return None,[]
         group_id = int(group_id)
 
         query2 = """

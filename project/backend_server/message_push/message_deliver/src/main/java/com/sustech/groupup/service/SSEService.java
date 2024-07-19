@@ -6,8 +6,13 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.dao.CannotSerializeTransactionException;
 import org.springframework.http.MediaType;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionSystemException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
@@ -36,6 +41,11 @@ public class SSEService {
     private final RunArgs runArgs;
     private final Map<Long, SseEmitter> clients = new ConcurrentHashMap<>();
 
+    @Retryable(
+            retryFor = TransactionSystemException.class,
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 1000))
+    @Transactional
     public SseEmitter register(long uid) {
         sseipMapper.insertOrUpdate(new SSEIPEntity(uid, getSelfIp()));//假连接优于丢失连接管理。先记录再创建
         SseEmitter emitter = new SseEmitter();

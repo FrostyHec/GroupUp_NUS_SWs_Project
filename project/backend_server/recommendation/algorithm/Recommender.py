@@ -1,3 +1,4 @@
+import math
 import queue
 from collections import deque
 from typing import List, Dict, Optional
@@ -58,7 +59,9 @@ class Recommender:
         corpus = []
         for survey in filtered_survey:
             target_id = survey['id']
-            result = answer[target_id]
+            result = ""
+            if(target_id in answer):
+                result = answer[target_id]
             content = str(result)
             corpus.append(content)
         
@@ -93,7 +96,9 @@ class Recommender:
         corpus = []
         for answer_willing in response:
             answer_id = answer_willing['id']
-            answer_input = str(answer[answer_id])
+            answer_input = ""
+            if(answer_id in answer):
+                answer_input = str(answer[answer_id])
             content = str(answer_willing['answer']) + " " + answer_input
             corpus.append(content)
         corpus_np = np.array(corpus)
@@ -164,8 +169,8 @@ class Recommender:
         groups = {}
         for group in current_group:
             group_id = group.group_id
-            group_vector = group.info
-            group_vector = list(group_vector.values())
+            group_vector = group.info.values()
+            group_vector = [item.vector for item in group_vector]
             group_vector = np.array(group_vector)
             group_vector = np.mean(group_vector, axis=0)
             group_vector = Vector(group_vector.shape, group_vector)
@@ -173,7 +178,7 @@ class Recommender:
         
         queries_embedding = user_group_vector.vector
         group_ids = list(groups.keys())
-        group_vectors = list(groups.values())
+        group_vectors = [item.vector for item in list(groups.values())]
         group_transpose = np.transpose(np.array(group_vectors), (1, 0, 2))
         result = np.zeros(len(group_vectors), dtype=float)
         for index, query_embedding in enumerate(queries_embedding):
@@ -181,8 +186,9 @@ class Recommender:
             similarities = cos_sim(query_embedding, group_embedding)
             result = np.add(result, similarities)
         result = result / len(queries_embedding) * 100
-        result_dict = dict(zip(group_ids, result))
-        return result_dict 
+        rec_row = [float(element.item()) for row in result for element in row]
+        result_dict = dict(zip(group_ids, rec_row))
+        return result_dict
 
     def grouping(self, current_group: List[GroupVectors],
                  current_ungrouped: Dict[int, Vector],
@@ -193,6 +199,8 @@ class Recommender:
         :param restriction:
         :return: 新创建的组的Group的Group ID 为 -1
         """
+        restriction = int(restriction['groupSize'])
+
         # First transform the current_group into a list of vectors.
         group_with_vacancies = {}
         group_members_left = {}
@@ -202,7 +210,7 @@ class Recommender:
                 continue
             group_vector = group.info
             group_id = group.group_id
-            group_vector = list(group_vector.values())
+            group_vector = [item.vector for item in list(group_vector.values())]
             group_vector = np.array(group_vector)
             group_vector = np.mean(group_vector, axis=0)
             group_vector = Vector(group_vector.shape, group_vector)
@@ -266,37 +274,41 @@ class Recommender:
                 del current_ungrouped[user_id]
                 
         # For unmatched users, use KNN to form new groups.
-        user_to_user = {}
-        user_index = {}
-        for index, user_id in enumerate(unmatched_users):
-            user_vector = current_ungrouped[user_id]
-            user_preference = self.get_person_preference_order(user_vector, None,
-                                                               current_ungrouped, restriction)
-            user_preference[user_id] = 0
-            user_preference = dict(sorted(user_preference.items(), key=lambda x: x[1], reverse=True))
-            user_to_user[user_id] = user_preference
-            user_index[user_id] = index
-            
         # Calculate the similarity between users.
         n = len(unmatched_users)
-        similarity_matrix = np.zeros((n, n))
-        for user_id, user_preference in user_to_user.items():
-            for target_id, preference in user_preference.items():
-                similarity_matrix[user_index[user_id]][user_index[target_id]] = preference
-        
-        cluster_size = n / restriction
-        kmeans = KMeans(n_clusters=cluster_size, random_state=0).fit(similarity_matrix)
-        labels = kmeans.labels_
-        
-        new_group = {}
-        for index, label in enumerate(labels):
-            if(label not in new_group.keys()):
-                new_group[label] = GroupVectors(-1, {})
-            user_id = user_index[index]
-            new_group[label].info[user_id] = current_ungrouped[user_id]
-            del current_ungrouped[user_id]           
-        
-        final_group = current_group + list(new_group.values())
-        return final_group
+        if(n > 0):
+            user_to_user = {}
+            user_index_to_id = {}
+            user_id_to_index = {}
+            for index, user_id in enumerate(unmatched_users):
+                user_vector = current_ungrouped[user_id]
+                user_preference = self.get_person_preference_order(user_vector, None,
+                                                               current_ungrouped, restriction)
+                user_preference[user_id] = 0
+                user_preference = dict(sorted(user_preference.items(), key=lambda x: x[1], reverse=True))
+                user_to_user[user_id] = user_preference
+                user_index_to_id[index] = user_id
+                user_id_to_index[user_id] = index
+
+            similarity_matrix = np.zeros((n, n))
+            for user_id, user_preference in user_to_user.items():
+                for target_id, preference in user_preference.items():
+                    similarity_matrix[user_id_to_index[user_id]][user_id_to_index[target_id]] = preference
+
+            cluster_size = math.ceil(n / restriction)
+            kmeans = KMeans(n_clusters=cluster_size, random_state=0).fit(similarity_matrix)
+            labels = kmeans.labels_
+
+            new_group = {}
+            for index, label in enumerate(labels):
+                if(label not in new_group.keys()):
+                    new_group[label] = GroupVectors(-1, {})
+                user_id = user_index_to_id[index]
+                new_group[label].info[user_id] = current_ungrouped[user_id]
+                del current_ungrouped[user_id]
+
+            return current_group + list(new_group.values())
+
+        return current_group
         
         

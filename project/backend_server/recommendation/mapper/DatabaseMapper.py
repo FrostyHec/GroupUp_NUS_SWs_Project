@@ -18,7 +18,6 @@ DATABASE_URL = (f'postgresql+psycopg2://{Config.database_username}:'
 engine = create_engine(DATABASE_URL)
 
 Session = sessionmaker(bind=engine)
-session = Session()
 
 
 class DatabaseMapper:
@@ -97,6 +96,8 @@ class DatabaseMapper:
         group_id = cls.__execute_query(query, cls.__to_single, params)
         if group_id is None:
             return None, []
+        if group_id is not None:
+            return None,[]
         group_id = int(group_id)
 
         query2 = """
@@ -167,10 +168,11 @@ class DatabaseMapper:
         """
         # 清空组队情况
         delete_member = """
-        delete from group_member where group_id in (select * from group_table where id = :sid);
+        delete from group_member where group_id in (select id from group_table where survey_id= :sid);
         """
-        with engine.connect() as connection:
-            connection.execute(text(delete_member), {'sid': sid})
+        session = Session()
+        session.execute(text(delete_member), {'sid': sid})
+        session.commit()
 
         # 重新插入
         group_members: List[GroupMember] = []

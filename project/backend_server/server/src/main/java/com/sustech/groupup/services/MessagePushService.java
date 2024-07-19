@@ -35,8 +35,10 @@ public class MessagePushService {
                     "from_id",from_id,"to_id",id,"type",1,
                     "required_ack",false,"body",""
             );
-            var response = restTemplate.postForEntity(dispatcherUrl, objectMapper.valueToTree(msg),
-                                                      Response.class);
+            var response =
+                        restTemplate.postForEntity(dispatcherUrl, objectMapper.valueToTree(msg),
+                                                   Response.class);
+
             if (response.getStatusCode() != HttpStatus.OK
                 || Objects.isNull(response.getBody())
                 || response.getBody().getCode() != ResponseCodeType.SUCCESS.getCode()) {

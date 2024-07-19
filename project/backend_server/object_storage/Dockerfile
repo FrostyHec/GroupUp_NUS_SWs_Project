@@ -19,7 +19,7 @@ RUN java -version
 WORKDIR /app
 
 # Copy the executable JAR into the container
-COPY ../target/server-1.0-SNAPSHOT.jar /app/app.jar
+COPY target/object_storage-1.0-SNAPSHOT.jar /app/app.jar
 
 EXPOSE 7073
 # TODO ?????????
